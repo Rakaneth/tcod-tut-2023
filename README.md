@@ -21,7 +21,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # Libraries used
 
-[tcod](https://github.com/libtcod/python-tcod), [tcod-ecs](https://github.com/libtcod/python-tcod-ecs),pyyaml
+[tcod](https://github.com/libtcod/python-tcod), [tcod-ecs](https://github.com/HexDecimal/python-tcod-ecs), pyyaml
 
 # DevLog
 
