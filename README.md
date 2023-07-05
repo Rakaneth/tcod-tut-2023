@@ -5,7 +5,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 # Progress
 
 * [x] Part 0 - Setting Up
-* [ ] Part 1 - Drawing the '@' symbol and moving it around
+* [x] Part 1 - Drawing the '@' symbol and moving it around
 * [ ] Part 2 - The generic Entity, the render functions, and the map
 * [ ] Part 3 - Generating a dungeon
 * [ ] Part 4 - Field of view
@@ -31,4 +31,11 @@ I've done a bit of plumbing, setting up an `Engine` class to hold the game state
 
 1. `git clone https://github.com/Rakaneth/tcod-tut-2023`
 2. `sh bootstrap.sh` (Linux) or  `.\bootstrap.bat` (Windows)
-3. `python main.py`
+3. `. ./env/bin/activate` (Linux) or `.\env\Scripts\activate` (Windows)
+4. `python main.py`
+
+In addition, a minimal Python debug config file for VSCode is included. With Microsoft's Python extension installed, select the Python interpreter in the `./env` folder and then the game can be debugged with `F5`.
+
+Got started early using the brand-spanking-new `tcod-ecs`, which I find less annoying to use than `esper`. There is a bit of a learning curve, but I was able to use it to make a generic entity that could move around and produce the famous `@`.
+
+With that, Week 1 is done. I will try to avoid skipping ahead, but that means I might make a second project alongside this to continue playing with `tcod-ecs`.

@@ -1,4 +1,5 @@
 import tcod
+from tcod.ecs import World
 from typing import Optional
 
 from screen import Screen
@@ -6,10 +7,10 @@ from action import Action, QuitAction
 
 
 class TestScreen(Screen):
-    """A test screen,"""
+    """A test screen"""
 
-    def __init__(self):
-        super().__init__("test")
+    def __init__(self, world: World):
+        super().__init__("test", world)
 
     def on_key(self, key: tcod.event.KeySym) -> Optional[Action]:
         match key:
@@ -24,8 +25,8 @@ class TestScreen(Screen):
 class WinScreen(Screen):
     """A test screen for screen navigation."""
 
-    def __init__(self):
-        super().__init__("win")
+    def __init__(self, world: World):
+        super().__init__("win", world)
 
     def on_draw(self, con: tcod.console.Console):
         con.print(0, 0, "You win! :)")
@@ -42,8 +43,8 @@ class WinScreen(Screen):
 class LoseScreen(Screen):
     """A test screen for screen navigation."""
 
-    def __init__(self):
-        super().__init__("lose")
+    def __init__(self, world: World):
+        super().__init__("lose", world)
 
     def on_draw(self, con: tcod.console.Console):
         con.print(0, 0, "You lose :(")
@@ -60,8 +61,8 @@ class LoseScreen(Screen):
 class MainScreen(Screen):
     """A test screen for screen navigation."""
 
-    def __init__(self):
-        super().__init__("main")
+    def __init__(self, world: World):
+        super().__init__("main", world)
 
     def on_draw(self, con: tcod.console.Console):
         con.print(0, 0, "Press [w] to win.")

@@ -2,8 +2,9 @@ from typing import Optional, Tuple
 
 import tcod
 import tcod.event
+from tcod.ecs import World
 
-from action import Action, QuitAction, MovementAction
+from action import Action, QuitAction
 
 
 class Screen(tcod.event.EventDispatch[Optional[Action]]):
@@ -12,9 +13,10 @@ class Screen(tcod.event.EventDispatch[Optional[Action]]):
     Handles input, update, and drawing.
     """
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, world: World):
         super().__init__()
         self.name = name
+        self.world = world
 
     def __repr__(self) -> str:
         return f"Screen(self.name)"

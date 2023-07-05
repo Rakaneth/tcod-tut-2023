@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class Action:
     running: bool
@@ -9,11 +10,7 @@ class Action:
         if self.running is None:
             self.running = True
 
+
 class QuitAction(Action):
     def __init__(self):
         super().__init__(False, None)
-
-@dataclass
-class MovementAction(Action):
-    dx: int
-    dy: int

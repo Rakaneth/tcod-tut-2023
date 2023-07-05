@@ -1,8 +1,11 @@
 import tcod
+
+from tcod.ecs import World
 from screen import Screen
-from testscreens import TestScreen, MainScreen, WinScreen, LoseScreen
+from mainscreen import MainScreen
 from action import Action
 from typing import Optional
+from geom import Point
 
 SCR_W = 80
 SCR_H = 50
@@ -20,6 +23,7 @@ class Engine:
             16,
             tcod.tileset.CHARMAP_CP437,
         )
+        self.world = World()
 
     @property
     def cur_screen(self) -> Screen:
@@ -29,8 +33,17 @@ class Engine:
         self.screens[sc.name] = sc
 
     def setup(self):
-        for s in [TestScreen, LoseScreen, WinScreen, MainScreen]:
-            self._register_sc(s())
+        self._register_sc(MainScreen(self.world))
+
+        test_ent_comps = {
+            ("name", str): "Hero",
+            ("pos", Point): Point(SCR_W // 2, SCR_H // 2),
+            ("glyph", str): "@",
+            ("color", tuple): (255, 0, 255),
+        }
+        self.world.new_entity(
+            name="player", components=test_ent_comps, tags=["Actor", "player"]
+        )
 
     def run(self):
         with tcod.context.new(
