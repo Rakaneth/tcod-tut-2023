@@ -14,7 +14,7 @@ class MainScreen(Screen):
         super().__init__("main", world)
 
     def on_draw(self, con: Console):
-        player = self.world.named["player"]
+        player = self.world["player"]
         glyph = player.components[("glyph", str)]
         color = player.components[("color", tuple)]
         p = player.components[("pos", Point)]
@@ -34,7 +34,7 @@ class MainScreen(Screen):
             case KeySym.d:
                 dp.x = 1
 
-        player = self.world.named["player"]
+        player = self.world["player"]
         pos = player.components[("pos", Point)]
 
         player.components[("pos", Point)] = pos + dp

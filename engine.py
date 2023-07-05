@@ -41,9 +41,12 @@ class Engine:
             ("glyph", str): "@",
             ("color", tuple): (255, 0, 255),
         }
-        self.world.new_entity(
-            name="player", components=test_ent_comps, tags=["Actor", "player"]
-        )
+        e = self.world["player"]
+        for k, v in test_ent_comps.items():
+            e.components[k] = v
+        
+        for tag in ["Actor", "Player"]:
+            e.tags.add(tag)
 
     def run(self):
         with tcod.context.new(
