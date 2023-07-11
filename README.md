@@ -6,7 +6,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 * [x] Part 0 - Setting Up
 * [x] Part 1 - Drawing the '@' symbol and moving it around
-* [ ] Part 2 - The generic Entity, the render functions, and the map
+* [ ] Part 2 - The generic Entity, the render functions, and the map (In Progress)
 * [ ] Part 3 - Generating a dungeon
 * [ ] Part 4 - Field of view
 * [ ] Part 5 - Placing enemies and kicking them (harmlessly)
