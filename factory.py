@@ -1,7 +1,6 @@
 from tcod.ecs import World, Entity
 from geom import Point
 from yaml import load, SafeLoader
-from typing import Tuple, Iterable
 
 import components as comps
 
@@ -36,7 +35,9 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
         e = world.new_entity()
 
     e.components.update(c)
-    for tag in tags.split(","):
-        e.tags.add(tag)
+
+    if len(tags) > 0:
+        for tag in tags.split(","):
+            e.tags.add(tag)
 
     return e
