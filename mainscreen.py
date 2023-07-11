@@ -16,15 +16,11 @@ class MainScreen(Screen):
         super().__init__("main", world)
 
     def on_draw(self, con: Console):
-        query = [
-            ("render", comps.Renderable),
-            ("pos", comps.Position),
-        ]
-        for render, posi in self.world.Q[
-            ("render", comps.Renderable), ("pos", comps.Position)
-        ]:
+        for render, posi in self.world.Q[comps.Renderable, comps.Location]:
             p = posi.pos
-            con.print(p.x, p.y, render.glyph, render.color)
+            cell = con.rgb[p.x, p.y]
+            cell["fg"] = render.color
+            cell["ch"] = ord(render.glyph)
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Point(0, 0)
@@ -40,7 +36,7 @@ class MainScreen(Screen):
                 dp.x = 1
 
         player = self.world["Farin"]
-        pos = player.components[("pos", comps.Position)]
+        pos = player.components[comps.Location]
         new_point = pos.pos + dp
 
-        player.components[("pos", comps.Position)].pos = new_point
+        player.components[comps.Location].pos = new_point

@@ -25,8 +25,8 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
 
     c = {
         ("name", str): nm,
-        ("render", comps.Renderable): comps.Renderable(glyph, color),
-        ("pos", comps.Position): comps.Position(None, Point(0, 0)),
+        comps.Renderable: comps.Renderable(glyph, color),
+        comps.Location: comps.Location(None, Point(0, 0)),
     }
 
     if name is not None or template.get("named", False):
@@ -44,9 +44,9 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
 
 
 def place_entity(e: Entity, pt: Point, map_id: str = None):
-    pos = e.components.get(("pos", comps.Position))
+    pos = e.components.get(comps.Location)
     if pos is None:
-        e.components[("pos", comps.Position)] = comps.Position(map_id, pt)
+        e.components[comps.Location] = comps.Location(map_id, pt)
     else:
         pos.pos = pt
         if map_id is not None:

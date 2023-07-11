@@ -12,7 +12,7 @@ class Renderable:
 
 
 @dataclass
-class Position:
+class Location:
     """Describes a position on a map."""
 
     map_id: str
