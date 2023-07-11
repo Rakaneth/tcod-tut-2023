@@ -2,7 +2,7 @@ from screen import Screen
 from tcod.console import Console
 from tcod.ecs import World, Entity
 from tcod.event import KeySym
-from geom import Point
+from geom import Point, Direction
 from typing import Optional
 from action import Action
 
@@ -24,19 +24,24 @@ class MainScreen(Screen):
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Point(0, 0)
+        running = True
 
         match key:
             case KeySym.w:
-                dp.y = -1
+                dp = Direction.UP
             case KeySym.a:
-                dp.x = -1
+                dp = Direction.LEFT
             case KeySym.s:
-                dp.y = 1
+                dp = Direction.DOWN
             case KeySym.d:
-                dp.x = 1
+                dp = Direction.RIGHT
+            case KeySym.ESCAPE:
+                running = False
 
-        player = self.world["Farin"]
-        pos = player.components[comps.Location]
-        new_point = pos.pos + dp
+        if running:
+            player = self.world["Farin"]
+            pos = player.components[comps.Location]
+            new_point = pos.pos + dp
+            player.components[comps.Location].pos = new_point
 
-        player.components[comps.Location].pos = new_point
+        return Action(running, None)

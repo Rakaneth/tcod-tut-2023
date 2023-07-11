@@ -63,4 +63,5 @@ class Engine:
                     action = self.cur_screen.dispatch(evt)
                     if action is not None:
                         running = action.running
-                        self.cur_scr_name = action.new_scr
+                        if action.new_scr is not None:
+                            self.cur_scr_name = action.new_scr
