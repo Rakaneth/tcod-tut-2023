@@ -6,9 +6,10 @@ from mainscreen import MainScreen
 from action import Action
 from typing import Optional
 from geom import Point
+from factory import make_char
 
-SCR_W = 80
-SCR_H = 50
+SCR_W = 40
+SCR_H = 30
 
 
 class Engine:
@@ -18,7 +19,7 @@ class Engine:
         self.screens: dict[str, Screen] = dict()
         self.cur_scr_name = "main"
         self.tileset = tcod.tileset.load_tilesheet(
-            "./assets/gfx/Cooz_curses_square_16x16.png",
+            "./assets/gfx/Sir_Henrys_32x32.png",
             16,
             16,
             tcod.tileset.CHARMAP_CP437,
@@ -34,19 +35,8 @@ class Engine:
 
     def setup(self):
         self._register_sc(MainScreen(self.world))
-
-        test_ent_comps = {
-            ("name", str): "Hero",
-            ("pos", Point): Point(SCR_W // 2, SCR_H // 2),
-            ("glyph", str): "@",
-            ("color", tuple): (255, 0, 255),
-        }
-        e = self.world["player"]
-        for k, v in test_ent_comps.items():
-            e.components[k] = v
-        
-        for tag in ["Actor", "Player"]:
-            e.tags.add(tag)
+        make_char(self.world, "test", "Player,Actor", "Farin")
+        make_char(self.world, "npc", "actor")
 
     def run(self):
         with tcod.context.new(

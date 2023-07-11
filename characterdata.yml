@@ -1,0 +1,9 @@
+---
+test: &base
+  name: Hero
+  glyph: '@'
+  color: [255, 255, 0]
+npc:
+  name: NPC
+  glyph: '@'
+  color: [255, 0, 255]
