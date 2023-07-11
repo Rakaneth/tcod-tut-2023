@@ -37,7 +37,7 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
     e.components.update(c)
 
     if len(tags) > 0:
-        for tag in tags.split(","):
+        for tag in tags.split():
             e.tags.add(tag)
 
     return e

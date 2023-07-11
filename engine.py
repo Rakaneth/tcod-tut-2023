@@ -35,7 +35,7 @@ class Engine:
 
     def setup(self):
         self._register_sc(MainScreen(self.world))
-        make_char(self.world, "test", "Player,Actor", "Farin")
+        make_char(self.world, "test", "Player Actor", "Farin")
         make_char(self.world, "npc", "actor")
 
     def run(self):
