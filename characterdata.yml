@@ -3,7 +3,12 @@ test: &base
   name: Hero
   glyph: '@'
   color: [255, 255, 0]
-npc:
+npc: 
+  <<: *base
   name: NPC
-  glyph: '@'
   color: [255, 0, 255]
+named_npc:
+  <<: *base
+  name: NPC!
+  color: [0, 255, 255]
+  named: true

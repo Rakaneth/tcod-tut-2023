@@ -6,7 +6,7 @@ from mainscreen import MainScreen
 from action import Action
 from typing import Optional
 from geom import Point
-from factory import make_char
+from factory import make_char, place_entity
 
 SCR_W = 40
 SCR_H = 30
@@ -35,8 +35,12 @@ class Engine:
 
     def setup(self):
         self._register_sc(MainScreen(self.world))
-        make_char(self.world, "test", "Player Actor", "Farin")
-        make_char(self.world, "npc", "actor")
+        farin = make_char(self.world, "test", "player actor", "Farin")
+        npc = make_char(self.world, "npc", "actor")
+        named_npc = make_char(self.world, "named_npc", "actor")
+        place_entity(farin, Point(1, 2))
+        place_entity(npc, Point(10, 10))
+        place_entity(named_npc, Point(7, 5))
 
     def run(self):
         with tcod.context.new(
