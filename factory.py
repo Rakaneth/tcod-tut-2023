@@ -52,8 +52,3 @@ def place_entity(e: Entity, pt: Point, map_id: str = None):
         pos.pos = pt
         if map_id is not None:
             pos.map_id = map_id
-
-
-def add_map(m: GameMap, world: World):
-    e = world[m.id]
-    e.components[GameMap] = m

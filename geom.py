@@ -65,7 +65,16 @@ class Rect:
         return Point((self.x1 + self.x2) // 2, (self.y1 + self.y2) // 2)
 
     def is_perimeter(self, x: int, y: int) -> bool:
-        return x in (self.x1, self.x2) or y in (self.y1, self.y2)
+        if x == self.x1:
+            return True
+        if x == self.x2:
+            return True
+        if y == self.y1:
+            return True
+        if y == self.y2:
+            return True
+
+        return False
 
     @property
     def perimeter(self) -> List[Point]:

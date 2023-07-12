@@ -6,7 +6,7 @@ from mainscreen import MainScreen
 from action import Action
 from typing import Optional
 from geom import Point
-from factory import make_char, place_entity, add_map
+from factory import make_char, place_entity
 from gamemap import arena, GameMap
 
 SCR_W = 40
@@ -36,8 +36,6 @@ class Engine:
 
     def setup(self):
         self._register_sc(MainScreen(self.world))
-        m = arena(10, 10, "arena")
-        add_map(m, self.world)
         farin = make_char(self.world, "test", "player actor", "Farin")
         npc = make_char(self.world, "npc", "actor")
         named_npc = make_char(self.world, "named_npc", "actor")
