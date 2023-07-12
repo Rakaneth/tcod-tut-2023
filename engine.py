@@ -40,8 +40,8 @@ class Engine:
         npc = make_char(self.world, "npc", "actor")
         named_npc = make_char(self.world, "named_npc", "actor")
         place_entity(farin, Point(1, 2), "arena")
-        place_entity(npc, Point(10, 10), "arena")
-        place_entity(named_npc, Point(7, 5), "arena")
+        place_entity(npc, Point(3, 4), "arena")
+        place_entity(named_npc, Point(5, 6), "arena")
 
     def run(self):
         with tcod.context.new(

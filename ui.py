@@ -2,7 +2,6 @@ from gamemap import GameMap
 from geom import Point
 from tcod.console import Console
 from typing import Tuple
-from swatch import tuple_from_int
 
 
 class Camera:
