@@ -65,6 +65,12 @@ class GameMap:
     def in_bounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.width and 0 <= y < self.height
 
+    def walkable(self, x: int, y: int) -> bool:
+        return self.__tiles[x, y]["walkable"]
+
+    def transparent(self, x: int, y: int) -> bool:
+        return self.__tiles[x, y]["transparent"]
+
     def carve_rect(self, r: Rect):
         self.tiles[r.x1 : r.x2 + 1, r.y1 : r.y2 + 1] = self.wall_tile
         self.tiles[r.x1 + 1 : r.x2, r.y1 + 1 : r.y2] = self.floor_tile

@@ -33,7 +33,11 @@ Created several modules for drawing and the map. I originally wanted to have a l
 
 Using `tcod-ecs`'s relations feature, I was able to filter out entities not on the map being drawn. This is a huge step in being able to keep 100% of the game state - including maps - in a single `World`, which will make part 10 much easier. 
 
-This nearly completes Week 2, though I still need to figure out how to get the game maps themselves as a resource that the `World` can use - and I need to stop the player from going out of the map bounds.
+I have decided to create my own class which holds the `World` as well as a dictionary of game maps. The `World` has a `mapid` relation that is used to filter out entities on the same map. 
+
+There is also a separate factory function to create a player character.
+
+Finally, the player can no longer go through walls. This completes Week 2.
 
 ## Week 1
 

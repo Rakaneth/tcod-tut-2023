@@ -39,6 +39,8 @@ class Engine:
     def setup(self):
         self._register_sc(MainScreen(self.gs))
         world = self.gs.world
+        arena_m = arena("arena", 45, 22, False)
+        self.gs.add_map(arena_m)
         farin = make_player(world, "test", "Farin")
         npc = make_char(world, "npc", "actor")
         named_npc = make_char(world, "named_npc", "actor")

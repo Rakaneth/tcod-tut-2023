@@ -17,19 +17,24 @@ class MainScreen(Screen):
     def __init__(self, gs: GameState):
         super().__init__("main", gs)
         self.camera = Camera(30, 20)
-        self.temp_map = arena("arena", 45, 35)
 
     def on_draw(self, con: Console):
-        draw_map(self.temp_map, self.camera, con)
+        draw_map(self.gs.cur_map, self.camera, con)
         for e in self.gs.world.Q.all_of(
             components=[comps.Renderable, comps.Location],
-            relations=[("mapid", "arena")],
+            relations=[("mapid", self.gs.cur_map.id)],
         ):
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
             draw_on_map(
-                p.x, p.y, render.glyph, self.camera, con, self.temp_map, render.color
+                p.x, p.y, render.glyph, self.camera, con, self.gs.cur_map, render.color
             )
+
+    def try_move(self, pt: Point):
+        if self.gs.cur_map.walkable(pt.x, pt.y):
+            pos = self.gs.player.components[comps.Location]
+            pos.pos = pt
+            self.camera.center = pt
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Point(0, 0)
@@ -51,7 +56,6 @@ class MainScreen(Screen):
             player = self.gs.player
             pos = player.components[comps.Location]
             new_point = pos.pos + dp
-            player.components[comps.Location].pos = new_point
-            self.camera.center = new_point
+            self.try_move(new_point)
 
         return Action(running, None)
