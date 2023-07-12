@@ -1,15 +1,30 @@
 import numpy as np
 from geom import Point, Rect
-from swatch import STONE_LIGHT, STONE_DARK
+from swatch import STONE_LIGHT, STONE_DARK, BLACK
 from typing import Tuple
+
+render_dt = np.dtype([("ch", np.int32), ("fg", "3B"), ("bg", "3B")])
+
+tile_dt = np.dtype(
+    [
+        ("walkable", bool),
+        ("transparent", bool),
+        ("dark", render_dt),
+    ]
+)
+
+
+def new_tile(
+    *,
+    walkable: int,
+    transparent: int,
+    dark=Tuple[int, Tuple[int, int, int], Tuple[int, int, int]]
+) -> np.ndarray:
+    return np.array((walkable, transparent, dark), dtype=tile_dt)
 
 
 class GameMap:
     """Describes a game map."""
-
-    TILE_NULL = 0
-    TILE_WALL = 1
-    TILE_FLOOR = 2
 
     def __init__(
         self,
@@ -20,12 +35,16 @@ class GameMap:
         wall_fg: Tuple[int, int, int] = STONE_LIGHT,
         floor_fg: Tuple[int, int, int] = STONE_DARK,
     ):
-        self.__tiles = np.zeros((width, height), dtype=np.uint8, order="F")
         self.__explored = np.zeros((width, height), dtype=bool, order="F")
         self.dark = dark
         self.__id = id
-        self.wall_fg = wall_fg
-        self.floor_fg = floor_fg
+        self.wall_tile = new_tile(
+            transparent=False, walkable=False, dark=(ord("#"), wall_fg, BLACK)
+        )
+        self.floor_tile = new_tile(
+            transparent=True, walkable=True, dark=(ord("."), floor_fg, BLACK)
+        )
+        self.__tiles = np.full((width, height), fill_value=self.floor_tile, order="F")
 
     @property
     def id(self) -> str:
@@ -46,42 +65,9 @@ class GameMap:
     def in_bounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.width and 0 <= y < self.height
 
-    def get(self, x: int, y: int) -> int:
-        if self.in_bounds(x, y):
-            return self.__tiles[x, y]
-
-        return self.TILE_NULL
-
-    def set(self, x: int, y: int, t: int):
-        if self.in_bounds(x, y):
-            self.__tiles[x, y] = t
-
     def carve_rect(self, r: Rect):
-        for pt_r in r.perimeter:
-            self.set(pt_r.x, pt_r.y, self.TILE_WALL)
-
-        for pt_i in r.interior:
-            self.set(pt_i.x, pt_i.y, self.TILE_FLOOR)
-
-    @property
-    def chars(self) -> np.ndarray:
-        def __to_char(t: int):
-            match t:
-                case GameMap.TILE_NULL:
-                    return 0
-                case GameMap.TILE_WALL:
-                    return ord("#")
-                case GameMap.TILE_FLOOR:
-                    return ord(".")
-
-        applyall = np.vectorize(__to_char)
-
-        return applyall(self.__tiles)
-
-    def write_to_file(self):
-        with open(f"./{self.id}.map", "w") as f:
-            v_char = np.vectorize(chr)
-            f.write(str(v_char(self.chars)))
+        self.tiles[r.x1 : r.x2 + 1, r.y1 : r.y2 + 1] = self.wall_tile
+        self.tiles[r.x1 + 1 : r.x2, r.y1 + 1 : r.y2] = self.floor_tile
 
 
 def arena(id: str, width: int, height: int, dark: bool = True) -> GameMap:
