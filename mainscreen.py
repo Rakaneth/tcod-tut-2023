@@ -21,8 +21,12 @@ class MainScreen(Screen):
 
     def on_draw(self, con: Console):
         draw_map(self.temp_map, self.camera, con)
-        for render, posi in self.world.Q[comps.Renderable, comps.Location]:
-            p = posi.pos
+        for e in self.world.Q.all_of(
+            components=[comps.Renderable, comps.Location],
+            relations=[("mapid", "arena")],
+        ):
+            p = e.components[comps.Location].pos
+            render = e.components[comps.Renderable]
             draw_on_map(
                 p.x, p.y, render.glyph, self.camera, con, self.temp_map, render.color
             )
