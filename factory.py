@@ -13,7 +13,7 @@ class GameData:
             self.data = load(f, SafeLoader)
 
 
-CHARDATA = GameData("characterdata.yml")
+CHARDATA = GameData("./assets/data/characterdata.yml")
 
 
 def make_player(world: World, temp_id: str, name: str) -> Entity:
