@@ -68,4 +68,4 @@ def place_entity(e: Entity, pt: Point, map_id: str = None):
     else:
         pos.pos = pt
         if map_id is not None:
-            e.relation_tag["mapid"] = map_id
+            e.relation_tag["map_id"] = map_id

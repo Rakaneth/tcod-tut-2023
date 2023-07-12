@@ -22,7 +22,7 @@ class MainScreen(Screen):
         draw_map(self.gs.cur_map, self.camera, con)
         for e in self.gs.world.Q.all_of(
             components=[comps.Renderable, comps.Location],
-            relations=[("mapid", self.gs.cur_map.id)],
+            relations=[("map_id", self.gs.cur_map.id)],
         ):
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
