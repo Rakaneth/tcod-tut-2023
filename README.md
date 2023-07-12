@@ -6,8 +6,8 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 * [x] Part 0 - Setting Up
 * [x] Part 1 - Drawing the '@' symbol and moving it around
-* [ ] Part 2 - The generic Entity, the render functions, and the map (In Progress)
-* [ ] Part 3 - Generating a dungeon
+* [x] Part 2 - The generic Entity, the render functions, and the map
+* [x] Part 3 - Generating a dungeon
 * [ ] Part 4 - Field of view
 * [ ] Part 5 - Placing enemies and kicking them (harmlessly)
 * [ ] Part 6 - Doing (and taking) some damage
@@ -28,6 +28,12 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 ## Week 2
 
 More plumbing. With a little bit of refactoring, there is now a module that stores components and a module that will create entities with all the required components. I have decided on using a YAML file (for which I am using the PyYAML library) to store the game data; I find it much easier to quickly edit and read a YAML file than a Python dictionary. I've also decided on a smaller screen size with a large 32x32 font.
+
+Created several modules for drawing and the map. I originally wanted to have a lighter map class that would convert raw tile data - ints, at first - to the proper graphics data when the map was drawn, but I had trouble getting NumPy to play nicely with broadcasting tuple data, so I opted for the method used in the most recent tcod tutorial - with a modification that allows for large, scrolling maps. There is a `Camera` object that keeps track of a viewport, and the `draw_map` function in `ui.py` uses it to draw everything around the player. 
+
+Using `tcod-ecs`'s relations feature, I was able to filter out entities not on the map being drawn. This is a huge step in being able to keep 100% of the game state - including maps - in a single `World`, which will make part 10 much easier. 
+
+This nearly completes Week 2, though I still need to figure out how to get the game maps themselves as a resource that the `World` can use - and I need to stop the player from going out of the map bounds.
 
 ## Week 1
 
