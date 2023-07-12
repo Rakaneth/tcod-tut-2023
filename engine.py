@@ -6,7 +6,9 @@ from mainscreen import MainScreen
 from action import Action
 from typing import Optional
 from geom import Point
-from factory import make_char, place_entity
+from factory import make_char, place_entity, make_player
+from gamemap import arena, GameMap
+from gamestate import GameState
 
 SCR_W = 40
 SCR_H = 30
@@ -24,7 +26,8 @@ class Engine:
             16,
             tcod.tileset.CHARMAP_CP437,
         )
-        self.world = World()
+        world = World()
+        self.gs = GameState(world)
 
     @property
     def cur_screen(self) -> Screen:
@@ -34,13 +37,16 @@ class Engine:
         self.screens[sc.name] = sc
 
     def setup(self):
-        self._register_sc(MainScreen(self.world))
-        farin = make_char(self.world, "test", "player actor", "Farin")
-        npc = make_char(self.world, "npc", "actor")
-        named_npc = make_char(self.world, "named_npc", "actor")
-        place_entity(farin, Point(1, 2))
-        place_entity(npc, Point(10, 10))
-        place_entity(named_npc, Point(7, 5))
+        self._register_sc(MainScreen(self.gs))
+        world = self.gs.world
+        arena_m = arena("arena", 45, 22, False)
+        self.gs.add_map(arena_m)
+        farin = make_player(world, "test", "Farin")
+        npc = make_char(world, "npc", "actor")
+        named_npc = make_char(world, "named_npc", "actor")
+        place_entity(farin, Point(1, 2), "arena")
+        place_entity(npc, Point(3, 4), "arena")
+        place_entity(named_npc, Point(5, 6), "void")
 
     def run(self):
         with tcod.context.new(

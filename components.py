@@ -15,5 +15,4 @@ class Renderable:
 class Location:
     """Describes a position on a map."""
 
-    map_id: str
     pos: Point

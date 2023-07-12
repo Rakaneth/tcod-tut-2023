@@ -16,6 +16,24 @@ class GameData:
 CHARDATA = GameData("characterdata.yml")
 
 
+def make_player(world: World, temp_id: str, name: str) -> Entity:
+    template = CHARDATA.data[temp_id]
+    color = tuple(template["color"])
+    glyph = template["glyph"]
+    c = {
+        ("name", str): name,
+        comps.Renderable: comps.Renderable(glyph, color),
+        comps.Location: comps.Location(Point(0, 0)),
+    }
+
+    e = world["player"]
+    e.components.update(c)
+    for tag in ["player", "actor"]:
+        e.tags.add(tag)
+
+    return e
+
+
 def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity:
     template = CHARDATA.data[id]
     color = tuple(template["color"])
@@ -26,10 +44,10 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
     c = {
         ("name", str): nm,
         comps.Renderable: comps.Renderable(glyph, color),
-        comps.Location: comps.Location(None, Point(0, 0)),
+        comps.Location: comps.Location(Point(0, 0)),
     }
 
-    if name is not None or template.get("named", False):
+    if template.get("named", False):
         e = world[nm]
     else:
         e = world.new_entity()
@@ -46,8 +64,8 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
 def place_entity(e: Entity, pt: Point, map_id: str = None):
     pos = e.components.get(comps.Location)
     if pos is None:
-        e.components[comps.Location] = comps.Location(map_id, pt)
+        e.components[comps.Location] = comps.Location(pt)
     else:
         pos.pos = pt
         if map_id is not None:
-            pos.map_id = map_id
+            e.relation_tag["mapid"] = map_id
