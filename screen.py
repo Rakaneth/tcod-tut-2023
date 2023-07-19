@@ -32,6 +32,9 @@ class Screen(tcod.event.EventDispatch[Optional[Action]]):
 
     def on_draw(self, con: tcod.console.Console):
         con.print(0, 0, f"This is the {self.name} screen.")
+    
+    def on_update(self):
+        pass
 
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
         return self.on_key(event.sym)

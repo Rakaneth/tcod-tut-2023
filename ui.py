@@ -56,7 +56,7 @@ def draw_map(m: GameMap, cam: Camera, con: Console):
     vw_explored = m.explored[st.x : x_end, st.y : y_end]
 
     con.rgb[0:s_xend, 0:s_yend] = np.select(
-        condlist=[vw_visible, vw_explored],
+        condlist=[(not m.dark) or vw_visible, vw_explored],
         choicelist=[viewport["light"], viewport["dark"]],
         default=SHROUD,
     )

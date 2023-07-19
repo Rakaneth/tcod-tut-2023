@@ -20,7 +20,6 @@ class MainScreen(Screen):
         self.camera = Camera(30, 20)
 
     def on_draw(self, con: Console):
-        self.update_fov()
         draw_map(self.gs.cur_map, self.camera, con)
         for e in self.gs.world.Q.all_of(
             components=[comps.Renderable, comps.Location],
@@ -28,7 +27,7 @@ class MainScreen(Screen):
         ):
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
-            if self.gs.cur_map.visible[p.x, p.y]:
+            if self.gs.cur_map.visible[p.x, p.y] or not self.gs.cur_map.dark:
                 draw_on_map(
                     p.x,
                     p.y,
@@ -38,12 +37,18 @@ class MainScreen(Screen):
                     self.gs.cur_map,
                     render.color,
                 )
+    
+    def on_update(self):
+        player = self.gs.player
+        pos = player.components[comps.Location].pos
+        self.camera.center = pos
+        self.update_fov()
 
     def try_move(self, pt: Point):
         if self.gs.cur_map.walkable(pt.x, pt.y):
             pos = self.gs.player.components[comps.Location]
             pos.pos = pt
-            self.camera.center = pt
+            
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Point(0, 0)

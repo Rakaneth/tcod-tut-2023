@@ -1,7 +1,8 @@
 import numpy as np
 from geom import Point, Rect
 from swatch import STONE_LIGHT, STONE_DARK, BLACK
-from typing import Tuple
+from typing import Self, Tuple
+from random import randint, choice, shuffle
 
 render_dt = np.dtype([("ch", np.int32), ("fg", "3B"), ("bg", "3B")])
 
@@ -60,7 +61,7 @@ class GameMap:
             light=(ord("."), floor_fg, BLACK),
             dark=(ord("."), floor_fg_dark, BLACK),
         )
-        self.__tiles = np.full((width, height), fill_value=self.floor_tile, order="F")
+        self.__tiles = np.full((width, height), fill_value=self.wall_tile, order="F")
 
     @property
     def id(self) -> str:
@@ -86,13 +87,56 @@ class GameMap:
 
     def transparent(self, x: int, y: int) -> bool:
         return self.__tiles[x, y]["transparent"]
+    
+    def carve(self, x: int, y: int):
+        self.tiles[x, y] = self.floor_tile
 
     def carve_rect(self, r: Rect):
         self.tiles[r.x1 : r.x2 + 1, r.y1 : r.y2 + 1] = self.wall_tile
         self.tiles[r.x1 + 1 : r.x2, r.y1 + 1 : r.y2] = self.floor_tile
+    
+    def neighbors(self, x: int, y: int):
+        return [
+            Point(i, j)
+            for (i, j) in [(x+1, y), (x-1, y), (x, y+1), (x, y-1)]
+            if self.in_bounds(i, j)
+        ]
+    
+    def on_edge(self, x: int, y: int) -> bool:
+        return x == 0 or x == self.width-1 or y == 0 or y == self.height-1
+    
+    def get_random_floor(self) -> Point:
+        cands = [
+            Point(x, y)
+            for x in range(0, self.width)
+            for y in range(0, self.height)
+            if self.in_bounds(x, y)
+            if self.walkable(x, y)
+        ]
+
+        return choice(cands)
+
 
 
 def arena(id: str, width: int, height: int, dark: bool = True) -> GameMap:
     m = GameMap(id, width, height, dark)
     m.carve_rect(Rect.from_xywh(0, 0, width, height))
     return m
+
+def drunk_walk(id: str, width: int, height: int, steps: int = 10000, dark: bool = True) -> GameMap:
+    m = GameMap(id, width, height, dark)
+    x = randint(1, m.width-2)
+    y = randint(1, m.height-2)
+    s = steps
+    while s > 0 :
+        m.carve(x, y)
+        neis = m.neighbors(x, y)
+        shuffle(neis)
+        for nei in neis:
+            if not(m.walkable(nei.x, nei.y) or m.on_edge(nei.x, nei.y)):
+                x, y = nei.x, nei.y
+                break
+        s -= 1
+    
+    return m
+    

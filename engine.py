@@ -7,7 +7,7 @@ from action import Action
 from typing import Optional
 from geom import Point
 from factory import make_char, place_entity, make_player
-from gamemap import arena, GameMap
+from gamemap import arena, GameMap, drunk_walk
 from gamestate import GameState
 
 SCR_W = 40
@@ -39,14 +39,12 @@ class Engine:
     def setup(self):
         self._register_sc(MainScreen(self.gs))
         world = self.gs.world
-        arena_m = arena("arena", 45, 22, False)
-        self.gs.add_map(arena_m)
+        drunk_m = drunk_walk("arena", 80, 80)
+        self.gs.add_map(drunk_m)
         farin = make_player(world, "test", "Farin")
         npc = make_char(world, "npc", "actor")
-        named_npc = make_char(world, "named_npc", "actor")
-        place_entity(farin, Point(1, 2), "arena")
-        place_entity(npc, Point(3, 4), "arena")
-        place_entity(named_npc, Point(5, 6), "void")
+        place_entity(farin, drunk_m)
+        place_entity(npc, drunk_m)
 
     def run(self):
         with tcod.context.new(
@@ -61,13 +59,18 @@ class Engine:
             action: Optional[Action] = None
 
             while running:
+                self.cur_screen.on_update()
+
                 root.clear()
                 self.cur_screen.on_draw(root)
                 ctx.present(root)
-
+                
                 for evt in tcod.event.wait():
-                    action = self.cur_screen.dispatch(evt)
+                    action = self.cur_screen.dispatch(evt)    
                     if action is not None:
-                        running = action.running
+                        running = action.running        
                         if action.new_scr is not None:
                             self.cur_scr_name = action.new_scr
+                
+
+                 

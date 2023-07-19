@@ -1,6 +1,7 @@
 from tcod.ecs import World, Entity
 from geom import Point
 from yaml import load, SafeLoader
+from gamemap import GameMap
 
 import components as comps
 
@@ -61,11 +62,12 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
     return e
 
 
-def place_entity(e: Entity, pt: Point, map_id: str = None):
+def place_entity(e: Entity, m: GameMap, pt: Point = None):
     pos = e.components.get(comps.Location)
+    if pt is None:
+        pt = m.get_random_floor()
     if pos is None:
         e.components[comps.Location] = comps.Location(pt)
     else:
         pos.pos = pt
-        if map_id is not None:
-            e.relation_tag["map_id"] = map_id
+        e.relation_tag["map_id"] = m.id
