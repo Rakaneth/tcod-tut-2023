@@ -2,9 +2,16 @@ from gamemap import GameMap, SHROUD
 from geom import Point
 from tcod.console import Console
 from typing import Tuple
+from gamestate import GameState
 
 import numpy as np
 
+MAP_W = 30
+MAP_H = 20
+SCR_W = 40
+SCR_H = 30
+MSG_W = 30
+MSG_H = 10
 
 class Camera:
     """Defines a viewport for the visible map."""
@@ -60,3 +67,13 @@ def draw_map(m: GameMap, cam: Camera, con: Console):
         choicelist=[viewport["light"], viewport["dark"]],
         default=SHROUD,
     )
+
+def draw_msgs(gs: GameState, con: Console):
+    con.draw_frame(0, MAP_H, MSG_W, MSG_H, title="Messages")
+    counter = 0
+    latest = gs.messages[-8:]
+    latest.reverse()
+    for msg in latest:
+        counter += con.print_box(1, MAP_H+counter+1, MSG_W-2, MSG_H-2, msg)
+        if counter >= MSG_H-2:
+            break

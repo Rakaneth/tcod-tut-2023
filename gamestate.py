@@ -1,5 +1,5 @@
 from tcod.ecs import World, Entity
-from typing import Dict
+from typing import Dict, List
 from gamemap import GameMap
 from geom import Point
 from components import Location
@@ -11,6 +11,7 @@ class GameState:
     def __init__(self, world: World):
         self.world = world
         self.maps: Dict[str, GameMap] = dict()
+        self.messages: List[str] = list()
 
     @property
     def player(self) -> Entity:
@@ -32,8 +33,11 @@ class GameState:
                 relations=[("map_id", self.cur_map.id)],
         ))
     
-    def is_enemy(self, e: Entity):
+    def is_enemy(self, e: Entity) -> bool:
         return "enemy" in e.tags
     
-    def is_friendly(self, e: Entity):
+    def is_friendly(self, e: Entity) -> bool:
         return "friendly" in e.tags
+    
+    def add_msg(self, txt):
+        self.messages.append(txt)

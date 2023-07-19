@@ -6,7 +6,7 @@ from tcod.map import compute_fov
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from ui import Camera, draw_map, draw_on_map
+from ui import Camera, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
 
 import components as comps
 
@@ -16,7 +16,7 @@ class MainScreen(Screen):
 
     def __init__(self, gs: GameState):
         super().__init__("main", gs)
-        self.camera = Camera(30, 20)
+        self.camera = Camera(MAP_W, MAP_H)
 
     def on_draw(self, con: Console):
         draw_map(self.gs.cur_map, self.camera, con)
@@ -36,6 +36,7 @@ class MainScreen(Screen):
                     self.gs.cur_map,
                     render.color,
                 )
+        draw_msgs(self.gs, con)
     
     def on_update(self):
         player = self.gs.player
@@ -54,11 +55,16 @@ class MainScreen(Screen):
             relations=[(comps.CollidesWith, ...)]
         ):
             target = e.relation_tag[comps.CollidesWith]
+            name = target.components[("name", str)]
             
             if self.gs.is_enemy(target):
                 color = bad
+                self.gs.add_msg(f"{name} is a BAD GUY! Kick them harder!")
             elif self.gs.is_friendly(target):
                 color = good
+                self.gs.add_msg(f"{name} is a GOOD GUY! Why'd you kick them?")
+            else:
+                self.gs.add_msg(f"{name} is neutral. Don't anger them!")
 
             target.components[comps.Renderable].color = color
             e.relation_tags.pop(comps.CollidesWith)

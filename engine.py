@@ -8,9 +8,7 @@ from typing import Optional
 from factory import make_char, place_entity, make_player
 from gamemap import drunk_walk
 from gamestate import GameState
-
-SCR_W = 40
-SCR_H = 30
+from ui import SCR_W, SCR_H
 
 
 class Engine:
@@ -41,9 +39,9 @@ class Engine:
         drunk_m = drunk_walk("arena", 80, 80)
         self.gs.add_map(drunk_m)
         farin = make_player(world, "test", "Farin")
-        bad_guy = make_char(world, "npc", "enemy")
-        good_guy = make_char(world, "npc", "friendly")
-        neut_guy = make_char(world, "npc", "neutral")
+        bad_guy = make_char(world, "npc", "enemy", "BadGuy")
+        good_guy = make_char(world, "npc", "friendly", "GoodGuy")
+        neut_guy = make_char(world, "npc", "neutral", "NeutralGuy")
         place_entity(farin, drunk_m)
         place_entity(bad_guy, drunk_m)
         place_entity(good_guy, drunk_m)

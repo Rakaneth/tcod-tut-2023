@@ -8,8 +8,8 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 * [x] Part 1 - Drawing the '@' symbol and moving it around
 * [x] Part 2 - The generic Entity, the render functions, and the map
 * [x] Part 3 - Generating a dungeon
-* [ ] Part 4 - Field of view
-* [ ] Part 5 - Placing enemies and kicking them (harmlessly)
+* [x] Part 4 - Field of view
+* [x] Part 5 - Placing enemies and kicking them (harmlessly)
 * [ ] Part 6 - Doing (and taking) some damage
 * [ ] Part 7 - Creating the interface
 * [ ] Part 8 - Items and Inventory
@@ -24,6 +24,14 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 [tcod](https://github.com/libtcod/python-tcod), [tcod-ecs](https://github.com/HexDecimal/python-tcod-ecs), pyyaml
 
 # DevLog
+
+## Week 3
+
+Implemented field of view and basic collision detection. I adapted the tutorial's method of updating field of view to suit my use of scrolling maps. I've implemented some convenience methods on the `GameState` class to make finding entities easier. To get some visual feedback, I've gone ahead and implemented a bit of UI, with a message box appearing at the bottom of the screen. Enemies can now properly be ![kicked!](/screenshots/kick.png)
+
+I also implemented a `drunk_walk` map generator that needs to be tweaked to consistently generate better maps. I did this from memory, so I might need to just find a good drunk-walk example and find out where I went wrong.
+
+Week 3 is, in theory, complete.
 
 ## Week 2
 
