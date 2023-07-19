@@ -10,6 +10,7 @@ tile_dt = np.dtype(
         ("walkable", bool),
         ("transparent", bool),
         ("dark", render_dt),
+        ("light", render_dt),
     ]
 )
 
@@ -18,9 +19,13 @@ def new_tile(
     *,
     walkable: int,
     transparent: int,
-    dark=Tuple[int, Tuple[int, int, int], Tuple[int, int, int]]
+    dark=Tuple[int, Tuple[int, int, int], Tuple[int, int, int]],
+    light=Tuple[int, Tuple[int, int, int], Tuple[int, int, int]],
 ) -> np.ndarray:
-    return np.array((walkable, transparent, dark), dtype=tile_dt)
+    return np.array((walkable, transparent, dark, light), dtype=tile_dt)
+
+
+SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=render_dt)
 
 
 class GameMap:
@@ -35,14 +40,25 @@ class GameMap:
         wall_fg: Tuple[int, int, int] = STONE_LIGHT,
         floor_fg: Tuple[int, int, int] = STONE_DARK,
     ):
-        self.__explored = np.zeros((width, height), dtype=bool, order="F")
+        self.explored = np.zeros((width, height), dtype=bool, order="F")
+        self.visible = np.zeros((width, height), dtype=bool, order="F")
         self.dark = dark
         self.__id = id
+        wr, wb, wg = wall_fg
+        fr, fg, fb = floor_fg
+        wall_fg_dark = (wr // 2, wg // 2, wb // 2)
+        floor_fg_dark = (fr // 2, fg // 2, fb // 2)
         self.wall_tile = new_tile(
-            transparent=False, walkable=False, dark=(ord("#"), wall_fg, BLACK)
+            transparent=False,
+            walkable=False,
+            light=(ord("#"), wall_fg, BLACK),
+            dark=(ord("#"), wall_fg_dark, BLACK),
         )
         self.floor_tile = new_tile(
-            transparent=True, walkable=True, dark=(ord("."), floor_fg, BLACK)
+            transparent=True,
+            walkable=True,
+            light=(ord("."), floor_fg, BLACK),
+            dark=(ord("."), floor_fg_dark, BLACK),
         )
         self.__tiles = np.full((width, height), fill_value=self.floor_tile, order="F")
 

@@ -16,7 +16,7 @@ class GameState:
 
     @property
     def cur_map(self) -> GameMap:
-        map_id = self.player.relation_tag["mapid"]
+        map_id = self.player.relation_tag["map_id"]
         return self.maps[map_id]
 
     def add_map(self, m: GameMap):

@@ -1,7 +1,9 @@
-from gamemap import GameMap
+from gamemap import GameMap, SHROUD
 from geom import Point
 from tcod.console import Console
 from typing import Tuple
+
+import numpy as np
 
 
 class Camera:
@@ -50,5 +52,11 @@ def draw_map(m: GameMap, cam: Camera, con: Console):
     s_xend = x_end - st.x
     s_yend = y_end - st.y
     viewport = m.tiles[st.x : x_end, st.y : y_end]
+    vw_visible = m.visible[st.x : x_end, st.y : y_end]
+    vw_explored = m.explored[st.x : x_end, st.y : y_end]
 
-    con.rgb[0:s_xend, 0:s_yend] = viewport["dark"]
+    con.rgb[0:s_xend, 0:s_yend] = np.select(
+        condlist=[vw_visible, vw_explored],
+        choicelist=[viewport["light"], viewport["dark"]],
+        default=SHROUD,
+    )

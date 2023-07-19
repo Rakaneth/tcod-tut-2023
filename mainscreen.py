@@ -2,6 +2,7 @@ from screen import Screen
 from tcod.console import Console
 from gamestate import GameState
 from tcod.event import KeySym
+from tcod.map import compute_fov
 from geom import Point, Direction
 from typing import Optional
 from action import Action
@@ -19,6 +20,7 @@ class MainScreen(Screen):
         self.camera = Camera(30, 20)
 
     def on_draw(self, con: Console):
+        self.update_fov()
         draw_map(self.gs.cur_map, self.camera, con)
         for e in self.gs.world.Q.all_of(
             components=[comps.Renderable, comps.Location],
@@ -26,9 +28,16 @@ class MainScreen(Screen):
         ):
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
-            draw_on_map(
-                p.x, p.y, render.glyph, self.camera, con, self.gs.cur_map, render.color
-            )
+            if self.gs.cur_map.visible[p.x, p.y]:
+                draw_on_map(
+                    p.x,
+                    p.y,
+                    render.glyph,
+                    self.camera,
+                    con,
+                    self.gs.cur_map,
+                    render.color,
+                )
 
     def try_move(self, pt: Point):
         if self.gs.cur_map.walkable(pt.x, pt.y):
@@ -59,3 +68,15 @@ class MainScreen(Screen):
             self.try_move(new_point)
 
         return Action(running, None)
+
+    def update_fov(self):
+        cur_map = self.gs.cur_map
+        player_loc = self.gs.player.components[comps.Location]
+
+        cur_map.visible = compute_fov(
+            cur_map.tiles["transparent"],
+            (player_loc.pos.x, player_loc.pos.y),
+            radius=8,
+        )
+
+        cur_map.explored |= cur_map.visible
