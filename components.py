@@ -13,6 +13,15 @@ class Renderable:
 
 @dataclass
 class Location:
-    """Describes a position on a map."""
+    """Describes an entity's position on a map."""
 
     pos: Point
+
+@dataclass
+class TryMove:
+    """Represents an entity wanting to move to a location."""
+    pos: Point
+
+# Relation tags
+CollidesWith = "collides_with"
+MapId = "map_id"

@@ -6,8 +6,8 @@ from tcod.map import compute_fov
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from gamemap import arena
 from ui import Camera, draw_map, draw_on_map
+from tcod.ecs import World, Entity
 
 import components as comps
 
@@ -41,15 +41,36 @@ class MainScreen(Screen):
     def on_update(self):
         player = self.gs.player
         pos = player.components[comps.Location].pos
-        self.camera.center = pos
+        self.check_moves()
+        self.check_collisions()
         self.update_fov()
+        self.camera.center = pos
+    
+    def check_collisions(self):
+        for e in self.gs.world.Q.all_of(
+            relations=[(comps.CollidesWith, ...)]
+        ):
+            target = e.relation_tag[comps.CollidesWith]
+            target.components[comps.Renderable].color = (255, 0, 0)
+            e.relation_tags.pop(comps.CollidesWith)
+    
+    def check_moves(self):
+        for e in self.gs.world.Q.all_of(
+            components=[comps.Location, comps.TryMove],
+            relations=[("map_id", self.gs.cur_map.id)]
+        ):
+            dest = e.components[comps.TryMove].pos
 
-    def try_move(self, pt: Point):
-        if self.gs.cur_map.walkable(pt.x, pt.y):
-            pos = self.gs.player.components[comps.Location]
-            pos.pos = pt
-            
-
+            if self.gs.cur_map.walkable(dest.x, dest.y):
+                blockers = list(self.gs.get_entities_at(dest))
+                if len(blockers) > 0:
+                    e.relation_tag[comps.CollidesWith] = blockers[0]
+                else:
+                    e.components[comps.Location].pos = dest
+                
+            e.components.pop(comps.TryMove)
+                
+                
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Point(0, 0)
         running = True
@@ -70,7 +91,7 @@ class MainScreen(Screen):
             player = self.gs.player
             pos = player.components[comps.Location]
             new_point = pos.pos + dp
-            self.try_move(new_point)
+            player.components[comps.TryMove] = comps.TryMove(new_point)
 
         return Action(running, None)
 
