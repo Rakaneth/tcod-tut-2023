@@ -31,3 +31,9 @@ class GameState:
                 components=[Location],
                 relations=[("map_id", self.cur_map.id)],
         ))
+    
+    def is_enemy(self, e: Entity):
+        return "enemy" in e.tags
+    
+    def is_friendly(self, e: Entity):
+        return "friendly" in e.tags

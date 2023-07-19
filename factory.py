@@ -29,7 +29,7 @@ def make_player(world: World, temp_id: str, name: str) -> Entity:
 
     e = world["player"]
     e.components.update(c)
-    for tag in ["player", "actor"]:
+    for tag in ["player", "actor", "blocker"]:
         e.tags.add(tag)
 
     return e
@@ -54,11 +54,14 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
         e = world.new_entity()
 
     e.components.update(c)
-
+    
     if len(tags) > 0:
         for tag in tags.split():
             e.tags.add(tag)
-
+    
+    for base_tag in ["blocker", "actor"]:
+        e.tags.add(base_tag)
+    
     return e
 
 

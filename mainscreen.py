@@ -7,7 +7,6 @@ from geom import Point, Direction
 from typing import Optional
 from action import Action
 from ui import Camera, draw_map, draw_on_map
-from tcod.ecs import World, Entity
 
 import components as comps
 
@@ -47,11 +46,21 @@ class MainScreen(Screen):
         self.camera.center = pos
     
     def check_collisions(self):
+        bad = (255, 0, 0)
+        good = (0, 255, 0)
+        color = (255, 255, 255)
+
         for e in self.gs.world.Q.all_of(
             relations=[(comps.CollidesWith, ...)]
         ):
             target = e.relation_tag[comps.CollidesWith]
-            target.components[comps.Renderable].color = (255, 0, 0)
+            
+            if self.gs.is_enemy(target):
+                color = bad
+            elif self.gs.is_friendly(target):
+                color = good
+
+            target.components[comps.Renderable].color = color
             e.relation_tags.pop(comps.CollidesWith)
     
     def check_moves(self):
