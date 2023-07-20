@@ -36,7 +36,7 @@ class Engine:
     def setup(self):
         self._register_sc(MainScreen(self.gs))
         world = self.gs.world
-        drunk_m = drunk_walk("arena", 80, 80)
+        drunk_m = drunk_walk("arena", 80, 80, 0.3)
         self.gs.add_map(drunk_m)
         farin = make_player(world, "test", "Farin")
         bad_guy = make_char(world, "npc", "enemy", "BadGuy")

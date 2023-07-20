@@ -3,6 +3,7 @@ from tcod.console import Console
 from gamestate import GameState
 from tcod.event import KeySym
 from tcod.map import compute_fov
+from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
 from typing import Optional
 from action import Action
@@ -105,8 +106,9 @@ class MainScreen(Screen):
         if running:
             player = self.gs.player
             pos = player.components[comps.Location]
-            new_point = pos.pos + dp
-            player.components[comps.TryMove] = comps.TryMove(new_point)
+            if dp != Point(0, 0):
+                new_point = pos.pos + dp
+                player.components[comps.TryMove] = comps.TryMove(new_point)
 
         return Action(running, None)
 
@@ -118,6 +120,7 @@ class MainScreen(Screen):
             cur_map.tiles["transparent"],
             (player_loc.pos.x, player_loc.pos.y),
             radius=8,
+            algorithm=FOV_DIAMOND,
         )
 
         cur_map.explored |= cur_map.visible

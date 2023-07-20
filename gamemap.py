@@ -143,16 +143,18 @@ def drunk_walk(
     m = GameMap(id, width, height, dark)
     x = m.width // 2
     y = m.height // 2
-    stack = [Point(x, y)]
+    pt = Point(x, y)
+    stack = [pt]
     floors = 0
     desired = int(width * height * max(0.1, min(coverage, 1)))
     m.carve(x, y)
+    
     
     def f(pt):
         return not (m.walkable(pt.x, pt.y) or m.on_edge(pt.x, pt.y))
     
     while floors < desired:
-        cands = list(filter(f, m.neighbors(x, y)))
+        cands = list(filter(f, m.neighbors(pt.x, pt.y)))
         if len(cands) > 0:
             pt = choice(cands)
             m.carve(pt.x, pt.y)
@@ -160,7 +162,7 @@ def drunk_walk(
             floors += 1
         else:
             pt = stack.pop()
-        x, y = pt.x, pt.y
+        
 
         
 
