@@ -8,7 +8,7 @@ from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from ui import Camera, draw_dmap, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
+from ui import Camera, draw_map, draw_msgs, draw_on_map, draw_dmap, MAP_W, MAP_H
 
 import components as comps
 
@@ -22,7 +22,7 @@ class MainScreen(Screen):
 
     def on_draw(self, con: Console):
         draw_map(self.gs.cur_map, self.camera, con)
-        # draw_dmap(self.gs.cur_map, self.camera, con)
+        draw_dmap(self.gs.cur_map, self.camera, con)
         for e in self.gs.drawable_entities():
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
@@ -85,7 +85,6 @@ class MainScreen(Screen):
         ):
             p_pos = self.gs.player.components[comps.Location].pos
             e_pos = e.components[comps.Location].pos
-            cur_map.dist[e_pos.x, e_pos.y] = 999999
             cur_map.update_dmap(p_pos)
             path = hillclimb2d(cur_map.dist, (e_pos.x, e_pos.y), True, False)
             

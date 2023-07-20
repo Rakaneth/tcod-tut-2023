@@ -90,8 +90,7 @@ class GameMap:
         )
     
     def update_dmap(self, *goals: Point):
-        max_int = np.iinfo(np.int32).max
-        self.dist = np.where(self.dist == 0, max_int, self.dist)
+        self.dist = maxarray((self.width, self.height), order='F')
         for goal in goals:
             self.dist[goal.x, goal.y] = 0
         dijkstra2d(self.dist, self.cost, True, out=self.dist)

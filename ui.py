@@ -1,4 +1,4 @@
-from gamemap import GameMap, SHROUD, render_dt
+from gamemap import GameMap, SHROUD
 from geom import Point
 from tcod.console import Console
 from typing import Tuple
