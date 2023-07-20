@@ -71,9 +71,7 @@ def draw_map(m: GameMap, cam: Camera, con: Console):
 def draw_msgs(gs: GameState, con: Console):
     con.draw_frame(0, MAP_H, MSG_W, MSG_H, title="Messages")
     counter = 0
-    latest = gs.messages[-8:]
-    latest.reverse()
-    for msg in latest:
+    for msg in gs.messages[::-1]:
         counter += con.print_box(1, MAP_H+counter+1, MSG_W-2, MSG_H-2, msg)
         if counter >= MSG_H-2:
             break
