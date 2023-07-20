@@ -39,5 +39,8 @@ class GameState:
     def is_friendly(self, e: Entity) -> bool:
         return "friendly" in e.tags
     
+    def is_neutral(self, e: Entity) -> bool:
+        return not (self.is_enemy(e) or self.is_friendly(e))
+    
     def add_msg(self, txt):
         self.messages.append(txt)
