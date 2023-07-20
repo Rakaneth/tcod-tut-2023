@@ -2,7 +2,7 @@ from tcod.ecs import World, Entity
 from typing import Dict, List
 from gamemap import GameMap
 from geom import Point
-from components import Location, MapId
+from components import Location, MapId, Renderable
 
 
 class GameState:
@@ -44,3 +44,10 @@ class GameState:
     
     def add_msg(self, txt):
         self.messages.append(txt)
+    
+    def drawable_entities(self):
+        fil = self.world.Q.all_of(
+            components=[Renderable, Location],
+            relations=[(MapId, self.cur_map.id)],
+        )
+        return sorted(list(fil), key=lambda i: i.components[Renderable].z)

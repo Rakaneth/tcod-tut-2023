@@ -23,7 +23,7 @@ def make_player(world: World, temp_id: str, name: str) -> Entity:
     glyph = template["glyph"]
     c = {
         comps.Name: name,
-        comps.Renderable: comps.Renderable(glyph, color),
+        comps.Renderable: comps.Renderable(glyph, color, 4),
         comps.Location: comps.Location(Point(0, 0)),
     }
 
@@ -44,7 +44,7 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
 
     c = {
         comps.Name: nm,
-        comps.Renderable: comps.Renderable(glyph, color),
+        comps.Renderable: comps.Renderable(glyph, color, 3),
         comps.Location: comps.Location(Point(0, 0)),
     }
 

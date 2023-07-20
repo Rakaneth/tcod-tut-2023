@@ -21,10 +21,7 @@ class MainScreen(Screen):
 
     def on_draw(self, con: Console):
         draw_map(self.gs.cur_map, self.camera, con)
-        for e in self.gs.world.Q.all_of(
-            components=[comps.Renderable, comps.Location],
-            relations=[(MapId, self.gs.cur_map.id)],
-        ):
+        for e in self.gs.drawable_entities():
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
             if self.gs.cur_map.visible[p.x, p.y] or not self.gs.cur_map.dark:

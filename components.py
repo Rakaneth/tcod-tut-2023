@@ -9,6 +9,7 @@ class Renderable:
 
     glyph: str
     color: Tuple[int, int, int]
+    z: int = 4
 
 
 @dataclass
