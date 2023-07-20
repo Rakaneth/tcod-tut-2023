@@ -64,20 +64,16 @@ class Engine:
                 root.clear()
                 self.cur_screen.on_draw(root)
                 ctx.present(root)
-                
+
                 for evt in tcod.event.wait():
                     ctx.convert_event(evt)
-                    action = self.cur_screen.dispatch(evt)    
+                    action = self.cur_screen.dispatch(evt)
                     if action is not None:
                         running = action.running
-                        update = action.update     
+                        update = action.update
                         if action.new_scr is not None:
                             self.cur_scr_name = action.new_scr
 
                 if update:
                     self.cur_screen.on_update()
                     update = False
-                
-                
-
-                 

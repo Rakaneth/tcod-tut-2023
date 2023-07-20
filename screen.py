@@ -32,7 +32,7 @@ class Screen(tcod.event.EventDispatch[Optional[Action]]):
 
     def on_draw(self, con: tcod.console.Console):
         con.print(0, 0, f"This is the {self.name} screen.")
-    
+
     def on_update(self):
         pass
 
@@ -44,6 +44,6 @@ class Screen(tcod.event.EventDispatch[Optional[Action]]):
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         return self.on_quit()
-    
+
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> Optional[Action]:
         return self.on_mouse_move(event.tile.x, event.tile.y)

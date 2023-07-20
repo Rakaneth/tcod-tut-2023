@@ -78,6 +78,7 @@ def draw_msgs(gs: GameState, con: Console):
         if counter >= MSG_H - 2:
             break
 
+
 def draw_dmap(m: GameMap, cam: Camera, con: Console):
     st = cam.start_point(m)
     x_end = st.x + min(m.width, cam.width)
@@ -85,5 +86,5 @@ def draw_dmap(m: GameMap, cam: Camera, con: Console):
     for y in np.arange(st.y, y_end):
         for x in np.arange(st.x, x_end):
             d = m.dist[x, y]
-            if d<10:
+            if d < 10:
                 draw_on_map(x, y, str(d), cam, con, m)

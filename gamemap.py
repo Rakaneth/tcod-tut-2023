@@ -44,8 +44,8 @@ class GameMap:
     ):
         self.explored = np.zeros((width, height), dtype=bool, order="F")
         self.visible = np.zeros((width, height), dtype=bool, order="F")
-        self.dist = maxarray((width, height), order='F')
-        self.cost = np.zeros((width, height), dtype=np.int32, order='F')
+        self.dist = maxarray((width, height), order="F")
+        self.cost = np.zeros((width, height), dtype=np.int32, order="F")
         self.dark = dark
         self.__id = id
         wr, wb, wg = wall_fg
@@ -81,16 +81,14 @@ class GameMap:
     @property
     def tiles(self) -> np.ndarray:
         return self.__tiles
-    
+
     def update_cost(self):
         self.cost = np.select(
-            condlist=[self.tiles["walkable"]],
-            choicelist=[1],
-            default=0
+            condlist=[self.tiles["walkable"]], choicelist=[1], default=0
         )
-    
+
     def update_dmap(self, *goals: Point):
-        self.dist = maxarray((self.width, self.height), order='F')
+        self.dist = maxarray((self.width, self.height), order="F")
         for goal in goals:
             self.dist[goal.x, goal.y] = 0
         dijkstra2d(self.dist, self.cost, True, out=self.dist)
@@ -141,7 +139,7 @@ def arena(id: str, width: int, height: int, dark: bool = True) -> GameMap:
 
 
 def drunk_walk(
-    id: str, width: int, height: int, coverage: float=0.5, dark: bool = True
+    id: str, width: int, height: int, coverage: float = 0.5, dark: bool = True
 ) -> GameMap:
     m = GameMap(id, width, height, dark)
     x = m.width // 2
@@ -151,11 +149,10 @@ def drunk_walk(
     floors = 0
     desired = int(width * height * max(0.1, min(coverage, 1)))
     m.carve(x, y)
-    
-    
+
     def f(pt):
         return not (m.walkable(pt.x, pt.y) or m.on_edge(pt.x, pt.y))
-    
+
     while floors < desired:
         cands = list(filter(f, m.neighbors(pt.x, pt.y)))
         if len(cands) > 0:
@@ -165,9 +162,6 @@ def drunk_walk(
             floors += 1
         else:
             pt = stack.pop()
-        
-
-        
 
     m.update_cost()
     return m

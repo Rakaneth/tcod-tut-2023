@@ -39,7 +39,7 @@ class MainScreen(Screen):
         draw_msgs(self.gs, con)
         loc = self.gs.player.components[comps.Location]
         con.print(MAP_W, 0, f"Pos: {loc}")
-    
+
     def on_update(self):
         self.get_npc_moves()
         self.check_moves()
@@ -48,22 +48,20 @@ class MainScreen(Screen):
         player = self.gs.player
         pos = player.components[comps.Location].pos
         self.camera.center = pos
-    
+
     def check_collisions(self):
-        for e in self.gs.world.Q.all_of(
-            relations=[(comps.CollidesWith, ...)]
-        ):
+        for e in self.gs.world.Q.all_of(relations=[(comps.CollidesWith, ...)]):
             target = e.relation_tag[comps.CollidesWith]
             target_name = target.components[comps.Name]
             e_name = e.components[comps.Name]
-            
+
             self.gs.add_msg(f"{e_name} kicks {target_name}!")
             e.relation_tags.pop(comps.CollidesWith)
-    
+
     def check_moves(self):
         for e in self.gs.world.Q.all_of(
             components=[comps.Location, comps.TryMove],
-            relations=[(comps.MapId, self.gs.cur_map.id)]
+            relations=[(comps.MapId, self.gs.cur_map.id)],
         ):
             dest = e.components[comps.TryMove].pos
 
@@ -73,9 +71,9 @@ class MainScreen(Screen):
                     e.relation_tag[comps.CollidesWith] = blockers[0]
                 else:
                     e.components[comps.Location].pos = dest
-                
+
             e.components.pop(comps.TryMove)
-    
+
     def get_npc_moves(self):
         cur_map = self.gs.cur_map
         for e in self.gs.world.Q.all_of(
@@ -87,15 +85,11 @@ class MainScreen(Screen):
             e_pos = e.components[comps.Location].pos
             cur_map.update_dmap(p_pos)
             path = hillclimb2d(cur_map.dist, (e_pos.x, e_pos.y), True, False)
-            
+
             if len(path) > 1:
                 try_x, try_y = path[1]
                 e.components[comps.TryMove] = comps.TryMove(Point(try_x, try_y))
-                
-            
 
-                
-                
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Point(0, 0)
         running = True

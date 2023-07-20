@@ -24,34 +24,35 @@ class GameState:
 
     def add_map(self, m: GameMap):
         self.maps[m.id] = m
-    
-    def get_entities_at(self, pt: Point, map_id = None):
+
+    def get_entities_at(self, pt: Point, map_id=None):
         id = map_id if map_id is not None else self.cur_map.id
         return filter(
             lambda i: i.components[Location].pos == pt,
             self.world.Q.all_of(
                 components=[Location],
                 relations=[(MapId, id)],
-        ))
-    
-    def get_blockers_at(self, pt: Point, map_id = None):
+            ),
+        )
+
+    def get_blockers_at(self, pt: Point, map_id=None):
         def is_blocker(e: Entity):
             return "blocker" in e.tags
-        
+
         return filter(is_blocker, self.get_entities_at(pt, map_id))
-    
+
     def is_enemy(self, e: Entity) -> bool:
         return "enemy" in e.tags
-    
+
     def is_friendly(self, e: Entity) -> bool:
         return "friendly" in e.tags
-    
+
     def is_neutral(self, e: Entity) -> bool:
         return not (self.is_enemy(e) or self.is_friendly(e))
-    
+
     def add_msg(self, txt):
         self.messages.append(txt)
-    
+
     def drawable_entities(self):
         fil = self.world.Q.all_of(
             components=[Renderable, Location],
