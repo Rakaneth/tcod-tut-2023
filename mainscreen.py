@@ -3,12 +3,12 @@ from tcod.console import Console
 from gamestate import GameState
 from tcod.event import KeySym
 from tcod.map import compute_fov
+from tcod.path import hillclimb2d
 from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from ui import Camera, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
-from components import MapId
+from ui import Camera, draw_dmap, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
 
 import components as comps
 
@@ -22,6 +22,7 @@ class MainScreen(Screen):
 
     def on_draw(self, con: Console):
         draw_map(self.gs.cur_map, self.camera, con)
+        # draw_dmap(self.gs.cur_map, self.camera, con)
         for e in self.gs.drawable_entities():
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
@@ -40,6 +41,7 @@ class MainScreen(Screen):
         con.print(MAP_W, 0, f"Pos: {loc}")
     
     def on_update(self):
+        self.get_npc_moves()
         self.check_moves()
         self.check_collisions()
         self.update_fov()
@@ -48,43 +50,51 @@ class MainScreen(Screen):
         self.camera.center = pos
     
     def check_collisions(self):
-        bad = (255, 0, 0)
-        good = (0, 255, 0)
-        color = (255, 255, 255)
-
         for e in self.gs.world.Q.all_of(
             relations=[(comps.CollidesWith, ...)]
         ):
             target = e.relation_tag[comps.CollidesWith]
-            name = target.components[comps.Name]
+            target_name = target.components[comps.Name]
+            e_name = e.components[comps.Name]
             
-            if self.gs.is_enemy(target):
-                color = bad
-                self.gs.add_msg(f"{name} is a BAD GUY! Kick them harder!")
-            elif self.gs.is_friendly(target):
-                color = good
-                self.gs.add_msg(f"{name} is a GOOD GUY! Why'd you kick them?")
-            else:
-                self.gs.add_msg(f"{name} is neutral. Don't anger them!")
-
-            target.components[comps.Renderable].color = color
+            self.gs.add_msg(f"{e_name} kicks {target_name}!")
             e.relation_tags.pop(comps.CollidesWith)
     
     def check_moves(self):
         for e in self.gs.world.Q.all_of(
             components=[comps.Location, comps.TryMove],
-            relations=[(MapId, self.gs.cur_map.id)]
+            relations=[(comps.MapId, self.gs.cur_map.id)]
         ):
             dest = e.components[comps.TryMove].pos
 
             if self.gs.cur_map.walkable(dest.x, dest.y):
-                blockers = list(self.gs.get_entities_at(dest))
+                blockers = list(self.gs.get_blockers_at(dest))
                 if len(blockers) > 0:
                     e.relation_tag[comps.CollidesWith] = blockers[0]
                 else:
                     e.components[comps.Location].pos = dest
                 
             e.components.pop(comps.TryMove)
+    
+    def get_npc_moves(self):
+        cur_map = self.gs.cur_map
+        for e in self.gs.world.Q.all_of(
+            components=[comps.Location],
+            relations=[(comps.MapId, self.gs.cur_map.id)],
+            tags=["enemy"],
+        ):
+            p_pos = self.gs.player.components[comps.Location].pos
+            e_pos = e.components[comps.Location].pos
+            cur_map.dist[e_pos.x, e_pos.y] = 999999
+            cur_map.update_dmap(p_pos)
+            path = hillclimb2d(cur_map.dist, (e_pos.x, e_pos.y), True, False)
+            
+            if len(path) > 1:
+                try_x, try_y = path[1]
+                e.components[comps.TryMove] = comps.TryMove(Point(try_x, try_y))
+                
+            
+
                 
                 
     def on_key(self, key: KeySym) -> Optional[Action]:
@@ -110,7 +120,7 @@ class MainScreen(Screen):
                 new_point = pos.pos + dp
                 player.components[comps.TryMove] = comps.TryMove(new_point)
 
-        return Action(running, None)
+        return Action(running, None, True)
 
     def update_fov(self):
         cur_map = self.gs.cur_map

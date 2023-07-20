@@ -1,8 +1,8 @@
 import numpy as np
 from geom import Point, Rect
 from swatch import STONE_LIGHT, STONE_DARK, BLACK
-from typing import Self, Tuple
-from random import randint, choice, shuffle
+from typing import Tuple
+from random import choice
 from tcod.path import maxarray, dijkstra2d
 
 render_dt = np.dtype([("ch", np.int32), ("fg", "3B"), ("bg", "3B")])
@@ -89,7 +89,11 @@ class GameMap:
             default=0
         )
     
-    def update_dmap(self):
+    def update_dmap(self, *goals: Point):
+        max_int = np.iinfo(np.int32).max
+        self.dist = np.where(self.dist == 0, max_int, self.dist)
+        for goal in goals:
+            self.dist[goal.x, goal.y] = 0
         dijkstra2d(self.dist, self.cost, True, out=self.dist)
 
     def in_bounds(self, x: int, y: int) -> bool:

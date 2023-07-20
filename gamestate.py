@@ -25,13 +25,20 @@ class GameState:
     def add_map(self, m: GameMap):
         self.maps[m.id] = m
     
-    def get_entities_at(self, pt: Point):
+    def get_entities_at(self, pt: Point, map_id = None):
+        id = map_id if map_id is not None else self.cur_map.id
         return filter(
             lambda i: i.components[Location].pos == pt,
             self.world.Q.all_of(
                 components=[Location],
-                relations=[(MapId, self.cur_map.id)],
+                relations=[(MapId, id)],
         ))
+    
+    def get_blockers_at(self, pt: Point, map_id = None):
+        def is_blocker(e: Entity):
+            return "blocker" in e.tags
+        
+        return filter(is_blocker, self.get_entities_at(pt, map_id))
     
     def is_enemy(self, e: Entity) -> bool:
         return "enemy" in e.tags

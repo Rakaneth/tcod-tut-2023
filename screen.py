@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional
 
 import tcod
 import tcod.event
@@ -19,10 +19,10 @@ class Screen(tcod.event.EventDispatch[Optional[Action]]):
         self.gs = gs
 
     def __repr__(self) -> str:
-        return f"Screen(self.name)"
+        return f"Screen({self.name})"
 
     def __str__(self) -> str:
-        return f"Screen(self.name)"
+        return f"Screen({self.name})"
 
     def on_key(self, key: tcod.event.KeySym) -> Optional[Action]:
         return None
@@ -36,8 +36,14 @@ class Screen(tcod.event.EventDispatch[Optional[Action]]):
     def on_update(self):
         pass
 
+    def on_mouse_move(self, x: int, y: int) -> Optional[Action]:
+        return None
+
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
         return self.on_key(event.sym)
 
     def ev_quit(self, event: tcod.event.Quit) -> Optional[Action]:
         return self.on_quit()
+    
+    def ev_mousemotion(self, event: tcod.event.MouseMotion) -> Optional[Action]:
+        return self.on_mouse_move(event.tile.x, event.tile.y)
