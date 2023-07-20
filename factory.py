@@ -22,7 +22,7 @@ def make_player(world: World, temp_id: str, name: str) -> Entity:
     color = tuple(template["color"])
     glyph = template["glyph"]
     c = {
-        ("name", str): name,
+        comps.Name: name,
         comps.Renderable: comps.Renderable(glyph, color),
         comps.Location: comps.Location(Point(0, 0)),
     }
@@ -43,7 +43,7 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
     e = None
 
     c = {
-        ("name", str): nm,
+        comps.Name: nm,
         comps.Renderable: comps.Renderable(glyph, color),
         comps.Location: comps.Location(Point(0, 0)),
     }
@@ -73,4 +73,4 @@ def place_entity(e: Entity, m: GameMap, pt: Point = None):
         e.components[comps.Location] = comps.Location(pt)
     else:
         pos.pos = pt
-        e.relation_tag["map_id"] = m.id
+        e.relation_tag[comps.MapId] = m.id

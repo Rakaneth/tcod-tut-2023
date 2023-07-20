@@ -2,7 +2,7 @@ from tcod.ecs import World, Entity
 from typing import Dict, List
 from gamemap import GameMap
 from geom import Point
-from components import Location
+from components import Location, MapId
 
 
 class GameState:
@@ -19,7 +19,7 @@ class GameState:
 
     @property
     def cur_map(self) -> GameMap:
-        map_id = self.player.relation_tag["map_id"]
+        map_id = self.player.relation_tag[MapId]
         return self.maps[map_id]
 
     def add_map(self, m: GameMap):
@@ -30,7 +30,7 @@ class GameState:
             lambda i: i.components[Location].pos == pt,
             self.world.Q.all_of(
                 components=[Location],
-                relations=[("map_id", self.cur_map.id)],
+                relations=[(MapId, self.cur_map.id)],
         ))
     
     def is_enemy(self, e: Entity) -> bool:

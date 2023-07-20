@@ -7,6 +7,7 @@ from geom import Point, Direction
 from typing import Optional
 from action import Action
 from ui import Camera, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
+from components import MapId
 
 import components as comps
 
@@ -22,7 +23,7 @@ class MainScreen(Screen):
         draw_map(self.gs.cur_map, self.camera, con)
         for e in self.gs.world.Q.all_of(
             components=[comps.Renderable, comps.Location],
-            relations=[("map_id", self.gs.cur_map.id)],
+            relations=[(MapId, self.gs.cur_map.id)],
         ):
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
@@ -55,7 +56,7 @@ class MainScreen(Screen):
             relations=[(comps.CollidesWith, ...)]
         ):
             target = e.relation_tag[comps.CollidesWith]
-            name = target.components[("name", str)]
+            name = target.components[comps.Name]
             
             if self.gs.is_enemy(target):
                 color = bad
@@ -72,7 +73,7 @@ class MainScreen(Screen):
     def check_moves(self):
         for e in self.gs.world.Q.all_of(
             components=[comps.Location, comps.TryMove],
-            relations=[("map_id", self.gs.cur_map.id)]
+            relations=[(MapId, self.gs.cur_map.id)]
         ):
             dest = e.components[comps.TryMove].pos
 

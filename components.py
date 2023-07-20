@@ -22,6 +22,9 @@ class TryMove:
     """Represents an entity wanting to move to a location."""
     pos: Point
 
+# Named components
+Name = ("name", str)
+
 # Relation tags
 CollidesWith = "collides_with"
 MapId = "map_id"
