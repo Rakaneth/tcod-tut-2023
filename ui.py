@@ -88,3 +88,12 @@ def draw_dmap(m: GameMap, cam: Camera, con: Console):
             d = m.dist[x, y]
             if d < 10:
                 draw_on_map(x, y, str(d), cam, con, m)
+
+
+class Menu:
+    """
+    Describes an in-game menu.
+    TODO: Part 10
+    """
+
+    pass

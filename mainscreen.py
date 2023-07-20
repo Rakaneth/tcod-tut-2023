@@ -41,6 +41,7 @@ class MainScreen(Screen):
         con.print(MAP_W, 0, f"Pos: {loc}")
 
     def on_update(self):
+        self.update_dmap()
         self.get_npc_moves()
         self.check_moves()
         self.check_collisions()
@@ -81,14 +82,16 @@ class MainScreen(Screen):
             relations=[(comps.MapId, self.gs.cur_map.id)],
             tags=["enemy"],
         ):
-            p_pos = self.gs.player.components[comps.Location].pos
             e_pos = e.components[comps.Location].pos
-            cur_map.update_dmap(p_pos)
             path = hillclimb2d(cur_map.dist, (e_pos.x, e_pos.y), True, False)
 
             if len(path) > 1:
                 try_x, try_y = path[1]
                 e.components[comps.TryMove] = comps.TryMove(Point(try_x, try_y))
+
+    def update_dmap(self):
+        pos = self.gs.player.components[comps.Location].pos
+        self.gs.cur_map.update_dmap(pos)
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Point(0, 0)
