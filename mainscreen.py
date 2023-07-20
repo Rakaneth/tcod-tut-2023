@@ -67,7 +67,7 @@ class MainScreen(Screen):
                 self.gs.add_msg(f"{name} is neutral. Don't anger them!")
 
             target.components[comps.Renderable].color = color
-            e.relation_tags.pop(comps.CollidesWith)
+            e.relation_tag.pop(comps.CollidesWith)
     
     def check_moves(self):
         for e in self.gs.world.Q.all_of(
