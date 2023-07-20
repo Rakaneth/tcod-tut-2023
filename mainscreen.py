@@ -129,13 +129,15 @@ class MainScreen(Screen):
             case KeySym.ESCAPE:
                 running = False
                 update = False
+            case _:
+                update = False
 
         if running:
             player = self.gs.player
             pos = player.components[comps.Location]
-
-            new_point = pos.pos + dp
-            player.components[comps.TryMove] = comps.TryMove(new_point)
+            if update:
+                new_point = pos.pos + dp
+                player.components[comps.TryMove] = comps.TryMove(new_point)
 
         return Action(running, None, update)
 
