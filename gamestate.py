@@ -2,7 +2,7 @@ from tcod.ecs import World, Entity
 from typing import Dict, List
 from gamemap import GameMap
 from geom import Point
-from components import Location, MapId, Renderable
+from components import Actor, Location, MapId, Renderable
 
 
 class GameState:
@@ -24,6 +24,21 @@ class GameState:
 
     def add_map(self, m: GameMap):
         self.maps[m.id] = m
+
+    def get_current_entities(self):
+        return self.world.Q.all_of(
+            components=[Location], relations=[(MapId, self.cur_map.id)]
+        )
+
+    def get_current_actors(self):
+        q = self.get_current_entities().all_of(components=[Actor])
+        return sorted(list(q), key=lambda i: i.components[Actor].speed, reverse=True)
+
+    def get_turn_actors(self):
+        def f(e: Entity):
+            return e.components[Actor].energy >= 100
+
+        return filter(f, self.get_current_actors())
 
     def get_entities_at(self, pt: Point, map_id=None):
         id = map_id if map_id is not None else self.cur_map.id

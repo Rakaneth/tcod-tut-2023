@@ -22,7 +22,7 @@ class MainScreen(Screen):
 
     def on_draw(self, con: Console):
         draw_map(self.gs.cur_map, self.camera, con)
-        draw_dmap(self.gs.cur_map, self.camera, con)
+        # draw_dmap(self.gs.cur_map, self.camera, con)
         for e in self.gs.drawable_entities():
             p = e.components[comps.Location].pos
             render = e.components[comps.Renderable]
@@ -41,12 +41,19 @@ class MainScreen(Screen):
         con.print(MAP_W, 0, f"Pos: {loc}")
 
     def on_update(self):
-        self.update_dmap()
-        self.get_npc_moves()
-        self.check_moves()
-        self.check_collisions()
-        self.update_fov()
         player = self.gs.player
+
+        while True:
+            self.update_dmap()
+            self.update_energy()
+            self.get_npc_moves()
+            self.check_moves()
+            self.check_collisions()
+            self.update_fov()
+
+            if player.components[comps.Actor].energy >= 100:
+                break
+
         pos = player.components[comps.Location].pos
         self.camera.center = pos
 
@@ -57,6 +64,7 @@ class MainScreen(Screen):
             e_name = e.components[comps.Name]
 
             self.gs.add_msg(f"{e_name} kicks {target_name}!")
+            e.components[comps.Actor].energy -= 50
             e.relation_tags.pop(comps.CollidesWith)
 
     def check_moves(self):
@@ -72,16 +80,13 @@ class MainScreen(Screen):
                     e.relation_tag[comps.CollidesWith] = blockers[0]
                 else:
                     e.components[comps.Location].pos = dest
+                    e.components[comps.Actor].energy -= 50
 
             e.components.pop(comps.TryMove)
 
     def get_npc_moves(self):
         cur_map = self.gs.cur_map
-        for e in self.gs.world.Q.all_of(
-            components=[comps.Location],
-            relations=[(comps.MapId, self.gs.cur_map.id)],
-            tags=["enemy"],
-        ):
+        for e in filter(lambda e: self.gs.is_enemy(e), self.gs.get_turn_actors()):
             e_pos = e.components[comps.Location].pos
             path = hillclimb2d(cur_map.dist, (e_pos.x, e_pos.y), True, False)
 
@@ -93,9 +98,15 @@ class MainScreen(Screen):
         pos = self.gs.player.components[comps.Location].pos
         self.gs.cur_map.update_dmap(pos)
 
+    def update_energy(self):
+        for e in self.gs.get_current_actors():
+            act_comp = e.components[comps.Actor]
+            act_comp.energy += act_comp.speed
+
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Point(0, 0)
         running = True
+        update = True
 
         match key:
             case KeySym.w:
@@ -108,6 +119,7 @@ class MainScreen(Screen):
                 dp = Direction.RIGHT
             case KeySym.ESCAPE:
                 running = False
+                update = False
 
         if running:
             player = self.gs.player
@@ -116,7 +128,7 @@ class MainScreen(Screen):
                 new_point = pos.pos + dp
                 player.components[comps.TryMove] = comps.TryMove(new_point)
 
-        return Action(running, None, True)
+        return Action(running, None, update)
 
     def update_fov(self):
         cur_map = self.gs.cur_map

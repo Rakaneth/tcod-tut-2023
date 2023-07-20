@@ -3,6 +3,7 @@ test: &base
   name: Hero
   glyph: '@'
   color: [255, 255, 255]
+  speed: 20
 npc: 
   <<: *base
   name: NPC
@@ -16,10 +17,15 @@ good_guy:
   <<: *base
   name: GoodGuy
   color: [0, 255, 0]
+  tags: 
+    - friendly
 bad_guy:
   <<: *base
   name: BadGuy
   color: [255, 0, 0]
+  tags:
+    - enemy
+  speed: 30
 neut_guy:
   <<: *base
   name: NeutralGuy

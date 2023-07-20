@@ -5,7 +5,7 @@ from screen import Screen
 from mainscreen import MainScreen
 from action import Action
 from typing import Optional
-from factory import make_char, place_entity, make_player
+from factory import make_char, place_entity
 from gamemap import drunk_walk
 from gamestate import GameState
 from ui import SCR_W, SCR_H
@@ -38,10 +38,10 @@ class Engine:
         world = self.gs.world
         drunk_m = drunk_walk("arena", 31, 15, 0.4)
         self.gs.add_map(drunk_m)
-        farin = make_player(world, "test", "Farin")
-        bad_guy = make_char(world, "bad_guy", "enemy")
-        good_guy = make_char(world, "good_guy", "friendly")
-        neut_guy = make_char(world, "neut_guy", "neutral")
+        farin = make_char(world, "test", name="Farin", player=True)
+        bad_guy = make_char(world, "bad_guy")
+        good_guy = make_char(world, "good_guy")
+        neut_guy = make_char(world, "neut_guy")
         place_entity(self.gs, farin, drunk_m)
         place_entity(self.gs, bad_guy, drunk_m)
         place_entity(self.gs, good_guy, drunk_m)
