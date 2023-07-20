@@ -35,6 +35,8 @@ class MainScreen(Screen):
                     render.color,
                 )
         draw_msgs(self.gs, con)
+        loc = self.gs.player.components[comps.Location]
+        con.print(MAP_W, 0, f"Pos: {loc}")
     
     def on_update(self):
         self.check_moves()

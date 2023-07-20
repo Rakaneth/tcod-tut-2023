@@ -18,6 +18,9 @@ class Location:
 
     pos: Point
 
+    def __str__(self) -> str:
+        return f"{self.pos}"
+
 @dataclass
 class TryMove:
     """Represents an entity wanting to move to a location."""

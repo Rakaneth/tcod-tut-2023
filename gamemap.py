@@ -1,8 +1,9 @@
 import numpy as np
 from geom import Point, Rect
 from swatch import STONE_LIGHT, STONE_DARK, BLACK
-from typing import Tuple
+from typing import Self, Tuple
 from random import randint, choice, shuffle
+from tcod.path import maxarray, dijkstra2d
 
 render_dt = np.dtype([("ch", np.int32), ("fg", "3B"), ("bg", "3B")])
 
@@ -43,6 +44,8 @@ class GameMap:
     ):
         self.explored = np.zeros((width, height), dtype=bool, order="F")
         self.visible = np.zeros((width, height), dtype=bool, order="F")
+        self.dist = maxarray((width, height), order='F')
+        self.cost = np.zeros((width, height), dtype=np.int32, order='F')
         self.dark = dark
         self.__id = id
         wr, wb, wg = wall_fg
@@ -78,6 +81,16 @@ class GameMap:
     @property
     def tiles(self) -> np.ndarray:
         return self.__tiles
+    
+    def update_cost(self):
+        self.cost = np.select(
+            condlist=[self.tiles["walkable"]],
+            choicelist=[1],
+            default=0
+        )
+    
+    def update_dmap(self):
+        dijkstra2d(self.dist, self.cost, True, out=self.dist)
 
     def in_bounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.width and 0 <= y < self.height
@@ -120,24 +133,36 @@ class GameMap:
 def arena(id: str, width: int, height: int, dark: bool = True) -> GameMap:
     m = GameMap(id, width, height, dark)
     m.carve_rect(Rect.from_xywh(0, 0, width, height))
+    m.update_cost()
     return m
 
 
 def drunk_walk(
-    id: str, width: int, height: int, steps: int = 10000, dark: bool = True
+    id: str, width: int, height: int, coverage: float=0.5, dark: bool = True
 ) -> GameMap:
     m = GameMap(id, width, height, dark)
-    x = randint(1, m.width - 2)
-    y = randint(1, m.height - 2)
-    s = steps
-    while s > 0:
-        m.carve(x, y)
-        neis = m.neighbors(x, y)
-        shuffle(neis)
-        for nei in neis:
-            if not (m.walkable(nei.x, nei.y) or m.on_edge(nei.x, nei.y)):
-                x, y = nei.x, nei.y
-                break
-        s -= 1
+    x = m.width // 2
+    y = m.height // 2
+    stack = [Point(x, y)]
+    floors = 0
+    desired = int(width * height * max(0.1, min(coverage, 1)))
+    m.carve(x, y)
+    
+    def f(pt):
+        return not (m.walkable(pt.x, pt.y) or m.on_edge(pt.x, pt.y))
+    
+    while floors < desired:
+        cands = list(filter(f, m.neighbors(x, y)))
+        if len(cands) > 0:
+            pt = choice(cands)
+            m.carve(pt.x, pt.y)
+            stack.append(pt)
+            floors += 1
+        else:
+            pt = stack.pop()
+        x, y = pt.x, pt.y
 
+        
+
+    m.update_cost()
     return m
