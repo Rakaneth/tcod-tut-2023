@@ -8,7 +8,7 @@ from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from ui import Camera, draw_map, draw_msgs, draw_on_map, draw_dmap, MAP_W, MAP_H
+from ui import Camera, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
 
 import components as comps
 
@@ -60,11 +60,18 @@ class MainScreen(Screen):
     def check_collisions(self):
         for e in self.gs.world.Q.all_of(relations=[(comps.CollidesWith, ...)]):
             target = e.relation_tag[comps.CollidesWith]
+            e_actor_comp = e.components[comps.Actor]
+
+            if target == e:
+                e_actor_comp.energy -= 100
+                e.relation_tag.pop(comps.CollidesWith)
+                continue
+
             target_name = target.components[comps.Name]
             e_name = e.components[comps.Name]
 
             self.gs.add_msg(f"{e_name} kicks {target_name}!")
-            e.components[comps.Actor].energy -= 50
+            e_actor_comp.energy -= 50
             e.relation_tags.pop(comps.CollidesWith)
 
     def check_moves(self):
@@ -104,7 +111,7 @@ class MainScreen(Screen):
             act_comp.energy += act_comp.speed
 
     def on_key(self, key: KeySym) -> Optional[Action]:
-        dp = Point(0, 0)
+        dp = Direction.NONE
         running = True
         update = True
 
@@ -117,6 +124,8 @@ class MainScreen(Screen):
                 dp = Direction.DOWN
             case KeySym.d:
                 dp = Direction.RIGHT
+            case KeySym.SPACE:
+                dp = Direction.NONE
             case KeySym.ESCAPE:
                 running = False
                 update = False
@@ -124,9 +133,9 @@ class MainScreen(Screen):
         if running:
             player = self.gs.player
             pos = player.components[comps.Location]
-            if dp != Point(0, 0):
-                new_point = pos.pos + dp
-                player.components[comps.TryMove] = comps.TryMove(new_point)
+
+            new_point = pos.pos + dp
+            player.components[comps.TryMove] = comps.TryMove(new_point)
 
         return Action(running, None, update)
 
