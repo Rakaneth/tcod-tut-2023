@@ -40,11 +40,11 @@ class MainScreen(Screen):
         draw_msgs(self.gs, con)
     
     def on_update(self):
-        player = self.gs.player
-        pos = player.components[comps.Location].pos
         self.check_moves()
         self.check_collisions()
         self.update_fov()
+        player = self.gs.player
+        pos = player.components[comps.Location].pos
         self.camera.center = pos
     
     def check_collisions(self):
