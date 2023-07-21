@@ -25,7 +25,15 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # DevLog
 
-## Week 4
+## Week 3
+
+Implemented field of view and basic collision detection. I adapted the tutorial's method of updating field of view to suit my use of scrolling maps. I've implemented some convenience methods on the `GameState` class to make finding entities easier. To get some visual feedback, I've gone ahead and implemented a bit of UI, with a message box appearing at the bottom of the screen. Enemies can now properly be kicked! ![kicked](/screenshots/kick.gif)
+
+I also implemented a `drunk_walk` map generator that needs to be tweaked to consistently generate better maps. I did this from memory, so I might need to just find a good drunk-walk example and find out where I went wrong.
+
+Week 3 is, in theory, complete.
+
+I may have been mistaken about that.
 
 A *lot* of cleanup and refactoring happened. There is now a speed system in place. Control is not passed back to the player until they have enough energy to act. Entities act in order of descending speed and gain energy equal to their speed, acting when they have 100. Each game action has an associated cost:
 
@@ -35,13 +43,7 @@ A *lot* of cleanup and refactoring happened. There is now a speed system in plac
 
 Among the things that got refactored was the `GameState` class. It worked initally until I got some help from @HexDecimal regarding proper use of the World to store arbitrary data. In a night of feverish inspiration (and an unhealthy dose of insomnia), I have removed that class and cleaned up all the functions that relied on the helpers there.
 
-## Week 3
-
-Implemented field of view and basic collision detection. I adapted the tutorial's method of updating field of view to suit my use of scrolling maps. I've implemented some convenience methods on the `GameState` class to make finding entities easier. To get some visual feedback, I've gone ahead and implemented a bit of UI, with a message box appearing at the bottom of the screen. Enemies can now properly be kicked! ![kicked](/screenshots/kick.gif)
-
-I also implemented a `drunk_walk` map generator that needs to be tweaked to consistently generate better maps. I did this from memory, so I might need to just find a good drunk-walk example and find out where I went wrong.
-
-Week 3 is, in theory, complete.
+*Now* week 3 is complete. I will likely start week 4 early while I have inspiration.
 
 ## Week 2
 
