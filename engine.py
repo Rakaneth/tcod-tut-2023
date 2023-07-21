@@ -11,6 +11,8 @@ from factory import make_char, place_entity, add_map
 from gamemap import drunk_walk
 from ui import SCR_W, SCR_H
 
+SAVING = False
+
 
 class Engine:
     """Holds the game state and data."""
@@ -94,5 +96,6 @@ class Engine:
             self.world = pickle.load(f)
 
     def shutdown(self):
-        with open("game.sav", "wb") as f:
-            pickle.dump(self.world, f)
+        if SAVING:
+            with open("game.sav", "wb") as f:
+                pickle.dump(self.world, f)
