@@ -1,3 +1,4 @@
+import pickle
 import tcod
 
 from tcod.ecs import World
@@ -33,8 +34,16 @@ class Engine:
         self.screens[sc.name] = sc
 
     def setup(self):
+        try:
+            self.load_save()
+        except FileNotFoundError:
+            print("No save game found.")
+            self.new_game()
+
+        self._register_sc(MainScreen(self.world))
+
+    def new_game(self):
         world = self.world
-        self._register_sc(MainScreen(world))
         drunk_m = drunk_walk("arena", 31, 15, 0.4)
         add_map(world, drunk_m)
         world[None].components[Messages] = list()
@@ -77,3 +86,13 @@ class Engine:
                 if update:
                     self.cur_screen.on_update()
                     update = False
+
+            self.shutdown()
+
+    def load_save(self):
+        with open("game.sav", "rb") as f:
+            self.world = pickle.load(f)
+
+    def shutdown(self):
+        with open("game.sav", "wb") as f:
+            pickle.dump(self.world, f)

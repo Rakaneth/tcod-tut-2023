@@ -14,7 +14,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 * [ ] Part 7 - Creating the interface
 * [ ] Part 8 - Items and Inventory
 * [ ] Part 9 - Ranged Scrolls and Targeting
-* [ ] Part 10 - Saving and loading
+* [x] Part 10 - Saving and loading
 * [ ] Part 11 - Delving into the Dungeon
 * [ ] Part 12 - Increasing Difficulty
 * [ ] Part 13 - Gearing up
@@ -33,6 +33,8 @@ I also implemented a `drunk_walk` map generator that needs to be tweaked to cons
 
 Week 3 is, in theory, complete.
 
+## Addendum 2023-7-20
+
 I may have been mistaken about that.
 
 A *lot* of cleanup and refactoring happened. There is now a speed system in place. Control is not passed back to the player until they have enough energy to act. Entities act in order of descending speed and gain energy equal to their speed, acting when they have 100. Each game action has an associated cost:
@@ -44,6 +46,10 @@ A *lot* of cleanup and refactoring happened. There is now a speed system in plac
 Among the things that got refactored was the `GameState` class. It worked initally until I got some help from @HexDecimal regarding proper use of the World to store arbitrary data. In a night of feverish inspiration (and an unhealthy dose of insomnia), I have removed that class and cleaned up all the functions that relied on the helpers there.
 
 *Now* week 3 is complete. I will likely start week 4 early while I have inspiration.
+
+## Addendum 2023-7-21
+
+I skipped...*way* ahead. It turns out that the main motivation behind me wanting to clean up the gamestate was so that I could do some preliminary saving and loading, and it turns out that my efforts have paid off. Now the world pickles just fine, and I can load the game from a previous save. I tried to do this with the GameState class and it wasn't pickling properly. 
 
 ## Week 2
 
