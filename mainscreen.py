@@ -8,7 +8,8 @@ from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from ui import Camera, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
+from swatch import HP_EMPTY, HP_FILLED
+from ui import Camera, draw_bar, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
 from tcod.ecs import World, Entity
 
 import components as comps
@@ -49,8 +50,7 @@ class MainScreen(Screen):
                     render.color,
                 )
         draw_msgs(w, con)
-        loc = q.player(w).components[comps.Location]
-        con.print(MAP_W, 0, f"Pos: {loc}")
+        self.draw_stats(con)
 
     def on_update(self):
         player = self.player
@@ -166,3 +166,16 @@ class MainScreen(Screen):
         )
 
         cur_map.explored |= cur_map.visible
+
+    def draw_stats(self, con: Console):
+        stats = self.player.components[comps.Combatant]
+        name = self.player.components[comps.Name]
+        loc = self.player.components[comps.Location]
+
+        con.print(MAP_W, 0, f"{name}")
+        con.print(MAP_W, 1, f"{loc}")
+        con.print(MAP_W, 2, f"HP: {stats.hp_str}")
+        draw_bar(MAP_W, 3, stats.cur_hp, stats.max_hp, 10, HP_FILLED, HP_EMPTY, con)
+        con.print(MAP_W, 4, f"ATP: {stats.atp}")
+        con.print(MAP_W, 5, f"DFP: {stats.dfp}")
+        con.print(MAP_W, 6, f"DMG: {stats.dmg_str}")

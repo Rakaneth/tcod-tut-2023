@@ -91,10 +91,33 @@ def draw_dmap(m: GameMap, cam: Camera, con: Console):
                 draw_on_map(x, y, str(d), cam, con, m)
 
 
+def draw_bar(
+    x: int,
+    y: int,
+    bar_cur: int,
+    bar_max: int,
+    width: int,
+    fill_color: Tuple[int, int, int],
+    empty_color: Tuple[int, int, int],
+    con: Console,
+    draw_values: bool = False,
+):
+    ratio = bar_cur / bar_max
+    ch = 0x2588
+    fill_w = int(min(ratio, 1.0) * width)
+    con.draw_rect(x, y, width, 1, ch, fg=empty_color)
+    con.draw_rect(x, y, fill_w, 1, ch, fg=fill_color)
+    if draw_values:
+        s = f"{bar_cur}/{bar_max}"
+        sx = (width - len(s)) // 2
+        if sx >= 0:
+            con.print(sx + x, y, s)
+
+
 class Menu:
     """
     Describes an in-game menu.
-    TODO: Part 10
+    TODO: Week 4
     """
 
     pass

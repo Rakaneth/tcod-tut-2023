@@ -37,6 +37,28 @@ class Actor:
     speed: int
 
 
+@dataclass
+class Combatant:
+    """Describes an entity that can fight."""
+
+    cur_hp: int
+    max_hp: int
+    atp: int
+    dfp: int
+    dmg: Tuple[int, int]
+
+    @property
+    def dmg_str(self) -> str:
+        a, b = self.dmg
+        low = min(a, b)
+        high = max(a, b)
+        return f"{low}-{high}"
+
+    @property
+    def hp_str(self) -> str:
+        return f"{self.cur_hp}/{self.max_hp}"
+
+
 # Named components
 Name = ("name", str)
 Messages = ("messages", list[str])

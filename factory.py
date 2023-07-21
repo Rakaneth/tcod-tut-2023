@@ -18,26 +18,6 @@ class GameData:
 CHARDATA = GameData("./assets/data/characterdata.yml")
 
 
-# def make_player(world: World, temp_id: str, name: str) -> Entity:
-#     template = CHARDATA.data[temp_id]
-#     color = tuple(template["color"])
-#     tags = template.get("tags", list())
-#     glyph = template["glyph"]
-#     c = {
-#         comps.Name: name,
-#         comps.Renderable: comps.Renderable(glyph, color, 4),
-#         comps.Location: comps.Location(Point(0, 0)),
-#         comps.Actor: comps.Actor(100, 20),
-#     }
-
-#     e = world["player"]
-#     e.components.update(c)
-#     for tag in ["player", "blocker"] + tags:
-#         e.tags.add(tag)
-
-#     return e
-
-
 def make_char(
     world: World, id: str, *, name: str = None, player: bool = False
 ) -> Entity:
@@ -47,14 +27,22 @@ def make_char(
     tags = template.get("tags", list())
     speed = template.get("speed", 20)
     nm = name if name is not None else template["name"]
+    hp = template.get("hp", None)
+    atp = template.get("atp", None)
+    dfp = template.get("dfp", None)
+    dmg = template.get("dmg", None)
     e = None
+    z = 4 if player else 3
 
     c = {
         comps.Name: nm,
-        comps.Renderable: comps.Renderable(glyph, color, 3),
+        comps.Renderable: comps.Renderable(glyph, color, z),
         comps.Location: comps.Location(Point(0, 0)),
         comps.Actor: comps.Actor(100, speed),
     }
+
+    if hp is not None and atp is not None and dfp is not None and dmg is not None:
+        c |= {comps.Combatant: comps.Combatant(hp, hp, atp, dfp, tuple(dmg))}
 
     if player:
         e = world["player"]

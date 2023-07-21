@@ -4,28 +4,24 @@ test: &base
   glyph: '@'
   color: [255, 255, 255]
   speed: 20
-npc: 
-  <<: *base
-  name: NPC
-  color: [255, 0, 255]
-named_npc:
-  <<: *base
-  name: NPC!
-  color: [0, 255, 255]
-  named: true
+  hp: 20
+  atp: 50
+  dfp: 50
+  dmg: [1, 4]
 good_guy:
   <<: *base
   name: GoodGuy
   color: [0, 255, 0]
   tags: 
     - friendly
+  dialogue: "Hey there, nice to see you!"
 bad_guy:
   <<: *base
   name: BadGuy
   color: [255, 0, 0]
   tags:
     - enemy
-  speed: 30
+  speed: 20
 neut_guy:
   <<: *base
   name: NeutralGuy
