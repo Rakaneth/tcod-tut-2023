@@ -84,7 +84,7 @@ class MainScreen(Screen):
 
             q.add_msg(self.world, f"{e_name} kicks {target_name}!")
             e_actor_comp.energy -= 50
-            e.relation_tags.pop(comps.CollidesWith)
+            e.relation_tag.pop(comps.CollidesWith)
 
     def check_moves(self):
         cur_map = self.cur_map
