@@ -1,13 +1,13 @@
 import tcod
 
 from tcod.ecs import World
+from components import Messages
 from screen import Screen
 from mainscreen import MainScreen
 from action import Action
 from typing import Optional
-from factory import make_char, place_entity, make_player
+from factory import make_char, place_entity, add_map
 from gamemap import drunk_walk
-from gamestate import GameState
 from ui import SCR_W, SCR_H
 
 
@@ -23,8 +23,7 @@ class Engine:
             16,
             tcod.tileset.CHARMAP_CP437,
         )
-        world = World()
-        self.gs = GameState(world)
+        self.world = World()
 
     @property
     def cur_screen(self) -> Screen:
@@ -34,18 +33,19 @@ class Engine:
         self.screens[sc.name] = sc
 
     def setup(self):
-        self._register_sc(MainScreen(self.gs))
-        world = self.gs.world
-        drunk_m = drunk_walk("arena", 80, 80)
-        self.gs.add_map(drunk_m)
-        farin = make_player(world, "test", "Farin")
-        bad_guy = make_char(world, "npc", "enemy", "BadGuy")
-        good_guy = make_char(world, "npc", "friendly", "GoodGuy")
-        neut_guy = make_char(world, "npc", "neutral", "NeutralGuy")
-        place_entity(farin, drunk_m)
-        place_entity(bad_guy, drunk_m)
-        place_entity(good_guy, drunk_m)
-        place_entity(neut_guy, drunk_m)
+        world = self.world
+        self._register_sc(MainScreen(world))
+        drunk_m = drunk_walk("arena", 31, 15, 0.4)
+        add_map(world, drunk_m)
+        world[None].components[Messages] = list()
+        farin = make_char(world, "test", name="Farin", player=True)
+        bad_guy = make_char(world, "bad_guy")
+        good_guy = make_char(world, "good_guy")
+        neut_guy = make_char(world, "neut_guy")
+        place_entity(world, farin, drunk_m)
+        place_entity(world, bad_guy, drunk_m)
+        place_entity(world, good_guy, drunk_m)
+        place_entity(world, neut_guy, drunk_m)
 
     def run(self):
         with tcod.context.new(
@@ -57,21 +57,23 @@ class Engine:
         ) as ctx:
             root = tcod.console.Console(SCR_W, SCR_H, order="F")
             running = True
+            update = True
             action: Optional[Action] = None
 
             while running:
-                self.cur_screen.on_update()
-
                 root.clear()
                 self.cur_screen.on_draw(root)
                 ctx.present(root)
-                
+
                 for evt in tcod.event.wait():
-                    action = self.cur_screen.dispatch(evt)    
+                    ctx.convert_event(evt)
+                    action = self.cur_screen.dispatch(evt)
                     if action is not None:
-                        running = action.running        
+                        running = action.running
+                        update = action.update
                         if action.new_scr is not None:
                             self.cur_scr_name = action.new_scr
-                
 
-                 
+                if update:
+                    self.cur_screen.on_update()
+                    update = False

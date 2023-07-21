@@ -18,13 +18,28 @@ class Location:
 
     pos: Point
 
+    def __str__(self) -> str:
+        return f"{self.pos}"
+
+
 @dataclass
 class TryMove:
     """Represents an entity wanting to move to a location."""
+
     pos: Point
+
+
+@dataclass
+class Actor:
+    """Describes an entity that can take actions."""
+
+    energy: int
+    speed: int
+
 
 # Named components
 Name = ("name", str)
+Messages = ("messages", list[str])
 
 # Relation tags
 CollidesWith = "collides_with"

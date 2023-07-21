@@ -1,4 +1,5 @@
 from tcod.ecs import World, Entity
+from queries import blockers_at
 from geom import Point
 from yaml import load, SafeLoader
 from gamemap import GameMap
@@ -17,28 +18,34 @@ class GameData:
 CHARDATA = GameData("./assets/data/characterdata.yml")
 
 
-def make_player(world: World, temp_id: str, name: str) -> Entity:
-    template = CHARDATA.data[temp_id]
-    color = tuple(template["color"])
-    glyph = template["glyph"]
-    c = {
-        comps.Name: name,
-        comps.Renderable: comps.Renderable(glyph, color, 4),
-        comps.Location: comps.Location(Point(0, 0)),
-    }
+# def make_player(world: World, temp_id: str, name: str) -> Entity:
+#     template = CHARDATA.data[temp_id]
+#     color = tuple(template["color"])
+#     tags = template.get("tags", list())
+#     glyph = template["glyph"]
+#     c = {
+#         comps.Name: name,
+#         comps.Renderable: comps.Renderable(glyph, color, 4),
+#         comps.Location: comps.Location(Point(0, 0)),
+#         comps.Actor: comps.Actor(100, 20),
+#     }
 
-    e = world["player"]
-    e.components.update(c)
-    for tag in ["player", "actor", "blocker"]:
-        e.tags.add(tag)
+#     e = world["player"]
+#     e.components.update(c)
+#     for tag in ["player", "blocker"] + tags:
+#         e.tags.add(tag)
 
-    return e
+#     return e
 
 
-def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity:
+def make_char(
+    world: World, id: str, *, name: str = None, player: bool = False
+) -> Entity:
     template = CHARDATA.data[id]
     color = tuple(template["color"])
     glyph = template["glyph"]
+    tags = template.get("tags", list())
+    speed = template.get("speed", 20)
     nm = name if name is not None else template["name"]
     e = None
 
@@ -46,31 +53,41 @@ def make_char(world: World, id: str, tags: str = "", name: str = None) -> Entity
         comps.Name: nm,
         comps.Renderable: comps.Renderable(glyph, color, 3),
         comps.Location: comps.Location(Point(0, 0)),
+        comps.Actor: comps.Actor(100, speed),
     }
 
-    if template.get("named", False):
+    if player:
+        e = world["player"]
+    elif template.get("named", False):
         e = world[nm]
     else:
         e = world.new_entity()
 
     e.components.update(c)
-    
-    if len(tags) > 0:
-        for tag in tags.split():
-            e.tags.add(tag)
-    
-    for base_tag in ["blocker", "actor"]:
-        e.tags.add(base_tag)
-    
+
+    for tag in ["blocker"] + tags:
+        e.tags.add(tag)
+
+    if player:
+        e.tags.add("player")
+
     return e
 
 
-def place_entity(e: Entity, m: GameMap, pt: Point = None):
+def add_map(w: World, m: GameMap):
+    w[None].components[(m.id, GameMap)] = m
+
+
+def place_entity(w: World, e: Entity, m: GameMap, pt: Point = None):
+    e.relation_tag[comps.MapId] = m.id
     pos = e.components.get(comps.Location)
     if pt is None:
         pt = m.get_random_floor()
+
+    while len(list(blockers_at(w, pt))) > 0:
+        pt = m.get_random_floor()
+
     if pos is None:
         e.components[comps.Location] = comps.Location(pt)
     else:
         pos.pos = pt
-        e.relation_tag[comps.MapId] = m.id

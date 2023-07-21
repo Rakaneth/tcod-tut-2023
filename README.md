@@ -33,6 +33,18 @@ I also implemented a `drunk_walk` map generator that needs to be tweaked to cons
 
 Week 3 is, in theory, complete.
 
+I may have been mistaken about that.
+
+A *lot* of cleanup and refactoring happened. There is now a speed system in place. Control is not passed back to the player until they have enough energy to act. Entities act in order of descending speed and gain energy equal to their speed, acting when they have 100. Each game action has an associated cost:
+
+* Moving costs 50
+* Bump-attacking costs 50
+* More to come
+
+Among the things that got refactored was the `GameState` class. It worked initally until I got some help from @HexDecimal regarding proper use of the World to store arbitrary data. In a night of feverish inspiration (and an unhealthy dose of insomnia), I have removed that class and cleaned up all the functions that relied on the helpers there.
+
+*Now* week 3 is complete. I will likely start week 4 early while I have inspiration.
+
 ## Week 2
 
 More plumbing. With a little bit of refactoring, there is now a module that stores components and a module that will create entities with all the required components. I have decided on using a YAML file (for which I am using the PyYAML library) to store the game data; I find it much easier to quickly edit and read a YAML file than a Python dictionary. I've also decided on a smaller screen size with a large 32x32 font.
