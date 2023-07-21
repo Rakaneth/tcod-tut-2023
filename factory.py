@@ -1,5 +1,5 @@
 from tcod.ecs import World, Entity
-from gamestate import GameState
+from queries import blockers_at
 from geom import Point
 from yaml import load, SafeLoader
 from gamemap import GameMap
@@ -74,13 +74,17 @@ def make_char(
     return e
 
 
-def place_entity(gs: GameState, e: Entity, m: GameMap, pt: Point = None):
+def add_map(w: World, m: GameMap):
+    w[None].components[(m.id, GameMap)] = m
+
+
+def place_entity(w: World, e: Entity, m: GameMap, pt: Point = None):
     e.relation_tag[comps.MapId] = m.id
     pos = e.components.get(comps.Location)
     if pt is None:
         pt = m.get_random_floor()
 
-    while len(list(gs.get_blockers_at(pt))) > 0:
+    while len(list(blockers_at(w, pt))) > 0:
         pt = m.get_random_floor()
 
     if pos is None:

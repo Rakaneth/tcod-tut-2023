@@ -2,7 +2,8 @@ from gamemap import GameMap, SHROUD
 from geom import Point
 from tcod.console import Console
 from typing import Tuple
-from gamestate import GameState
+from tcod.ecs import World
+from queries import messages
 
 import numpy as np
 
@@ -70,10 +71,10 @@ def draw_map(m: GameMap, cam: Camera, con: Console):
     )
 
 
-def draw_msgs(gs: GameState, con: Console):
+def draw_msgs(w: World, con: Console):
     con.draw_frame(0, MAP_H, MSG_W, MSG_H, title="Messages")
     counter = 0
-    for msg in gs.messages[::-1]:
+    for msg in messages(w)[::-1]:
         counter += con.print_box(1, MAP_H + counter + 1, MSG_W - 2, MSG_H - 2, msg)
         if counter >= MSG_H - 2:
             break

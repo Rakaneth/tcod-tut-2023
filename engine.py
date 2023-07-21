@@ -1,13 +1,13 @@
 import tcod
 
 from tcod.ecs import World
+from components import Messages
 from screen import Screen
 from mainscreen import MainScreen
 from action import Action
 from typing import Optional
-from factory import make_char, place_entity
+from factory import make_char, place_entity, add_map
 from gamemap import drunk_walk
-from gamestate import GameState
 from ui import SCR_W, SCR_H
 
 
@@ -23,8 +23,7 @@ class Engine:
             16,
             tcod.tileset.CHARMAP_CP437,
         )
-        world = World()
-        self.gs = GameState(world)
+        self.world = World()
 
     @property
     def cur_screen(self) -> Screen:
@@ -34,18 +33,19 @@ class Engine:
         self.screens[sc.name] = sc
 
     def setup(self):
-        self._register_sc(MainScreen(self.gs))
-        world = self.gs.world
+        world = self.world
+        self._register_sc(MainScreen(world))
         drunk_m = drunk_walk("arena", 31, 15, 0.4)
-        self.gs.add_map(drunk_m)
+        add_map(world, drunk_m)
+        world[None].components[Messages] = list()
         farin = make_char(world, "test", name="Farin", player=True)
         bad_guy = make_char(world, "bad_guy")
         good_guy = make_char(world, "good_guy")
         neut_guy = make_char(world, "neut_guy")
-        place_entity(self.gs, farin, drunk_m)
-        place_entity(self.gs, bad_guy, drunk_m)
-        place_entity(self.gs, good_guy, drunk_m)
-        place_entity(self.gs, neut_guy, drunk_m)
+        place_entity(world, farin, drunk_m)
+        place_entity(world, bad_guy, drunk_m)
+        place_entity(world, good_guy, drunk_m)
+        place_entity(world, neut_guy, drunk_m)
 
     def run(self):
         with tcod.context.new(

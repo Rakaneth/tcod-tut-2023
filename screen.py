@@ -2,7 +2,7 @@ from typing import Optional
 
 import tcod
 import tcod.event
-from gamestate import GameState
+from tcod.ecs import World
 
 from action import Action, QuitAction
 
@@ -13,10 +13,10 @@ class Screen(tcod.event.EventDispatch[Optional[Action]]):
     Handles input, update, and drawing.
     """
 
-    def __init__(self, name: str, gs: GameState):
+    def __init__(self, name: str, world: World):
         super().__init__()
         self.name = name
-        self.gs = gs
+        self.world = world
 
     def __repr__(self) -> str:
         return f"Screen({self.name})"

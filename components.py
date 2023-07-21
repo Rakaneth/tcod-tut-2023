@@ -39,6 +39,7 @@ class Actor:
 
 # Named components
 Name = ("name", str)
+Messages = ("messages", list[str])
 
 # Relation tags
 CollidesWith = "collides_with"
