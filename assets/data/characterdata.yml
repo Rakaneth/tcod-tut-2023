@@ -1,5 +1,6 @@
 ---
-test: &base
+# Player templates
+base_hero: &hero
   name: Hero
   glyph: '@'
   color: [255, 255, 255]
@@ -7,25 +8,126 @@ test: &base
   hp: 20
   atp: 50
   dfp: 50
-  dmg: [1, 4]
-good_guy:
-  <<: *base
-  name: GoodGuy
-  color: [0, 255, 0]
-  tags: 
-    - friendly
-  dialogue: "Hey there, nice to see you!"
-bad_guy:
-  <<: *base
-  name: BadGuy
+  dmg: [1, 2]
+
+falwyn:
+  <<: *hero
+  name: Falwyn
+  color: [16, 192, 16]
+  atp: 30
+
+farin:
+  <<: *hero
+  name: Farin
+  color: [255, 0, 255]
+  hp: 15
+  atp: 35
+  dfp: 35
+  dmg: [1, 1]
+
+thrakir:
+  <<: *hero
+  name: Thrakir
+  color: [160, 16, 16]
+  hp: 30
+  atp: 65
+  dfp: 10
+  dmg: [2, 4]
+
+rikkas:
+  <<: *hero
+  name: Rikkas
+  color: [192, 101, 64]
+  speed: 15
+  hp: 45
+  atp: 40
+  dfp: 65
+  dmg: [1, 3]
+
+# Human templates
+
+base_human: &human
+  name: Human
+  glyph: '@'
+  color: [255, 255, 255]
+  speed: 20
+  hp: 20
+  atp: 0
+  dfp: 0
+  dmg: [1, 1]
+  tier: 1
+  tags:
+    - enemy 
+    - humanoid
+    - human
+
+bandit:
+  <<: *human
+  name: Bandit
   color: [255, 0, 0]
   hp: 10
   atp: 25
-  dfp: 35
+  dfp: 35    
+  speed: 20
+  freq: 10
+
+base_orc: &orc
+  name: Orc
+  glyph: 'o'
+  color: [16, 128, 16]
+  speed: 20
+  hp: 40
+  atp: 60
+  dfp: 40
+  dmg: [1, 6]
+  tier: 1
   tags:
     - enemy
-  speed: 20
-neut_guy:
-  <<: *base
-  name: NeutralGuy
-  color: [255, 255, 0]
+    - humanoid
+    - orc
+  freq: 2
+
+korashi:
+  <<: *orc
+  name: Korashi Orc
+  color: [128, 128, 192]
+  speed: 15
+
+chidani:
+  <<: *orc
+  name: Chidani Orc
+  color: [0x9D, 0, 0]
+  speed: 25
+
+# Cave Creatures
+
+bear:
+  name: Bear
+  glyph: 'B'
+  color: [108, 96, 64]
+  speed: 10
+  hp: 50
+  atp: 70
+  dfp: 30
+  dmg: [2, 6]
+  tier: 1
+  tags:
+    - enemy
+    - cave
+    - ursine
+  freq: 3
+
+blindclaw:
+  name: Blindclaw
+  glyph: 'l'
+  color: [32, 32, 108]
+  speed: 30
+  hp: 30
+  atp: 60
+  dfp: 25
+  dmg: [1, 4]
+  tier: 1
+  tags:
+    - enemy
+    - cave
+  freq: 7

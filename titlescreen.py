@@ -7,8 +7,12 @@ from screen import Screen
 from tcod.ecs import World
 from tcod.console import Console
 from tcod.event import KeySym
-from factory import make_char, place_entity, add_map
-from gamemap import drunk_walk
+from factory import (
+    build_all_maps,
+    make_char,
+    place_entity,
+    populate_all_maps,
+)
 from components import GameVersion, Messages
 from ui import Menu
 
@@ -89,15 +93,9 @@ class TitleScreen(Screen):
 
     def new_game(self):
         world = self.world
-        drunk_m = drunk_walk("arena", 31, 15, 0.4)
-        add_map(world, drunk_m)
         world[None].components[Messages] = list()
         world[None].components[GameVersion] = VERSION
-        farin = make_char(world, "test", name="Farin", player=True)
-        bad_guy = make_char(world, "bad_guy")
-        good_guy = make_char(world, "good_guy")
-        neut_guy = make_char(world, "neut_guy")
-        place_entity(world, farin, drunk_m)
-        place_entity(world, bad_guy, drunk_m)
-        place_entity(world, good_guy, drunk_m)
-        place_entity(world, neut_guy, drunk_m)
+        thrakir = make_char(world, "thrakir", player=True)
+        build_all_maps(world)
+        place_entity(world, thrakir, "cave")
+        populate_all_maps(world)

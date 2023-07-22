@@ -1,8 +1,9 @@
+from random import choices, randint
 from tcod.ecs import World, Entity
-from queries import blockers_at
+from queries import blockers_at, get_map
 from geom import Point
 from yaml import load, SafeLoader
-from gamemap import GameMap
+from gamemap import GameMap, arena, drunk_walk
 
 import components as comps
 
@@ -15,7 +16,10 @@ class GameData:
             self.data = load(f, SafeLoader)
 
 
-CHARDATA = GameData("./assets/data/characterdata.yml")
+DATAFOLDER = "./assets/data/"
+
+CHARDATA = GameData(f"{DATAFOLDER}characterdata.yml")
+MAPDATA = GameData(f"{DATAFOLDER}/mapdata.yml")
 
 
 def make_char(
@@ -71,9 +75,10 @@ def add_map(w: World, m: GameMap):
     w[None].components[(m.id, GameMap)] = m
 
 
-def place_entity(w: World, e: Entity, m: GameMap, pt: Point = None):
-    e.relation_tag[comps.MapId] = m.id
+def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
+    e.relation_tag[comps.MapId] = map_id
     pos = e.components.get(comps.Location)
+    m = get_map(w, map_id)
     if pt is None:
         pt = m.get_random_floor()
 
@@ -84,3 +89,65 @@ def place_entity(w: World, e: Entity, m: GameMap, pt: Point = None):
         e.components[comps.Location] = comps.Location(pt)
     else:
         pos.pos = pt
+
+
+def build_all_maps(w: World):
+    for map_id in MAPDATA.data.keys():
+        m = make_map(map_id)
+        add_map(w, m)
+
+
+def populate_all_maps(w: World):
+    maps = (item for item in w[None].components.values() if isinstance(item, GameMap))
+    for m in maps:
+        populate_map(w, m)
+
+
+def make_map(build_id: str) -> GameMap:
+    """Creates a map based on map data."""
+    template = MAPDATA.data[build_id]
+    gen = template["gen"]
+    w_low, w_high = template["width"]
+    h_low, h_high = template["height"]
+    tier = template["tier"]
+    dark = template.get("dark", False)
+
+    width = randint(w_low, w_high)
+    height = randint(h_low, h_high)
+    cov = 0.3 + 0.1 * tier
+
+    maps = {
+        "drunkard": drunk_walk(build_id, width, height, cov, dark),
+        "arena": arena(build_id, width, height, dark),
+    }
+
+    return maps[gen]
+
+
+def populate_map(w: World, m: GameMap):
+    template = MAPDATA.data[m.id]
+
+    tier = template["tier"]
+    monster_data = template["monsters"]
+    m_low, m_high = monster_data["number"]
+    num_monsters = randint(m_low, m_high)
+    m_types = monster_data["types"]
+
+    monster_cands = {
+        key: val["freq"]
+        for key, val in CHARDATA.data.items()
+        if val.get("freq", 0) > 0
+        if val.get("tier", 0) == tier
+        if any(tag in val.get("tags", []) for tag in m_types)
+    }
+
+    if monster_cands:
+        monster_choice_ids = choices(
+            list(monster_cands.keys()), list(monster_cands.values()), k=num_monsters
+        )
+
+        for m_id in monster_choice_ids:
+            monster = make_char(w, m_id)
+            place_entity(w, monster, m.id)
+    else:
+        print(f"No monster choices for map {m.id}; check data")
