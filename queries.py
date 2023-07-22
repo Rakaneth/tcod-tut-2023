@@ -82,7 +82,9 @@ def messages(w: World) -> list[str]:
 
 
 def kill(e: Entity):
-    e.components[comps.Renderable] = comps.Renderable("%", BLOOD, 2)
+    render = e.components[comps.Renderable]
+    render.glyph = "%"
+    render.z = 2
     e.tags.add("dead")
     e.tags.remove("blocker")
     if comps.TryMove in e.components:
