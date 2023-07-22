@@ -2,6 +2,7 @@ from tcod.ecs import World, Entity, Query
 from gamemap import GameMap
 from geom import Point
 import components as comps
+from swatch import BLOOD
 
 
 def player(w: World) -> Entity:
@@ -23,7 +24,13 @@ def current_actors(w: World) -> list[Entity]:
 
 
 def turn_actors(w: World):
-    return filter(lambda i: i.components[comps.Actor].energy >= 100, current_actors(w))
+    def f(e: Entity) -> bool:
+        return (
+            e.components[comps.Actor].energy >= 100
+            and not e.components[comps.Combatant].dead
+        )
+
+    return filter(f, current_actors(w))
 
 
 def entities(w: World, map_id: str = None) -> Query:
@@ -61,9 +68,24 @@ def is_neutral(e: Entity) -> bool:
     return not (is_friendly(e) or is_enemy(e))
 
 
+def is_hostile(e1: Entity, e2: Entity) -> bool:
+    hostile_groups = e1.relation_tags_many[comps.HostileTo]
+    return any(tag in hostile_groups for tag in e2.tags)
+
+
 def add_msg(w: World, txt: str):
     w[None].components[comps.Messages].append(txt)
 
 
 def messages(w: World) -> list[str]:
     return w[None].components[comps.Messages]
+
+
+def kill(e: Entity):
+    e.components[comps.Renderable] = comps.Renderable("%", BLOOD, 2)
+    e.tags.add("dead")
+    e.tags.remove("blocker")
+    if comps.TryMove in e.components:
+        e.components.pop(comps.TryMove)
+    if comps.CollidesWith in e.components:
+        e.components.pop(comps.CollidesWith)

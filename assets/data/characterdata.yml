@@ -19,6 +19,9 @@ bad_guy:
   <<: *base
   name: BadGuy
   color: [255, 0, 0]
+  hp: 10
+  atp: 25
+  dfp: 35
   tags:
     - enemy
   speed: 20

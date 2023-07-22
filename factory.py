@@ -42,7 +42,7 @@ def make_char(
     }
 
     if hp is not None and atp is not None and dfp is not None and dmg is not None:
-        c |= {comps.Combatant: comps.Combatant(hp, hp, atp, dfp, tuple(dmg))}
+        c |= {comps.Combatant: comps.Combatant(hp, hp, atp, dfp, tuple(sorted(dmg)))}
 
     if player:
         e = world["player"]
@@ -53,11 +53,16 @@ def make_char(
 
     e.components.update(c)
 
+    if "enemy" in tags:
+        e.relation_tags_many[comps.HostileTo].add("player")
+        e.relation_tags_many[comps.HostileTo].add("friendly")
+
     for tag in ["blocker"] + tags:
         e.tags.add(tag)
 
     if player:
         e.tags.add("player")
+        e.relation_tags_many[comps.HostileTo].add("enemy")
 
     return e
 

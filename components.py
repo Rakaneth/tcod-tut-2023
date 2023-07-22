@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Tuple
 from geom import Point
+from tcod.ecs import Entity
 
 
 @dataclass
@@ -49,20 +50,33 @@ class Combatant:
 
     @property
     def dmg_str(self) -> str:
-        a, b = self.dmg
-        low = min(a, b)
-        high = max(a, b)
+        low, high = self.dmg
         return f"{low}-{high}"
 
     @property
     def hp_str(self) -> str:
         return f"{self.cur_hp}/{self.max_hp}"
 
+    @property
+    def dead(self) -> bool:
+        return self.cur_hp <= 0
+
+    def heal(self):
+        self.cur_hp = self.max_hp
+
+    def restore(self, amt: int):
+        self.cur_hp = min(self.max_hp, self.cur_hp + amt)
+
+    def damage(self, amt: int):
+        self.cur_hp -= amt
+
 
 # Named components
 Name = ("name", str)
 Messages = ("messages", list[str])
+BumpAttacking = ("bump_attacking", Entity)
+CollidesWith = ("collides_with", Entity)
 
 # Relation tags
-CollidesWith = "collides_with"
 MapId = "map_id"
+HostileTo = "hostile_to"

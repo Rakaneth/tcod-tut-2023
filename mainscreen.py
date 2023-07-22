@@ -14,6 +14,7 @@ from tcod.ecs import World, Entity
 
 import components as comps
 import queries as q
+import combat as cbt
 
 
 class MainScreen(Screen):
@@ -61,6 +62,8 @@ class MainScreen(Screen):
             self.get_npc_moves()
             self.check_moves()
             self.check_collisions()
+            self.resolve_bumps()
+            self.check_deaths()
             self.update_fov()
 
             if player.components[comps.Actor].energy >= 100:
@@ -70,21 +73,18 @@ class MainScreen(Screen):
         self.camera.center = pos
 
     def check_collisions(self):
-        for e in self.world.Q.all_of(relations=[(comps.CollidesWith, ...)]):
-            target = e.relation_tag[comps.CollidesWith]
+        for e, target in self.world.Q[Entity, comps.CollidesWith]:
             e_actor_comp = e.components[comps.Actor]
 
             if target == e:
                 e_actor_comp.energy -= 100
-                e.relation_tag.pop(comps.CollidesWith)
+                e.components.pop(comps.CollidesWith)
                 continue
 
-            target_name = target.components[comps.Name]
-            e_name = e.components[comps.Name]
+            if q.is_hostile(e, target):
+                e.components[comps.BumpAttacking] = target
 
-            q.add_msg(self.world, f"{e_name} kicks {target_name}!")
-            e_actor_comp.energy -= 50
-            e.relation_tag.pop(comps.CollidesWith)
+            e.components.pop(comps.CollidesWith)
 
     def check_moves(self):
         cur_map = self.cur_map
@@ -97,7 +97,7 @@ class MainScreen(Screen):
             if cur_map.walkable(dest.x, dest.y):
                 blockers = list(q.blockers_at(self.world, dest))
                 if len(blockers) > 0:
-                    e.relation_tag[comps.CollidesWith] = blockers[0]
+                    e.components[comps.CollidesWith] = blockers[0]
                 else:
                     e.components[comps.Location].pos = dest
                     e.components[comps.Actor].energy -= 50
@@ -122,6 +122,34 @@ class MainScreen(Screen):
         for e in q.current_actors(self.world):
             act_comp = e.components[comps.Actor]
             act_comp.energy += act_comp.speed
+
+    def resolve_bumps(self):
+        for attacker, defender in self.world.Q[Entity, comps.BumpAttacking]:
+            atk_name = attacker.components[comps.Name]
+            def_name = defender.components[comps.Name]
+
+            q.add_msg(self.world, f"{atk_name} attacks {def_name}!")
+            result = cbt.bump_attack(attacker, defender)
+            if result.hit:
+                raw_dmg = cbt.roll_dmg(attacker)
+                defender.components[comps.Combatant].damage(raw_dmg)
+                q.add_msg(
+                    self.world, f"{atk_name} hits {def_name} for {raw_dmg} damage!"
+                )
+            else:
+                q.add_msg(self.world, f"{atk_name} misses {def_name}!")
+
+            attacker.components.pop(comps.BumpAttacking)
+
+    def check_deaths(self):
+        query = self.world.Q.all_of(components=[comps.Combatant]).none_of(
+            tags=["player", "dead"]
+        )
+        for e, stats in query[Entity, comps.Combatant]:
+            e_name = e.components[comps.Name]
+            if stats.dead:
+                q.add_msg(self.world, f"{e_name} has fallen!")
+                q.kill(e)
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Direction.NONE
