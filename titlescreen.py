@@ -64,7 +64,6 @@ class TitleScreen(Screen):
             for screen in self.engine.screens.values():
                 screen.world = world
             self.engine.world = world
-
         except FileNotFoundError:
             print(f"File {game_file} not found, creating new game")
             self.new_game()
