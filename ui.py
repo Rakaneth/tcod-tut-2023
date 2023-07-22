@@ -117,7 +117,47 @@ def draw_bar(
 class Menu:
     """
     Describes an in-game menu.
-    TODO: Week 4
     """
 
-    pass
+    def __init__(
+        self,
+        options: list[str],
+        con: Console,
+        *,
+        x: int = None,
+        y: int = None,
+        title: str = "",
+    ) -> None:
+        self.console = con
+        self.options = options
+        w = max(map(len, options))
+        self.width = max(w, len(title)) + 4
+        self.height = len(options) + 2
+        self.x = (con.width - self.width) // 2 if x is None else x
+        self.y = (con.height - self.height) // 2 if y is None else y
+        self.index = 0
+        self.title = title
+
+    def move_up(self):
+        self.index -= 1
+        if self.index < 0:
+            self.index = len(self.options) - 1
+
+    def move_down(self):
+        self.index += 1
+        if self.index >= len(self.options):
+            self.index = 0
+
+    @property
+    def selected(self) -> str:
+        return self.options[self.index]
+
+    def draw(self, con: Console):
+        con.draw_frame(self.x, self.y, self.width, self.height, self.title)
+        fg = con.default_fg
+        bg = con.default_bg
+        for i, opt in enumerate(self.options):
+            f, b = fg, bg
+            if i == self.index:
+                f, b = bg, fg
+            con.print(self.x + 1, self.y + i + 1, opt, f, b)
