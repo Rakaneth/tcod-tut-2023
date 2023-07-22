@@ -14,6 +14,7 @@ from tcod.ecs import World, Entity
 
 import components as comps
 import queries as q
+import updates as u
 import combat as cbt
 
 
@@ -128,16 +129,16 @@ class MainScreen(Screen):
             atk_name = attacker.components[comps.Name]
             def_name = defender.components[comps.Name]
 
-            q.add_msg(self.world, f"{atk_name} attacks {def_name}!")
+            u.add_msg(self.world, f"{atk_name} attacks {def_name}!")
             result = cbt.bump_attack(attacker, defender)
             if result.hit:
                 raw_dmg = cbt.roll_dmg(attacker)
                 defender.components[comps.Combatant].damage(raw_dmg)
-                q.add_msg(
+                u.add_msg(
                     self.world, f"{atk_name} hits {def_name} for {raw_dmg} damage!"
                 )
             else:
-                q.add_msg(self.world, f"{atk_name} misses {def_name}!")
+                u.add_msg(self.world, f"{atk_name} misses {def_name}!")
 
             attacker.components.pop(comps.BumpAttacking)
 
@@ -148,8 +149,8 @@ class MainScreen(Screen):
         for e, stats in query[Entity, comps.Combatant]:
             e_name = e.components[comps.Name]
             if stats.dead:
-                q.add_msg(self.world, f"{e_name} has fallen!")
-                q.kill(e)
+                u.add_msg(self.world, f"{e_name} has fallen!")
+                u.kill(e)
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Direction.NONE

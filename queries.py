@@ -69,24 +69,13 @@ def is_neutral(e: Entity) -> bool:
 
 def is_hostile(e1: Entity, e2: Entity) -> bool:
     hostile_groups = e1.relation_tags_many[comps.HostileTo]
-    return any(tag in hostile_groups for tag in e2.tags)
 
+    for group in hostile_groups:
+        if group in e2.tags:
+            return True
 
-def add_msg(w: World, txt: str):
-    w[None].components[comps.Messages].append(txt)
+    return False
 
 
 def messages(w: World) -> list[str]:
     return w[None].components[comps.Messages]
-
-
-def kill(e: Entity):
-    render = e.components[comps.Renderable]
-    render.glyph = "%"
-    render.z = 2
-    e.tags.add("dead")
-    e.tags.remove("blocker")
-    if comps.TryMove in e.components:
-        e.components.pop(comps.TryMove)
-    if comps.CollidesWith in e.components:
-        e.components.pop(comps.CollidesWith)
