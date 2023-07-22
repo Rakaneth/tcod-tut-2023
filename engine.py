@@ -1,14 +1,17 @@
+import os
 import pickle
+import re
 import tcod
 
 from tcod.ecs import World
+from components import GameFileName, GameSaved, Name
 from screen import Screen
 from mainscreen import MainScreen
 from action import Action
 from typing import Optional
 from titlescreen import TitleScreen
 from ui import SCR_W, SCR_H
-from constants import SAVING
+from constants import SAVING, VERSION
 
 
 class Engine:
@@ -34,6 +37,8 @@ class Engine:
         self.screens[sc.name] = sc
 
     def setup(self):
+        if not os.path.exists("saves/"):
+            os.mkdir("saves")
         self._register_sc(MainScreen(self.world))
         self._register_sc(TitleScreen(self.world, self.root, self))
 
@@ -71,5 +76,8 @@ class Engine:
 
     def shutdown(self):
         if SAVING:
-            with open("game.sav", "wb") as f:
+            game_file = self.world[None].components[GameFileName]
+            self.world[None].components[GameSaved] = True
+
+            with open(f"saves/{game_file}", "wb") as f:
                 pickle.dump(self.world, f)

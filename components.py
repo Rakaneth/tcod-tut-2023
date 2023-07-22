@@ -71,12 +71,16 @@ class Combatant:
         self.cur_hp -= amt
 
 
+# Named components - global Entity
+Messages = ("messages", list[str])
+GameVersion = ("game_version", str)
+GameSaved = ("game_saved", bool)
+GameFileName = ("game_file_name", str)
+
 # Named components
 Name = ("name", str)
-Messages = ("messages", list[str])
 BumpAttacking = ("bump_attacking", Entity)
 CollidesWith = ("collides_with", Entity)
-GameVersion = ("game_version", str)
 
 # Relation tags
 MapId = "map_id"

@@ -1,6 +1,7 @@
 from __future__ import annotations
+import re
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 from action import Action
 from constants import SAVING, VERSION
 from screen import Screen
@@ -13,8 +14,9 @@ from factory import (
     place_entity,
     populate_all_maps,
 )
-from components import GameVersion, Messages
+from components import GameFileName, GameSaved, GameVersion, Messages
 from ui import Menu
+from datetime import datetime
 
 import pickle
 import glob
@@ -32,11 +34,28 @@ class TitleScreen(Screen):
 
     def __init__(self, world: World, con: Console, e: Engine):
         super().__init__("title", world)
-        opts = ["New Game"]
-        files = glob.glob("*.sav")
-        opts += files
+        opts = [
+            "New Game - Thrakir",
+            "New Game - Farin",
+            "New Game - Rikkas",
+            "New Game - Falwyn",
+        ]
+        files = glob.glob("saves/*.sav")
+        opts += sorted(
+            [
+                f.replace(".sav", "")
+                .replace("/", "")
+                .replace("\\", "")
+                .replace("saves", "")
+                for f in files
+            ]
+        )
+
         self.menu = Menu(opts, con, title="Select File")
         self.engine = e
+
+    def on_quit(self) -> Action | None:
+        raise SystemExit()
 
     def on_draw(self, con: Console):
         self.menu.draw(con)
@@ -54,19 +73,25 @@ class TitleScreen(Screen):
             case KeySym.RETURN:
                 result = self.menu.selected
 
-        if result == "New Game":
-            self.new_game()
-            new_scr = "main"
-            update = True
-        elif result is not None and SAVING:
-            self.load_game(result)
-            new_scr = "main"
-            update = True
-        elif result is not None:
-            print(f"File {result} was picked, but saving is disabled.")
-            self.new_game()
-            new_scr = "main"
-            update = True
+        if result:
+            mo = re.fullmatch(
+                r"New Game - (?P<hero>(Thrakir|Falwyn|Rikkas|Farin))", result
+            )
+            if mo:
+                hero = mo.group("hero")
+                self.new_game(hero)
+                new_scr = "main"
+                update = True
+            elif SAVING:
+                self.load_game(f"saves/{result}.sav")
+                new_scr = "main"
+                update = True
+            elif result is not None:
+                print(f"File {result}.sav was picked, but saving is disabled.")
+                print("Starting a new game with Farin.")
+                self.new_game("Farin")
+                new_scr = "main"
+                update = True
 
         return Action(True, new_scr, update)
 
@@ -91,11 +116,16 @@ class TitleScreen(Screen):
             print("Creating new game.")
             self.new_game()
 
-    def new_game(self):
+    def new_game(self, hero: str):
+        now = datetime.now()
         world = self.world
         world[None].components[Messages] = list()
         world[None].components[GameVersion] = VERSION
-        thrakir = make_char(world, "thrakir", player=True)
+        world[None].components[GameSaved] = False
+        world[None].components[
+            GameFileName
+        ] = f"{hero}-{(now.strftime('%Y%m%d-%H%M%S'))}.sav"
+        thrakir = make_char(world, hero.lower(), player=True)
         build_all_maps(world)
         place_entity(world, thrakir, "cave")
         populate_all_maps(world)

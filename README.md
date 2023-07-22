@@ -35,6 +35,16 @@ So...I'm a whole week ahead now. Bump-attacking is in place, and entities that a
 
 Working on a title screen. Currently, it just shows a list of saved games. With a lot of hacking, save games can be selected from the menu. (Oh, yeah. I implemented a `Menu` class to handle those.) It even has version checks! Currently, an exception is thrown if the game versions do not match.
 
+Maps are now generated based on some map data that describes the layout, items, general difficulty (there I go skipping ahead again), and available monsters types.
+
+I think saving and loading is complete now. The world stores the game save name, which is determined by the starting hero and a timestamp. A `saves` directory is created if one does not exist when the game loads. This is where the game saves are stored. This folder can be deleted wholesale to remove the saved games. I honestly think saving and loading should be done sooner in the project and tested throughout. I am glad to have a version I am happy with.
+
+Also, there are four distinct heroes, with different strengths and weaknesses. All the plumbing done earlier is paying off here; with a few changes to `assets/data/characterdata.yml` and `titlescreen.py`, I can easily add new heroes to the game. Monsters and maps are easier to add.
+
+Now, back to pondering my combat system - and items.
+
+![saving](/screenshots/saving.gif)
+
 ## Week 3
 
 Implemented field of view and basic collision detection. I adapted the tutorial's method of updating field of view to suit my use of scrolling maps. I've implemented some convenience methods on the `GameState` class to make finding entities easier. To get some visual feedback, I've gone ahead and implemented a bit of UI, with a message box appearing at the bottom of the screen. Enemies can now properly be kicked! 
