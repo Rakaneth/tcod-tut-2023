@@ -69,12 +69,13 @@ def is_neutral(e: Entity) -> bool:
 
 def is_hostile(e1: Entity, e2: Entity) -> bool:
     hostile_groups = e1.relation_tags_many[comps.HostileTo]
+    return any(group in e2.tags for group in hostile_groups)
 
-    for group in hostile_groups:
-        if group in e2.tags:
-            return True
+    # for group in hostile_groups:
+    #     if group in e2.tags:
+    #         return True
 
-    return False
+    # return False
 
 
 def messages(w: World) -> list[str]:
