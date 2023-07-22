@@ -76,6 +76,7 @@ Name = ("name", str)
 Messages = ("messages", list[str])
 BumpAttacking = ("bump_attacking", Entity)
 CollidesWith = ("collides_with", Entity)
+GameVersion = ("game_version", str)
 
 # Relation tags
 MapId = "map_id"

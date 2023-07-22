@@ -31,6 +31,10 @@ So...I'm a whole week ahead now. Bump-attacking is in place, and entities that a
 
 ![combat](/screenshots/week4.gif)
 
+### Addendum 2023-7-22
+
+Working on a title screen. Currently, it just shows a list of saved games. With a lot of hacking, save games can be selected from the menu. (Oh, yeah. I implemented a `Menu` class to handle those.) It even has version checks! Currently, an exception is thrown if the game versions do not match.
+
 ## Week 3
 
 Implemented field of view and basic collision detection. I adapted the tutorial's method of updating field of view to suit my use of scrolling maps. I've implemented some convenience methods on the `GameState` class to make finding entities easier. To get some visual feedback, I've gone ahead and implemented a bit of UI, with a message box appearing at the bottom of the screen. Enemies can now properly be kicked! 
@@ -41,7 +45,7 @@ I also implemented a `drunk_walk` map generator that needs to be tweaked to cons
 
 Week 3 is, in theory, complete.
 
-## Addendum 2023-7-20
+### Addendum 2023-7-20
 
 I may have been mistaken about that.
 
@@ -55,7 +59,7 @@ Among the things that got refactored was the `GameState` class. It worked inital
 
 *Now* week 3 is complete. I will likely start week 4 early while I have inspiration.
 
-## Addendum 2023-7-21
+### Addendum 2023-7-21
 
 I skipped...*way* ahead. It turns out that the main motivation behind me wanting to clean up the gamestate was so that I could do some preliminary saving and loading, and it turns out that my efforts have paid off. Now the world pickles just fine, and I can load the game from a previous save. I tried to do this with the GameState class and it wasn't pickling properly. 
 

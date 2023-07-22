@@ -2,13 +2,14 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from action import Action
+from constants import SAVING, VERSION
 from screen import Screen
 from tcod.ecs import World
 from tcod.console import Console
 from tcod.event import KeySym
 from factory import make_char, place_entity, add_map
 from gamemap import drunk_walk
-from components import Messages
+from components import GameVersion, Messages
 from ui import Menu
 
 import pickle
@@ -16,6 +17,10 @@ import glob
 
 if TYPE_CHECKING:
     from engine import Engine
+
+
+class VersionError(Exception):
+    pass
 
 
 class TitleScreen(Screen):
@@ -49,8 +54,13 @@ class TitleScreen(Screen):
             self.new_game()
             new_scr = "main"
             update = True
-        elif result is not None:
+        elif result is not None and SAVING:
             self.load_game(result)
+            new_scr = "main"
+            update = True
+        elif result is not None:
+            print(f"File {result} was picked, but saving is disabled.")
+            self.new_game()
             new_scr = "main"
             update = True
 
@@ -61,6 +71,11 @@ class TitleScreen(Screen):
         try:
             with open(game_file, "rb") as f:
                 world = pickle.load(f)
+            load_ver = world[None].components[GameVersion]
+            if load_ver != VERSION:
+                raise VersionError(
+                    f"Version mismatch: loaded {load_ver}, current {VERSION}"
+                )
             for screen in self.engine.screens.values():
                 screen.world = world
             self.engine.world = world
@@ -77,6 +92,7 @@ class TitleScreen(Screen):
         drunk_m = drunk_walk("arena", 31, 15, 0.4)
         add_map(world, drunk_m)
         world[None].components[Messages] = list()
+        world[None].components[GameVersion] = VERSION
         farin = make_char(world, "test", name="Farin", player=True)
         bad_guy = make_char(world, "bad_guy")
         good_guy = make_char(world, "good_guy")
