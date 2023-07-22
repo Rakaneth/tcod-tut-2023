@@ -2,7 +2,6 @@ from tcod.ecs import World, Entity, Query
 from gamemap import GameMap
 from geom import Point
 import components as comps
-from swatch import BLOOD
 
 
 def player(w: World) -> Entity:
