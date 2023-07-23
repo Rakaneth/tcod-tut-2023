@@ -1,5 +1,6 @@
 from tcod.ecs import World, Entity
 import components as comps
+from swatch import WHITE
 
 
 def kill(e: Entity):
@@ -14,5 +15,6 @@ def kill(e: Entity):
         e.components.pop(comps.CollidesWith)
 
 
-def add_msg(w: World, txt: str):
-    w[None].components[comps.Messages].append(txt)
+def add_msg(w: World, txt: str, fg: tuple[int, int, int] = WHITE):
+    new_msg = comps.GameMessage(txt, fg)
+    w[None].components[comps.Messages].append(new_msg)

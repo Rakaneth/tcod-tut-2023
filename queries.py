@@ -78,5 +78,5 @@ def is_hostile(e1: Entity, e2: Entity) -> bool:
     # return False
 
 
-def messages(w: World) -> list[str]:
+def messages(w: World) -> list[comps.GameMessage]:
     return w[None].components[comps.Messages]

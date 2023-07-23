@@ -75,7 +75,9 @@ def draw_msgs(w: World, con: Console):
     con.draw_frame(0, MAP_H, MSG_W, MSG_H, title="Messages")
     counter = 0
     for msg in messages(w)[::-1]:
-        counter += con.print_box(1, MAP_H + counter + 1, MSG_W - 2, MSG_H - 2, msg)
+        counter += con.print_box(
+            1, MAP_H + counter + 1, MSG_W - 2, MSG_H - 2, msg.message, msg.color
+        )
         if counter >= MSG_H - 2:
             break
 

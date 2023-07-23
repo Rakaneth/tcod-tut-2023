@@ -71,8 +71,16 @@ class Combatant:
         self.cur_hp -= amt
 
 
+@dataclass(frozen=True)
+class GameMessage:
+    """Describes a game message."""
+
+    message: str
+    color: Tuple[int, int, int]
+
+
 # Named components - global Entity
-Messages = ("messages", list[str])
+Messages = ("messages", list[GameMessage])
 GameVersion = ("game_version", str)
 GameSaved = ("game_saved", bool)
 GameFileName = ("game_file_name", str)

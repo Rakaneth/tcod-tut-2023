@@ -8,7 +8,7 @@ from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from swatch import HP_EMPTY, HP_FILLED
+from swatch import BLOOD, CAUTION, DEAD, HP_EMPTY, HP_FILLED, INFO
 from ui import Camera, draw_bar, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
 from tcod.ecs import World, Entity
 
@@ -129,16 +129,18 @@ class MainScreen(Screen):
             atk_name = attacker.components[comps.Name]
             def_name = defender.components[comps.Name]
 
-            u.add_msg(self.world, f"{atk_name} attacks {def_name}!")
+            u.add_msg(self.world, f"{atk_name} attacks {def_name}!", CAUTION)
             result = cbt.bump_attack(attacker, defender)
             if result.hit:
                 raw_dmg = cbt.roll_dmg(attacker)
                 defender.components[comps.Combatant].damage(raw_dmg)
                 u.add_msg(
-                    self.world, f"{atk_name} hits {def_name} for {raw_dmg} damage!"
+                    self.world,
+                    f"{atk_name} hits {def_name} for {raw_dmg} damage!",
+                    BLOOD,
                 )
             else:
-                u.add_msg(self.world, f"{atk_name} misses {def_name}!")
+                u.add_msg(self.world, f"{atk_name} misses {def_name}!", INFO)
 
             attacker.components.pop(comps.BumpAttacking)
 
@@ -149,7 +151,7 @@ class MainScreen(Screen):
         for e, stats in query[Entity, comps.Combatant]:
             e_name = e.components[comps.Name]
             if stats.dead:
-                u.add_msg(self.world, f"{e_name} has fallen!")
+                u.add_msg(self.world, f"{e_name} has fallen!", DEAD)
                 u.kill(e)
 
     def on_key(self, key: KeySym) -> Optional[Action]:
