@@ -45,7 +45,7 @@ def make_char(
         comps.Name: nm,
         comps.Renderable: comps.Renderable(glyph, color, z),
         comps.Location: comps.Location(Point(0, 0)),
-        comps.Actor: comps.Actor(100, speed),
+        comps.Actor: comps.Actor(0, speed),
         comps.EffectsList: list(),
     }
 

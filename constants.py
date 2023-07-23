@@ -1,3 +1,3 @@
-SAVING = True
+SAVING = False
 VERSION = "0.4.04"
 DEBUG = True

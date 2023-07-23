@@ -78,16 +78,15 @@ class Engine:
 
     def shutdown(self):
         dump_log(self.world)
+        game_file = self.world[None].components[GameFileName]
+        msgs = self.world[None].components[Messages]
 
         if SAVING:
-            game_file = self.world[None].components[GameFileName]
             self.world[None].components[GameSaved] = True
 
             with open(f"saves/{game_file}", "wb") as f:
                 pickle.dump(self.world, f)
 
-            msgs = self.world[None].components[Messages]
-
-            with open(f"logs/{game_file}".replace(".sav", ".msgs"), "w") as fl:
-                msg_list = [f"{msg.message}\n" for msg in msgs]
-                fl.writelines(msg_list)
+        with open(f"logs/{game_file}".replace(".sav", ".msgs"), "w") as fl:
+            msg_list = [f"{msg.message}\n" for msg in msgs]
+            fl.writelines(msg_list)

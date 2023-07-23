@@ -7,7 +7,7 @@ from queries import messages
 
 import numpy as np
 
-MAP_W = 25
+MAP_W = 20
 MAP_H = 20
 SCR_W = 40
 SCR_H = 30

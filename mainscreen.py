@@ -117,6 +117,7 @@ class MainScreen(Screen):
                 else:
                     e.components[comps.Location].pos = dest
                     e.components[comps.Actor].energy -= 100
+                    write_log(self.world, "action", f"{q.name(e)} moved")
 
             e.components.pop(comps.TryMove)
 
@@ -157,7 +158,7 @@ class MainScreen(Screen):
             write_log(
                 self.world,
                 "combat",
-                f"{atk_name} bumping {def_name}: hit={result.hit}, margin={result.margin}",
+                f"{atk_name} bumping {def_name}: hit={result.hit}, margin={result.margin}",  # noqa: E501
             )
             if result.hit:
                 raw_dmg = cbt.roll_dmg(attacker)
@@ -203,7 +204,7 @@ class MainScreen(Screen):
                 write_log(
                     self.world,
                     "combat",
-                    f"On-hit {on_hit.eff.name} successfully applied by {atk_name} to {def_name}",
+                    f"On-hit {on_hit.eff.name} successfully applied by {atk_name} to {def_name}",  # noqa: E501
                 )
             attacker.components.pop(comps.CheckOnHits)
 

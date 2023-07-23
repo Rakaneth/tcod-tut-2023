@@ -59,3 +59,7 @@ def remove_effect(e: Entity, eff_name: str):
     if maybe_eff:
         maybe_eff.on_remove(e)
         e.components[comps.EffectsList].remove(maybe_eff)
+
+
+def rename(e: Entity, new_name: str):
+    e.components[comps.Name] = new_name
