@@ -36,6 +36,7 @@ class GameMap:
     def __init__(
         self,
         id: str,
+        name: str,
         width: int,
         height: int,
         dark: bool = False,
@@ -48,6 +49,7 @@ class GameMap:
         self.cost = np.zeros((width, height), dtype=np.int32, order="F")
         self.dark = dark
         self.__id = id
+        self.__name = name
         wr, wb, wg = wall_fg
         fr, fg, fb = floor_fg
         wall_fg_dark = (wr // 2, wg // 2, wb // 2)
@@ -69,6 +71,10 @@ class GameMap:
     @property
     def id(self) -> str:
         return self.__id
+
+    @property
+    def name(self) -> str:
+        return self.__name
 
     @property
     def width(self) -> int:
@@ -131,17 +137,22 @@ class GameMap:
         return choice(cands)
 
 
-def arena(id: str, width: int, height: int, dark: bool = True) -> GameMap:
-    m = GameMap(id, width, height, dark)
+def arena(id: str, name: str, width: int, height: int, dark: bool = True) -> GameMap:
+    m = GameMap(id, name, width, height, dark)
     m.carve_rect(Rect.from_xywh(0, 0, width, height))
     m.update_cost()
     return m
 
 
 def drunk_walk(
-    id: str, width: int, height: int, coverage: float = 0.5, dark: bool = True
+    id: str,
+    name: str,
+    width: int,
+    height: int,
+    coverage: float = 0.5,
+    dark: bool = True,
 ) -> GameMap:
-    m = GameMap(id, width, height, dark)
+    m = GameMap(id, name, width, height, dark)
     x = m.width // 2
     y = m.height // 2
     pt = Point(x, y)

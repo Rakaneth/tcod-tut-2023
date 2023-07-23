@@ -198,10 +198,11 @@ class MainScreen(Screen):
     def draw_stats(self, con: Console):
         stats = self.player.components[comps.Combatant]
         name = self.player.components[comps.Name]
+        map_name = self.cur_map.name
         loc = self.player.components[comps.Location]
 
         con.print(MAP_W, 0, f"{name}")
-        con.print(MAP_W, 1, f"{loc}")
+        con.print(MAP_W, 1, f"{map_name} - {loc}")
         con.print(MAP_W, 2, f"HP: {stats.hp_str}")
         draw_bar(MAP_W, 3, stats.cur_hp, stats.max_hp, 10, HP_FILLED, HP_EMPTY, con)
         con.print(MAP_W, 4, f"ATP: {stats.atp}")

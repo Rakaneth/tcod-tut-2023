@@ -1,6 +1,7 @@
 ---
 cave:
   gen: drunkard
+  name: Cave
   width: [30, 50]
   height: [30, 50]
   tier: 1
@@ -18,6 +19,7 @@ cave:
 
 cavern:
   gen: drunkard
+  name: Cavern
   width: [50, 80]
   height: [50, 80]
   tier: 2

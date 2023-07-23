@@ -111,6 +111,7 @@ def make_map(build_id: str) -> GameMap:
     h_low, h_high = template["height"]
     tier = template["tier"]
     dark = template.get("dark", False)
+    name = template["name"]
 
     width = randint(w_low, w_high)
     height = randint(h_low, h_high)
@@ -119,9 +120,9 @@ def make_map(build_id: str) -> GameMap:
 
     match gen:
         case "drunkard":
-            m = drunk_walk(build_id, width, height, cov, dark)
+            m = drunk_walk(build_id, name, width, height, cov, dark)
         case "arena":
-            m = arena(build_id, width, height, dark)
+            m = arena(build_id, name, width, height, dark)
         case _:
             raise NotImplementedError(f"Map type {gen} not yet implemented.")
 
