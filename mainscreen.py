@@ -8,7 +8,7 @@ from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from swatch import BLOOD, CAUTION, DEAD, HP_EMPTY, HP_FILLED, INFO
+from swatch import CAUTION, HP_EMPTY, HP_FILLED
 from ui import Camera, draw_bar, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
 from tcod.ecs import World, Entity
 
@@ -126,21 +126,19 @@ class MainScreen(Screen):
 
     def resolve_bumps(self):
         for attacker, defender in self.world.Q[Entity, comps.BumpAttacking]:
-            atk_name = attacker.components[comps.Name]
             def_name = defender.components[comps.Name]
 
-            u.add_msg(self.world, f"{atk_name} attacks {def_name}!", CAUTION)
+            u.add_msg_about(attacker, f"<entity> attacks {def_name}!")
             result = cbt.bump_attack(attacker, defender)
             if result.hit:
                 raw_dmg = cbt.roll_dmg(attacker)
                 defender.components[comps.Combatant].damage(raw_dmg)
-                u.add_msg(
-                    self.world,
-                    f"{atk_name} hits {def_name} for {raw_dmg} damage!",
-                    BLOOD,
+                u.add_msg_about(
+                    attacker,
+                    f"<entity> hits {def_name} for {raw_dmg} damage!",
                 )
             else:
-                u.add_msg(self.world, f"{atk_name} misses {def_name}!", INFO)
+                u.add_msg_about(attacker, f"<entity> misses {def_name}!")
 
             attacker.components.pop(comps.BumpAttacking)
 
@@ -149,9 +147,8 @@ class MainScreen(Screen):
             tags=["player", "dead"]
         )
         for e, stats in query[Entity, comps.Combatant]:
-            e_name = e.components[comps.Name]
             if stats.dead:
-                u.add_msg(self.world, f"{e_name} has fallen!", DEAD)
+                u.add_msg_about(e, "<entity> has fallen!")
                 u.kill(e)
 
     def on_key(self, key: KeySym) -> Optional[Action]:

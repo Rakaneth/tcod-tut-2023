@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Tuple
+from effects import GameEffect
 from geom import Point
 from tcod.ecs import Entity
 
@@ -89,6 +90,7 @@ GameFileName = ("game_file_name", str)
 Name = ("name", str)
 BumpAttacking = ("bump_attacking", Entity)
 CollidesWith = ("collides_with", Entity)
+EffectsList = ("effect_list", list[GameEffect])
 
 # Relation tags
 MapId = "map_id"

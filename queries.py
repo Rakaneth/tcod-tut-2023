@@ -1,7 +1,13 @@
+from __future__ import annotations
+
 from tcod.ecs import World, Entity, Query
+from typing import TYPE_CHECKING
 from gamemap import GameMap
 from geom import Point
 import components as comps
+
+if TYPE_CHECKING:
+    from effects import GameEffect
 
 
 def player(w: World) -> Entity:
@@ -71,12 +77,14 @@ def is_hostile(e1: Entity, e2: Entity) -> bool:
     hostile_groups = e1.relation_tags_many[comps.HostileTo]
     return any(group in e2.tags for group in hostile_groups)
 
-    # for group in hostile_groups:
-    #     if group in e2.tags:
-    #         return True
-
-    # return False
-
 
 def messages(w: World) -> list[comps.GameMessage]:
     return w[None].components[comps.Messages]
+
+
+def find_effect(e: Entity, eff_name: str) -> GameEffect | None:
+    f = list(filter(lambda eff: eff.name == eff_name, e.components[comps.EffectsList]))
+    if f:
+        return f[0]
+
+    return None
