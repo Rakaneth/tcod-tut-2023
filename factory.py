@@ -142,7 +142,7 @@ def populate_map(w: World, m: GameMap):
         key: val["freq"]
         for key, val in CHARDATA.data.items()
         if val.get("freq", 0) > 0
-        if val.get("tier", 0) == tier
+        if val.get("tier", 99) <= tier
         if any(tag in val.get("tags", []) for tag in m_types)
     }
 

@@ -7,7 +7,7 @@ cave:
   tier: 1
   dark: true
   monsters:
-    number: [5, 20]
+    number: [1, 5]
     types:
       - humanoid
       - cave

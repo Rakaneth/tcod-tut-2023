@@ -48,7 +48,7 @@ rikkas:
 
 base_human: &human
   name: Human
-  glyph: '@'
+  glyph: 'H'
   color: [255, 255, 255]
   speed: 20
   hp: 20
@@ -85,19 +85,21 @@ base_orc: &orc
     - enemy
     - humanoid
     - orc
-  freq: 2
 
 korashi:
   <<: *orc
   name: Korashi Orc
   color: [128, 128, 192]
   speed: 15
+  dmg: [2, 6]
+  freq: 2
 
 chidani:
   <<: *orc
   name: Chidani Orc
   color: [0x9D, 0, 0]
   speed: 25
+  freq: 2
 
 # Cave Creatures
 
