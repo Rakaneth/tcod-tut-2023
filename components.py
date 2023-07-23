@@ -93,6 +93,7 @@ Messages = ("messages", list[GameMessage])
 GameVersion = ("game_version", str)
 GameSaved = ("game_saved", bool)
 GameFileName = ("game_file_name", str)
+GameTurn = ("game_turn", int)
 
 # Named components
 Name = ("name", str)

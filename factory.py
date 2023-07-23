@@ -1,6 +1,7 @@
 from random import choices, randint
 from tcod.ecs import World, Entity
 from effects import BleedEffect
+from gamelog import write_log
 from queries import blockers_at, get_map
 from geom import Point
 from yaml import load, SafeLoader
@@ -79,6 +80,8 @@ def make_char(
         e.tags.add("player")
         e.relation_tags_many[comps.HostileTo].add("enemy")
 
+    write_log(world, "factory", f"Creating character {nm}")
+
     return e
 
 
@@ -101,9 +104,14 @@ def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
     else:
         pos.pos = pt
 
+    write_log(
+        w, "factory", f"Adding entity {e.components[comps.Name]} to {map_id} at {pt}"
+    )
+
 
 def build_all_maps(w: World):
     for map_id in MAPDATA.data.keys():
+        write_log(w, "factory", f"Building map {map_id}")
         m = make_map(map_id)
         add_map(w, m)
 
@@ -111,6 +119,7 @@ def build_all_maps(w: World):
 def populate_all_maps(w: World):
     maps = (item for item in w[None].components.values() if isinstance(item, GameMap))
     for m in maps:
+        write_log(w, "factory", f"Populating map {m.id}")
         populate_map(w, m)
 
 
@@ -167,4 +176,4 @@ def populate_map(w: World, m: GameMap):
             monster = make_char(w, m_id)
             place_entity(w, monster, m.id)
     else:
-        print(f"No monster choices for map {m.id}; check data")
+        write_log(w, "factory", f"No monster choices for map {m.id}; check data")

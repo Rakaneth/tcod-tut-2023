@@ -4,8 +4,9 @@ from typing import TYPE_CHECKING
 from tcod.ecs import World, Entity
 import components as comps
 
-from queries import find_effect
+from queries import find_effect, name
 from swatch import WHITE
+from gamelog import write_log
 
 if TYPE_CHECKING:
     from effects import GameEffect
@@ -21,6 +22,7 @@ def kill(e: Entity):
         e.components.pop(comps.TryMove)
     if comps.CollidesWith in e.components:
         e.components.pop(comps.CollidesWith)
+    write_log(e.world, "kill", f"{name(e)} dies")
 
 
 def add_msg(w: World, txt: str, fg: tuple[int, int, int] = WHITE):

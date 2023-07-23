@@ -64,7 +64,11 @@ Monster stats are being rebalanced, though I am trying to hold off on a balance 
 
 #### UI Improvements
 
-The UI now shows active effects, as well as a map name. 
+The UI now shows active effects, as well as a map name.
+
+#### Development Improvements
+
+There is now a gamelog that displays game events, out-of-world, as they happen. There is a DEBUG switch in `constants.py` that controls the logging, as I suspect that this will get quite large over a session.
 
 ## Week 3
 

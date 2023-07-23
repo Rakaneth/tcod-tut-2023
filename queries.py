@@ -14,6 +14,10 @@ def player(w: World) -> Entity:
     return w["player"]
 
 
+def name(e: Entity) -> str:
+    return e.components[comps.Name]
+
+
 def get_map(w: World, map_id: str) -> GameMap:
     return w[None].components[(map_id, GameMap)]
 
@@ -24,7 +28,7 @@ def cur_map(w: World) -> GameMap:
 
 
 def current_actors(w: World) -> list[Entity]:
-    q = entities(w).all_of(components=[comps.Actor])
+    q = entities(w).all_of(components=[comps.Actor]).none_of(tags=["dead"])
     return sorted(list(q), key=lambda i: i.components[comps.Actor].speed)
 
 

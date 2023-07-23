@@ -1,3 +1,4 @@
+from gamelog import write_log
 from screen import Screen
 from tcod.console import Console
 from gamemap import GameMap
@@ -115,13 +116,14 @@ class MainScreen(Screen):
                     e.components[comps.CollidesWith] = blockers[0]
                 else:
                     e.components[comps.Location].pos = dest
-                    e.components[comps.Actor].energy -= 50
+                    e.components[comps.Actor].energy -= 100
 
             e.components.pop(comps.TryMove)
 
     def get_npc_moves(self):
         cur_map = self.cur_map
         for e in filter(lambda e: q.is_enemy(e), q.turn_actors(self.world)):
+            write_log(self.world, "action", f"{q.name(e)} acts")
             e_pos = e.components[comps.Location].pos
             path = hillclimb2d(cur_map.dist, (e_pos.x, e_pos.y), True, False)
 
@@ -137,15 +139,26 @@ class MainScreen(Screen):
         for e in q.current_actors(self.world):
             act_comp = e.components[comps.Actor]
             act_comp.energy += act_comp.speed
+            write_log(
+                self.world,
+                "energy",
+                f"{q.name(e)} gains {act_comp.speed} energy, has {act_comp.energy}",
+            )
         sent_comp = self.world[None].components[comps.Actor]
         sent_comp.energy += sent_comp.speed
 
     def resolve_bumps(self):
         for attacker, defender in self.world.Q[Entity, comps.BumpAttacking]:
-            def_name = defender.components[comps.Name]
+            atk_name = q.name(attacker)
+            def_name = q.name(defender)
 
             u.add_msg_about(attacker, f"<entity> attacks {def_name}!")
             result = cbt.bump_attack(attacker, defender)
+            write_log(
+                self.world,
+                "combat",
+                f"{atk_name} bumping {def_name}: hit={result.hit}, margin={result.margin}",
+            )
             if result.hit:
                 raw_dmg = cbt.roll_dmg(attacker)
                 defender.components[comps.Combatant].damage(raw_dmg)
@@ -153,10 +166,16 @@ class MainScreen(Screen):
                     attacker,
                     f"<entity> hits {def_name} for {raw_dmg} damage!",
                 )
+                write_log(
+                    self.world,
+                    "combat",
+                    f"{atk_name} bumps {def_name} for {raw_dmg} raw",
+                )
                 attacker.components[comps.CheckOnHits] = defender
             else:
                 u.add_msg_about(attacker, f"<entity> misses {def_name}!")
 
+            attacker.components[comps.Actor].energy -= 100
             attacker.components.pop(comps.BumpAttacking)
 
     def check_deaths(self):
@@ -172,8 +191,20 @@ class MainScreen(Screen):
         for attacker, defender, on_hit in self.world.Q[
             Entity, comps.CheckOnHits, comps.OnHit
         ]:
+            atk_name = q.name(attacker)
+            def_name = q.name(defender)
+            write_log(
+                self.world,
+                "combat",
+                f"Checking on-hits for {atk_name} against {def_name}",
+            )
             if cbt.pct_chance(on_hit.chance):
                 u.apply_effect(defender, on_hit.eff)
+                write_log(
+                    self.world,
+                    "combat",
+                    f"On-hit {on_hit.eff.name} successfully applied by {atk_name} to {def_name}",
+                )
             attacker.components.pop(comps.CheckOnHits)
 
     def end_turn(self):
@@ -183,6 +214,8 @@ class MainScreen(Screen):
             for e in query:
                 u.tick_effects(e, 1)
             sentinel.energy = 0
+            self.world[None].components[comps.GameTurn] += 1
+            write_log(self.world, "end turn", "Turn ends")
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Direction.NONE

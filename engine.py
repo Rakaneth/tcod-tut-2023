@@ -4,6 +4,7 @@ import tcod
 
 from tcod.ecs import World
 from components import GameFileName, GameSaved, Messages
+from gamelog import dump_log
 from screen import Screen
 from mainscreen import MainScreen
 from action import Action
@@ -76,6 +77,8 @@ class Engine:
             self.shutdown()
 
     def shutdown(self):
+        dump_log(self.world)
+
         if SAVING:
             game_file = self.world[None].components[GameFileName]
             self.world[None].components[GameSaved] = True
