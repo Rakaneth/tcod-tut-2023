@@ -26,11 +26,13 @@ cavern:
   dark: true
   monsters:
     number: [15, 30]
+    tiers: [1, 2]
     types:
       - humanoid
       - cave
   items:
     number: [5, 15]
+    tiers: [1, 2]
     types:
       - equipment
       - consumable

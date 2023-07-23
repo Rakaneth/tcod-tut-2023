@@ -1,5 +1,6 @@
 from random import choices, randint
 from tcod.ecs import World, Entity
+from effects import BleedEffect
 from queries import blockers_at, get_map
 from geom import Point
 from yaml import load, SafeLoader
@@ -37,16 +38,26 @@ def make_char(
     dmg = template.get("dmg", None)
     e = None
     z = 4 if player else 3
+    on_hit = template.get("on_hit", None)
 
     c = {
         comps.Name: nm,
         comps.Renderable: comps.Renderable(glyph, color, z),
         comps.Location: comps.Location(Point(0, 0)),
         comps.Actor: comps.Actor(100, speed),
+        comps.EffectsList: list(),
     }
 
     if hp is not None and atp is not None and dfp is not None and dmg is not None:
         c |= {comps.Combatant: comps.Combatant(hp, hp, atp, dfp, tuple(sorted(dmg)))}
+
+    if on_hit:
+        bleed_data = on_hit.get("bleed", None)
+        if bleed_data:
+            duration = bleed_data["duration"]
+            potency = bleed_data["potency"]
+            chance = bleed_data["chance"]
+            c |= {comps.OnHit: comps.OnHit(BleedEffect(duration, potency), chance)}
 
     if player:
         e = world["player"]
@@ -137,12 +148,13 @@ def populate_map(w: World, m: GameMap):
     m_low, m_high = monster_data["number"]
     num_monsters = randint(m_low, m_high)
     m_types = monster_data["types"]
+    m_tiers = monster_data.get("tiers", list())
 
     monster_cands = {
         key: val["freq"]
         for key, val in CHARDATA.data.items()
         if val.get("freq", 0) > 0
-        if val.get("tier", 99) <= tier
+        if (m_tiers and val.get("tier", 99) in m_tiers) or val.get("tier", 99) == tier
         if any(tag in val.get("tags", []) for tag in m_types)
     }
 

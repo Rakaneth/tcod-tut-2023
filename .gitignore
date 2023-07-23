@@ -3,3 +3,4 @@ env/
 *.map
 *.sav
 saves/
+logs/

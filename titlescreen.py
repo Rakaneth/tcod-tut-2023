@@ -14,7 +14,7 @@ from factory import (
     place_entity,
     populate_all_maps,
 )
-from components import GameFileName, GameSaved, GameVersion, Messages
+from components import Actor, GameFileName, GameSaved, GameVersion, Messages
 from ui import Menu
 from datetime import datetime
 
@@ -125,6 +125,7 @@ class TitleScreen(Screen):
         world[None].components[
             GameFileName
         ] = f"{hero}-{(now.strftime('%Y%m%d-%H%M%S'))}.sav"
+        world[None].components[Actor] = Actor(0, 20)
         thrakir = make_char(world, hero.lower(), player=True)
         build_all_maps(world)
         place_entity(world, thrakir, "cave")

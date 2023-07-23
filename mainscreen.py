@@ -9,7 +9,18 @@ from geom import Point, Direction
 from typing import Optional
 from action import Action
 from swatch import CAUTION, HP_EMPTY, HP_FILLED
-from ui import Camera, draw_bar, draw_map, draw_msgs, draw_on_map, MAP_W, MAP_H
+from ui import (
+    MSG_H,
+    MSG_W,
+    SCR_W,
+    Camera,
+    draw_bar,
+    draw_map,
+    draw_msgs,
+    draw_on_map,
+    MAP_W,
+    MAP_H,
+)
 from tcod.ecs import World, Entity
 
 import components as comps
@@ -53,6 +64,7 @@ class MainScreen(Screen):
                 )
         draw_msgs(w, con)
         self.draw_stats(con)
+        self.draw_fx(con)
 
     def on_update(self):
         player = self.player
@@ -64,7 +76,9 @@ class MainScreen(Screen):
             self.check_moves()
             self.check_collisions()
             self.resolve_bumps()
+            self.check_on_hits()
             self.check_deaths()
+            self.end_turn()
             self.update_fov()
 
             if player.components[comps.Actor].energy >= 100:
@@ -123,6 +137,8 @@ class MainScreen(Screen):
         for e in q.current_actors(self.world):
             act_comp = e.components[comps.Actor]
             act_comp.energy += act_comp.speed
+        sent_comp = self.world[None].components[comps.Actor]
+        sent_comp.energy += sent_comp.speed
 
     def resolve_bumps(self):
         for attacker, defender in self.world.Q[Entity, comps.BumpAttacking]:
@@ -137,6 +153,7 @@ class MainScreen(Screen):
                     attacker,
                     f"<entity> hits {def_name} for {raw_dmg} damage!",
                 )
+                attacker.components[comps.CheckOnHits] = defender
             else:
                 u.add_msg_about(attacker, f"<entity> misses {def_name}!")
 
@@ -150,6 +167,22 @@ class MainScreen(Screen):
             if stats.dead:
                 u.add_msg_about(e, "<entity> has fallen!")
                 u.kill(e)
+
+    def check_on_hits(self):
+        for attacker, defender, on_hit in self.world.Q[
+            Entity, comps.CheckOnHits, comps.OnHit
+        ]:
+            if cbt.pct_chance(on_hit.chance):
+                u.apply_effect(defender, on_hit.eff)
+            attacker.components.pop(comps.CheckOnHits)
+
+    def end_turn(self):
+        query = q.current_actors(self.world)
+        sentinel = self.world[None].components[comps.Actor]
+        if sentinel.energy == 100:
+            for e in query:
+                u.tick_effects(e, 1)
+            sentinel.energy = 0
 
     def on_key(self, key: KeySym) -> Optional[Action]:
         dp = Direction.NONE
@@ -208,3 +241,11 @@ class MainScreen(Screen):
         con.print(MAP_W, 4, f"ATP: {stats.atp}")
         con.print(MAP_W, 5, f"DFP: {stats.dfp}")
         con.print(MAP_W, 6, f"DMG: {stats.dmg_str}")
+
+    def draw_fx(self, con: Console):
+        effects = self.player.components[comps.EffectsList]
+        x = MSG_W
+        y = MAP_H
+        con.draw_frame(MSG_W, MAP_H, SCR_W - MSG_W, MSG_H, "Effects")
+        for i, eff in enumerate(effects[-8:]):
+            con.print(x + 1, y + i + 1, f"{eff}")

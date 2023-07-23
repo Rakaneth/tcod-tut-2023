@@ -22,6 +22,10 @@ def pct() -> int:
     return d(100)
 
 
+def pct_chance(chance: int) -> bool:
+    return d(100) <= chance
+
+
 def bump_attack(attacker: Entity, defender: Entity) -> AttackResult:
     atk_stat = attacker.components[Combatant].atp
     def_stat = defender.components[Combatant].dfp

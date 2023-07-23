@@ -65,7 +65,7 @@ bandit:
   <<: *human
   name: Bandit
   color: [255, 0, 0]
-  hp: 10
+  hp: 15
   atp: 25
   dfp: 35    
   speed: 20
@@ -76,7 +76,7 @@ base_orc: &orc
   glyph: 'o'
   color: [16, 128, 16]
   speed: 20
-  hp: 40
+  hp: 25
   atp: 60
   dfp: 40
   dmg: [1, 6]
@@ -91,6 +91,7 @@ korashi:
   name: Korashi Orc
   color: [128, 128, 192]
   speed: 15
+  hp: 30
   dmg: [2, 6]
   freq: 2
 
@@ -103,6 +104,27 @@ chidani:
 
 # Cave Creatures
 
+bat:
+  name: Cave Bat
+  glyph: 'I'
+  color: [192, 32, 32]
+  speed: 20
+  hp: 10
+  atp: 30
+  dfp: 30
+  dmg: [1, 1]
+  on_hit:
+    bleed:
+      duration: 1
+      potency: 1
+      chance: 20
+  tier: 1
+  tags:
+    - enemy
+    - cave
+  freq: 8
+
+
 bear:
   name: Bear
   glyph: 'B'
@@ -112,7 +134,7 @@ bear:
   atp: 70
   dfp: 30
   dmg: [2, 6]
-  tier: 1
+  tier: 2
   tags:
     - enemy
     - cave
@@ -128,8 +150,9 @@ blindclaw:
   atp: 60
   dfp: 25
   dmg: [1, 4]
-  tier: 1
+  tier: 2
   tags:
     - enemy
     - cave
+    - humanoid
   freq: 7

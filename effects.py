@@ -40,9 +40,9 @@ class GameEffect:
         has_potency = self.potency > 0
 
         if has_duration and has_potency:
-            addendum = f" {self.potency} ({self.duration} turns)"
+            addendum = f" {self.potency}({self.duration} t)"
         elif has_duration:
-            addendum = f" ({self.duration} turns)"
+            addendum = f"({self.duration} t)"
         elif has_potency:
             addendum = f" {self.potency}"
 

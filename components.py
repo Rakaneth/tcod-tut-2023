@@ -80,6 +80,14 @@ class GameMessage:
     color: Tuple[int, int, int]
 
 
+@dataclass(frozen=True)
+class OnHit:
+    """Describes an on-hit attack."""
+
+    eff: GameEffect
+    chance: int
+
+
 # Named components - global Entity
 Messages = ("messages", list[GameMessage])
 GameVersion = ("game_version", str)
@@ -91,6 +99,7 @@ Name = ("name", str)
 BumpAttacking = ("bump_attacking", Entity)
 CollidesWith = ("collides_with", Entity)
 EffectsList = ("effect_list", list[GameEffect])
+CheckOnHits = ("check_on_hits", Entity)
 
 # Relation tags
 MapId = "map_id"

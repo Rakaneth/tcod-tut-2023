@@ -3,7 +3,7 @@ import pickle
 import tcod
 
 from tcod.ecs import World
-from components import GameFileName, GameSaved
+from components import GameFileName, GameSaved, Messages
 from screen import Screen
 from mainscreen import MainScreen
 from action import Action
@@ -38,6 +38,8 @@ class Engine:
     def setup(self):
         if not os.path.exists("saves/"):
             os.mkdir("saves")
+        if not os.path.exists("logs/"):
+            os.mkdir("logs")
         self._register_sc(MainScreen(self.world))
         self._register_sc(TitleScreen(self.world, self.root, self))
 
@@ -80,3 +82,9 @@ class Engine:
 
             with open(f"saves/{game_file}", "wb") as f:
                 pickle.dump(self.world, f)
+
+            msgs = self.world[None].components[Messages]
+
+            with open(f"logs/{game_file}".replace(".sav", ".msgs"), "w") as fl:
+                msg_list = [f"{msg.message}\n" for msg in msgs]
+                fl.writelines(msg_list)
