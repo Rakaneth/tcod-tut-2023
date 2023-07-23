@@ -115,13 +115,17 @@ def make_map(build_id: str) -> GameMap:
     width = randint(w_low, w_high)
     height = randint(h_low, h_high)
     cov = 0.3 + 0.1 * tier
+    m = None
 
-    maps = {
-        "drunkard": drunk_walk(build_id, width, height, cov, dark),
-        "arena": arena(build_id, width, height, dark),
-    }
+    match gen:
+        case "drunkard":
+            m = drunk_walk(build_id, width, height, cov, dark)
+        case "arena":
+            m = arena(build_id, width, height, dark)
+        case _:
+            raise NotImplementedError(f"Map type {gen} not yet implemented.")
 
-    return maps[gen]
+    return m
 
 
 def populate_map(w: World, m: GameMap):

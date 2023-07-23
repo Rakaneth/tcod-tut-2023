@@ -1,17 +1,16 @@
 import os
 import pickle
-import re
 import tcod
 
 from tcod.ecs import World
-from components import GameFileName, GameSaved, Name
+from components import GameFileName, GameSaved
 from screen import Screen
 from mainscreen import MainScreen
 from action import Action
 from typing import Optional
 from titlescreen import TitleScreen
 from ui import SCR_W, SCR_H
-from constants import SAVING, VERSION
+from constants import SAVING
 
 
 class Engine:

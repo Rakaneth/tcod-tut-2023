@@ -1,7 +1,7 @@
 from __future__ import annotations
 import re
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from action import Action
 from constants import SAVING, VERSION
 from screen import Screen
@@ -109,12 +109,12 @@ class TitleScreen(Screen):
                 screen.world = world
             self.engine.world = world
         except FileNotFoundError:
-            print(f"File {game_file} not found, creating new game")
-            self.new_game()
+            print(f"File {game_file} not found, creating new game with Falwyn.")
+            self.new_game("Falwyn")
         except EOFError:
             print(f"File {game_file} has no data; likely a testing file.")
-            print("Creating new game.")
-            self.new_game()
+            print("Creating new game with Thrakir.")
+            self.new_game("Thrakir")
 
     def new_game(self, hero: str):
         now = datetime.now()
