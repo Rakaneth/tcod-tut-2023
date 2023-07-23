@@ -45,6 +45,27 @@ Now, back to pondering my combat system - and items.
 
 ![saving](/screenshots/saving.gif)
 
+### Addendum 2023-7-23
+
+So here I am, up late again, brimming with inspiration.
+
+#### Game Message Improvements
+
+The game messages got a lot of improvements:
+
+* Messages about a specific entity use that entity's render color.
+* Messages are now dumped along with save files in a separate `logs/` folder. Considering the size, I will likely use an appending strategy and have the `World` dump the messages at a certain benchmark to keep save file size down.
+
+#### Combat Improvements
+
+There is now a rudimentary on-hit system in place, as well as an effect system. Some attacks or enemies have a chance to cause effects when they hit. The effects are defined in `effects.py` and have a uniform, flexible format. The hope is that some equipment will produce these on-hit effects.
+
+Monster stats are being rebalanced, though I am trying to hold off on a balance pass until I get items in - which I am not far from at this point.
+
+#### UI Improvements
+
+The UI now shows active effects, as well as a map name. 
+
 ## Week 3
 
 Implemented field of view and basic collision detection. I adapted the tutorial's method of updating field of view to suit my use of scrolling maps. I've implemented some convenience methods on the `GameState` class to make finding entities easier. To get some visual feedback, I've gone ahead and implemented a bit of UI, with a message box appearing at the bottom of the screen. Enemies can now properly be kicked! 

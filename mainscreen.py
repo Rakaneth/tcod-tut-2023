@@ -8,7 +8,7 @@ from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
 from typing import Optional
 from action import Action
-from swatch import CAUTION, HP_EMPTY, HP_FILLED
+from swatch import HP_EMPTY, HP_FILLED
 from ui import (
     MSG_H,
     MSG_W,
