@@ -1,33 +1,41 @@
 import os
 import pickle
 import tcod
+import factory as fac
+import components as comps
 
 from tcod.ecs import World
-from components import GameFileName, GameSaved, Messages
 from gamelog import dump_log
 from screen import Screen
 from mainscreen import MainScreen
-from action import Action
-from typing import Optional
 from titlescreen import TitleScreen
 from ui import SCR_W, SCR_H
-from constants import SAVING
+from constants import SAVING, VERSION
+from datetime import datetime
 
 
 class Engine:
     """Holds the game state and data."""
 
     def __init__(self):
-        self.screens: dict[str, Screen] = dict()
-        self.cur_scr_name = "title"
-        self.tileset = tcod.tileset.load_tilesheet(
+        tileset = tcod.tileset.load_tilesheet(
             "./assets/gfx/Sir_Henrys_32x32.png",
             16,
             16,
             tcod.tileset.CHARMAP_CP437,
         )
+        self.screens: dict[str, Screen] = dict()
+        self.cur_scr_name = "title"
+        self.context = tcod.context.new(
+            columns=SCR_W, rows=SCR_H, tileset=tileset, vsync=True
+        )
         self.world = World()
         self.root = tcod.console.Console(SCR_W, SCR_H, order="F")
+        self.should_update = True
+        self.running = True
+
+    def __del__(self):
+        self.context.close()
 
     @property
     def cur_screen(self) -> Screen:
@@ -41,52 +49,66 @@ class Engine:
             os.mkdir("saves")
         if not os.path.exists("logs/"):
             os.mkdir("logs")
-        self._register_sc(MainScreen(self.world))
-        self._register_sc(TitleScreen(self.world, self.root, self))
+        self._register_sc(MainScreen(self))
+        self._register_sc(TitleScreen(self))
+
+    def input(self):
+        for evt in tcod.event.wait():
+            self.context.convert_event(evt)
+            self.cur_screen.dispatch(evt)
+
+    def update(self):
+        if self.should_update:
+            self.cur_screen.on_update()
+            self.should_update = False
+
+    def draw(self):
+        self.root.clear()
+        self.cur_screen.on_draw(self.root)
+        self.context.present(self.root)
 
     def run(self):
-        with tcod.context.new(
-            columns=SCR_W,
-            rows=SCR_H,
-            tileset=self.tileset,
-            title="Roguelike Summer Tutorial 2023",
-            vsync=True,
-        ) as ctx:
-            running = True
-            update = True
-            action: Optional[Action] = None
+        while self.running:
+            self.input()
+            self.update()
+            self.draw()
 
-            while running:
-                self.root.clear()
-                self.cur_screen.on_draw(self.root)
-                ctx.present(self.root)
+        self.shutdown()
 
-                for evt in tcod.event.wait():
-                    ctx.convert_event(evt)
-                    action = self.cur_screen.dispatch(evt)
-                    if action is not None:
-                        running = action.running
-                        update = action.update
-                        if action.new_scr is not None:
-                            self.cur_scr_name = action.new_scr
+    def save_game(self):
+        if SAVING:
+            save_file = self.world[None].components.get(comps.GameFileName)
+            if save_file:
+                with open(f"saves/{save_file}.sav", "wb") as f:
+                    pickle.dump(self.world, f)
 
-                if update:
-                    self.cur_screen.on_update()
-                    update = False
+    def load_game(self, world: World):
+        if SAVING:
+            self.world = world
 
-            self.shutdown()
+    def new_game(self, hero_id: str):
+        now = datetime.now()
+        world = World()
+        world[None].components[comps.Messages] = list()
+        world[None].components[comps.GameVersion] = VERSION
+        world[None].components[comps.GameSaved] = False
+        world[None].components[
+            comps.GameFileName
+        ] = f"{hero_id}-{(now.strftime('%Y%m%d_%H%M%S'))}"
+        world[None].components[comps.Actor] = comps.Actor(0, 20)
+        world[None].components[comps.GameTurn] = 0
+        player = fac.make_char(world, hero_id, player=True)
+        fac.build_all_maps(world)
+        fac.place_entity(world, player, "cave")
+        fac.populate_all_maps(world)
+        self.world = world
 
     def shutdown(self):
         dump_log(self.world)
-        game_file = self.world[None].components[GameFileName]
-        msgs = self.world[None].components[Messages]
+        game_file = self.world[None].components[comps.GameFileName]
+        msgs = self.world[None].components[comps.Messages]
+        self.save_game()
 
-        if SAVING:
-            self.world[None].components[GameSaved] = True
-
-            with open(f"saves/{game_file}", "wb") as f:
-                pickle.dump(self.world, f)
-
-        with open(f"logs/{game_file}".replace(".sav", ".msgs"), "w") as fl:
+        with open(f"logs/{game_file}.txt", "w") as fl:
             msg_list = [f"{msg.message}\n" for msg in msgs]
             fl.writelines(msg_list)

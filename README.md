@@ -70,6 +70,36 @@ The UI now shows active effects, as well as a map name.
 
 There is now a gamelog that displays game events, out-of-world, as they happen. There is a DEBUG switch in `constants.py` that controls the logging, as I suspect that this will get quite large over a session.
 
+### THE GREAT REFACTOR 2023-07-25
+
+In creating a reusable template by harvesting the most useful plumbing from this project so far, I decided on a large refactor of the architecture that should make things a bit smoother. 
+
+* Removed the components that were wrappers over single fields; I can use named components for these.
+* Worked some more on the title screen 
+    * Removed the ugly timestamps from the titles
+    * Filtered out saves with older versions
+* Factored out saving and loading into separate functions that can be called by anything with a reference to the engine
+* Screens take a reference to the engine instead of a world; this allows for easier saving/loading because:
+    * Only the engine's world needs to be replaced
+    * Screens can call the save/load functions at need
+
+* Removed `action.py` (possibly to return) since screens are using the engine directly
+* Removed `Screen.on_key` in favor of a system similar to the `EventDispatch`. Each screen has the following methods, each of which correspond to a key press:
+    
+    * `on_up`: up, W, numpad 8
+    * `on_down`: down, S, numpad 2
+    * `on_left`: left, A, numpad 4
+    * `on_right`: right, D, numpad 6
+    * `on_confirm`: return, numpad enter
+    * `on_cancel`: ESC
+    * `on_wait`: space
+
+    Now, there is only one big `match...case` statement in the base `Screen` class that calls the correct method. Screens override the ones they need; the others do nothing by default.
+
+* The map updates its own FOV field.
+
+
+
 ## Week 3
 
 Implemented field of view and basic collision detection. I adapted the tutorial's method of updating field of view to suit my use of scrolling maps. I've implemented some convenience methods on the `GameState` class to make finding entities easier. To get some visual feedback, I've gone ahead and implemented a bit of UI, with a message box appearing at the bottom of the screen. Enemies can now properly be kicked! 

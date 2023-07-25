@@ -1,41 +1,32 @@
+from __future__ import annotations
+
 from gamelog import write_log
 from screen import Screen
 from tcod.console import Console
 from gamemap import GameMap
-from tcod.event import KeySym
-from tcod.map import compute_fov
 from tcod.path import hillclimb2d
-from tcod.constants import FOV_DIAMOND
 from geom import Point, Direction
-from typing import Optional
-from action import Action
+from typing import TYPE_CHECKING
 from swatch import HP_EMPTY, HP_FILLED
-from ui import (
-    MSG_H,
-    MSG_W,
-    SCR_W,
-    Camera,
-    draw_bar,
-    draw_map,
-    draw_msgs,
-    draw_on_map,
-    MAP_W,
-    MAP_H,
-)
-from tcod.ecs import World, Entity
+
+from tcod.ecs import Entity
 
 import components as comps
 import queries as q
 import updates as u
 import combat as cbt
+import ui
+
+if TYPE_CHECKING:
+    from engine import Engine
 
 
 class MainScreen(Screen):
     """Main playing area."""
 
-    def __init__(self, world: World):
-        super().__init__("main", world)
-        self.camera = Camera(MAP_W, MAP_H)
+    def __init__(self, engine: Engine):
+        super().__init__("main", engine)
+        self.camera = ui.Camera(ui.MAP_W, ui.MAP_H)
 
     @property
     def cur_map(self) -> GameMap:
@@ -48,13 +39,13 @@ class MainScreen(Screen):
     def on_draw(self, con: Console):
         w = self.world
         cur_map = self.cur_map
-        draw_map(cur_map, self.camera, con)
-        # draw_dmap(cur_map, self.camera, con)
+        ui.draw_map(cur_map, self.camera, con)
+        # ui.draw_dmap(cur_map, self.camera, con)
         for e in q.drawable_entities(w):
             p = e.components[comps.Location]
             render = e.components[comps.Renderable]
             if cur_map.visible[p.x, p.y] or not cur_map.dark:
-                draw_on_map(
+                ui.draw_on_map(
                     p.x,
                     p.y,
                     render.glyph,
@@ -63,7 +54,7 @@ class MainScreen(Screen):
                     cur_map,
                     render.color,
                 )
-        draw_msgs(w, con)
+        ui.draw_msgs(w, con)
         self.draw_stats(con)
         self.draw_fx(con)
 
@@ -108,7 +99,7 @@ class MainScreen(Screen):
             components=[comps.Location, comps.TryMove],
             relations=[(comps.MapId, cur_map.id)],
         ):
-            dest = e.components[comps.TryMove].pos
+            dest = e.components[comps.TryMove]
 
             if cur_map.walkable(dest.x, dest.y):
                 blockers = list(q.blockers_at(self.world, dest))
@@ -130,7 +121,7 @@ class MainScreen(Screen):
 
             if len(path) > 1:
                 try_x, try_y = path[1]
-                e.components[comps.TryMove] = comps.TryMove(Point(try_x, try_y))
+                e.components[comps.TryMove] = Point(try_x, try_y)
 
     def update_dmap(self):
         pos = self.player.components[comps.Location]
@@ -218,49 +209,38 @@ class MainScreen(Screen):
             self.world[None].components[comps.GameTurn] += 1
             write_log(self.world, "end turn", "Turn ends")
 
-    def on_key(self, key: KeySym) -> Optional[Action]:
-        dp = Direction.NONE
-        running = True
-        update = True
+    def on_up(self):
+        pos = self.player.components[comps.Location]
+        self.player.components[comps.TryMove] = pos + Direction.UP
+        self.engine.should_update = True
 
-        match key:
-            case KeySym.w:
-                dp = Direction.UP
-            case KeySym.a:
-                dp = Direction.LEFT
-            case KeySym.s:
-                dp = Direction.DOWN
-            case KeySym.d:
-                dp = Direction.RIGHT
-            case KeySym.SPACE:
-                dp = Direction.NONE
-            case KeySym.ESCAPE:
-                running = False
-                update = False
-            case _:
-                update = False
+    def on_down(self):
+        pos = self.player.components[comps.Location]
+        self.player.components[comps.TryMove] = pos + Direction.DOWN
+        self.engine.should_update = True
 
-        if running:
-            player = self.player
-            pos = player.components[comps.Location]
-            if update:
-                new_point = pos + dp
-                player.components[comps.TryMove] = comps.TryMove(new_point)
+    def on_left(self):
+        pos = self.player.components[comps.Location]
+        self.player.components[comps.TryMove] = pos + Direction.LEFT
+        self.engine.should_update = True
 
-        return Action(running, None, update)
+    def on_right(self):
+        pos = self.player.components[comps.Location]
+        self.player.components[comps.TryMove] = pos + Direction.RIGHT
+        self.engine.should_update = True
+
+    def on_wait(self):
+        pos = self.player.components[comps.Location]
+        self.player.components[comps.TryMove] = pos
+        self.engine.should_update = True
+
+    def on_cancel(self):
+        self.engine.running = False
+        self.engine.should_update = False
 
     def update_fov(self):
-        cur_map = self.cur_map
         player_loc = self.player.components[comps.Location]
-
-        cur_map.visible = compute_fov(
-            cur_map.tiles["transparent"],
-            (player_loc.x, player_loc.y),
-            radius=8,
-            algorithm=FOV_DIAMOND,
-        )
-
-        cur_map.explored |= cur_map.visible
+        self.cur_map.update_fov(player_loc.x, player_loc.y, 8)
 
     def draw_stats(self, con: Console):
         stats = self.player.components[comps.Combatant]
@@ -268,18 +248,20 @@ class MainScreen(Screen):
         map_name = self.cur_map.name
         loc = self.player.components[comps.Location]
 
-        con.print(MAP_W, 0, f"{name}")
-        con.print(MAP_W, 1, f"{map_name} - {loc}")
-        con.print(MAP_W, 2, f"HP: {stats.hp_str}")
-        draw_bar(MAP_W, 3, stats.cur_hp, stats.max_hp, 10, HP_FILLED, HP_EMPTY, con)
-        con.print(MAP_W, 4, f"ATP: {stats.atp}")
-        con.print(MAP_W, 5, f"DFP: {stats.dfp}")
-        con.print(MAP_W, 6, f"DMG: {stats.dmg_str}")
+        con.print(ui.MAP_W, 0, f"{name}")
+        con.print(ui.MAP_W, 1, f"{map_name} - {loc}")
+        con.print(ui.MAP_W, 2, f"HP: {stats.hp_str}")
+        ui.draw_bar(
+            ui.MAP_W, 3, stats.cur_hp, stats.max_hp, 10, HP_FILLED, HP_EMPTY, con
+        )
+        con.print(ui.MAP_W, 4, f"ATP: {stats.atp}")
+        con.print(ui.MAP_W, 5, f"DFP: {stats.dfp}")
+        con.print(ui.MAP_W, 6, f"DMG: {stats.dmg_str}")
 
     def draw_fx(self, con: Console):
         effects = self.player.components[comps.EffectsList]
-        x = MSG_W
-        y = MAP_H
-        con.draw_frame(MSG_W, MAP_H, SCR_W - MSG_W, MSG_H, "Effects")
+        x = ui.MSG_W
+        y = ui.MAP_H
+        con.draw_frame(ui.MSG_W, ui.MAP_H, ui.SCR_W - ui.MSG_W, ui.MSG_H, "Effects")
         for i, eff in enumerate(effects[-8:]):
             con.print(x + 1, y + i + 1, f"{eff}")

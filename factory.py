@@ -1,13 +1,13 @@
 from random import choices, randint
 from tcod.ecs import World, Entity
-from effects import BleedEffect
-from gamelog import write_log
 from queries import blockers_at, get_map
 from geom import Point
 from yaml import load, SafeLoader
 from gamemap import GameMap, arena, drunk_walk
 
 import components as comps
+import effects
+import gamelog as gl
 
 
 class GameData:
@@ -58,7 +58,9 @@ def make_char(
             duration = bleed_data["duration"]
             potency = bleed_data["potency"]
             chance = bleed_data["chance"]
-            c |= {comps.OnHit: comps.OnHit(BleedEffect(duration, potency), chance)}
+            c |= {
+                comps.OnHit: comps.OnHit(effects.BleedEffect(duration, potency), chance)
+            }
 
     if player:
         e = world["player"]
@@ -80,7 +82,7 @@ def make_char(
         e.tags.add("player")
         e.relation_tags_many[comps.HostileTo].add("enemy")
 
-    write_log(world, "factory", f"Creating character {nm}")
+    gl.write_log(world, "factory", f"Creating character {nm}")
 
     return e
 
@@ -91,7 +93,6 @@ def add_map(w: World, m: GameMap):
 
 def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
     e.relation_tag[comps.MapId] = map_id
-    pos = e.components.get(comps.Location)
     m = get_map(w, map_id)
     if pt is None:
         pt = m.get_random_floor()
@@ -101,14 +102,14 @@ def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
 
     e.components[comps.Location] = pt
 
-    write_log(
+    gl.write_log(
         w, "factory", f"Adding entity {e.components[comps.Name]} to {map_id} at {pt}"
     )
 
 
 def build_all_maps(w: World):
     for map_id in MAPDATA.data.keys():
-        write_log(w, "factory", f"Building map {map_id}")
+        gl.write_log(w, "factory", f"Building map {map_id}")
         m = make_map(map_id)
         add_map(w, m)
 
@@ -116,7 +117,7 @@ def build_all_maps(w: World):
 def populate_all_maps(w: World):
     maps = (item for item in w[None].components.values() if isinstance(item, GameMap))
     for m in maps:
-        write_log(w, "factory", f"Populating map {m.id}")
+        gl.write_log(w, "factory", f"Populating map {m.id}")
         populate_map(w, m)
 
 
@@ -173,4 +174,4 @@ def populate_map(w: World, m: GameMap):
             monster = make_char(w, m_id)
             place_entity(w, monster, m.id)
     else:
-        write_log(w, "factory", f"No monster choices for map {m.id}; check data")
+        gl.write_log(w, "factory", f"No monster choices for map {m.id}; check data")

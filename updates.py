@@ -3,8 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from tcod.ecs import World, Entity
 import components as comps
+import queries as q
 
-from queries import find_effect, name
 from swatch import WHITE
 from gamelog import write_log
 
@@ -22,7 +22,7 @@ def kill(e: Entity):
         e.components.pop(comps.TryMove)
     if comps.CollidesWith in e.components:
         e.components.pop(comps.CollidesWith)
-    write_log(e.world, "kill", f"{name(e)} dies")
+    write_log(e.world, "kill", f"{q.name(e)} dies")
 
 
 def add_msg(w: World, txt: str, fg: tuple[int, int, int] = WHITE):
@@ -38,7 +38,7 @@ def add_msg_about(e: Entity, txt: str):
 
 
 def apply_effect(e: Entity, eff: GameEffect):
-    maybe_eff = find_effect(e, eff.name)
+    maybe_eff = q.find_effect(e, eff.name)
     if maybe_eff:
         maybe_eff.on_merge(eff)
         return
@@ -55,7 +55,7 @@ def tick_effects(e: Entity, num_ticks: int):
 
 
 def remove_effect(e: Entity, eff_name: str):
-    maybe_eff = find_effect(e, eff_name)
+    maybe_eff = q.find_effect(e, eff_name)
     if maybe_eff:
         maybe_eff.on_remove(e)
         e.components[comps.EffectsList].remove(maybe_eff)

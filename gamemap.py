@@ -4,6 +4,8 @@ from swatch import STONE_LIGHT, STONE_DARK, BLACK
 from typing import Tuple
 from random import choice
 from tcod.path import maxarray, dijkstra2d
+from tcod.map import compute_fov
+from tcod.constants import FOV_DIAMOND
 
 render_dt = np.dtype([("ch", np.int32), ("fg", "3B"), ("bg", "3B")])
 
@@ -98,6 +100,10 @@ class GameMap:
         for goal in goals:
             self.dist[goal.x, goal.y] = 0
         dijkstra2d(self.dist, self.cost, True, out=self.dist)
+
+    def update_fov(self, x: int, y: int, r: int):
+        self.visible = compute_fov(self.tiles["transparent"], (x, y), r, FOV_DIAMOND)
+        self.explored |= self.visible
 
     def in_bounds(self, x: int, y: int) -> bool:
         return 0 <= x < self.width and 0 <= y < self.height

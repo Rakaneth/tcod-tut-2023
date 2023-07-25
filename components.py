@@ -1,8 +1,9 @@
 from dataclasses import dataclass
 from typing import Tuple
-from effects import GameEffect
 from geom import Point
 from tcod.ecs import Entity
+
+import effects
 
 
 @dataclass
@@ -12,13 +13,6 @@ class Renderable:
     glyph: str
     color: Tuple[int, int, int]
     z: int = 4
-
-
-@dataclass
-class TryMove:
-    """Represents an entity wanting to move to a location."""
-
-    pos: Point
 
 
 @dataclass
@@ -74,7 +68,7 @@ class GameMessage:
 class OnHit:
     """Describes an on-hit attack."""
 
-    eff: GameEffect
+    eff: effects.GameEffect
     chance: int
 
 
@@ -89,9 +83,10 @@ GameTurn = ("game_turn", int)
 Name = ("name", str)
 BumpAttacking = ("bump_attacking", Entity)
 CollidesWith = ("collides_with", Entity)
-EffectsList = ("effect_list", list[GameEffect])
+EffectsList = ("effect_list", list[effects.GameEffect])
 CheckOnHits = ("check_on_hits", Entity)
 Location = ("location", Point)
+TryMove = ("try_move", Point)
 
 # Relation tags
 MapId = "map_id"
