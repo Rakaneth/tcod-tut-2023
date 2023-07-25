@@ -99,6 +99,8 @@ In creating a reusable template by harvesting the most useful plumbing from this
 * The map updates its own FOV field.
 * Many, many circular import issues were fixed.
 
+![refactor](/screenshots/refactor.gif)
+
 
 ## Week 3
 
