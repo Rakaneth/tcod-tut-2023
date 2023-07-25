@@ -6,11 +6,9 @@ import components as comps
 
 from tcod.ecs import World
 from gamelog import dump_log
-from gameoverscreen import GameOverScreen
+from screens.gameoverscreen import GameOverScreen
 from screen import Screen, ScreenNames
-from mainscreen import MainScreen
-from titlescreen import TitleScreen
-from testuiscreen import TestUIScreen
+from screens import MainScreen, TitleScreen, TestUIScreen
 from ui import SCR_W, SCR_H
 from constants import SAVING, VERSION
 from datetime import datetime
