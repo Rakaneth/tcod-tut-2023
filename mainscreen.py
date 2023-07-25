@@ -51,7 +51,7 @@ class MainScreen(Screen):
         draw_map(cur_map, self.camera, con)
         # draw_dmap(cur_map, self.camera, con)
         for e in q.drawable_entities(w):
-            p = e.components[comps.Location].pos
+            p = e.components[comps.Location]
             render = e.components[comps.Renderable]
             if cur_map.visible[p.x, p.y] or not cur_map.dark:
                 draw_on_map(
@@ -85,7 +85,7 @@ class MainScreen(Screen):
             if player.components[comps.Actor].energy >= 100:
                 break
 
-        pos = player.components[comps.Location].pos
+        pos = player.components[comps.Location]
         self.camera.center = pos
 
     def check_collisions(self):
@@ -115,7 +115,7 @@ class MainScreen(Screen):
                 if len(blockers) > 0:
                     e.components[comps.CollidesWith] = blockers[0]
                 else:
-                    e.components[comps.Location].pos = dest
+                    e.components[comps.Location] = dest
                     e.components[comps.Actor].energy -= 100
                     write_log(self.world, "action", f"{q.name(e)} moved")
 
@@ -125,7 +125,7 @@ class MainScreen(Screen):
         cur_map = self.cur_map
         for e in filter(lambda e: q.is_enemy(e), q.turn_actors(self.world)):
             write_log(self.world, "action", f"{q.name(e)} acts")
-            e_pos = e.components[comps.Location].pos
+            e_pos = e.components[comps.Location]
             path = hillclimb2d(cur_map.dist, (e_pos.x, e_pos.y), True, False)
 
             if len(path) > 1:
@@ -133,7 +133,7 @@ class MainScreen(Screen):
                 e.components[comps.TryMove] = comps.TryMove(Point(try_x, try_y))
 
     def update_dmap(self):
-        pos = self.player.components[comps.Location].pos
+        pos = self.player.components[comps.Location]
         self.cur_map.update_dmap(pos)
 
     def update_energy(self):
@@ -244,7 +244,7 @@ class MainScreen(Screen):
             player = self.player
             pos = player.components[comps.Location]
             if update:
-                new_point = pos.pos + dp
+                new_point = pos + dp
                 player.components[comps.TryMove] = comps.TryMove(new_point)
 
         return Action(running, None, update)
@@ -255,7 +255,7 @@ class MainScreen(Screen):
 
         cur_map.visible = compute_fov(
             cur_map.tiles["transparent"],
-            (player_loc.pos.x, player_loc.pos.y),
+            (player_loc.x, player_loc.y),
             radius=8,
             algorithm=FOV_DIAMOND,
         )

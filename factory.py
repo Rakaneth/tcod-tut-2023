@@ -44,7 +44,7 @@ def make_char(
     c = {
         comps.Name: nm,
         comps.Renderable: comps.Renderable(glyph, color, z),
-        comps.Location: comps.Location(Point(0, 0)),
+        comps.Location: Point(0, 0),
         comps.Actor: comps.Actor(0, speed),
         comps.EffectsList: list(),
     }
@@ -99,10 +99,7 @@ def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
     while len(list(blockers_at(w, pt))) > 0:
         pt = m.get_random_floor()
 
-    if pos is None:
-        e.components[comps.Location] = comps.Location(pt)
-    else:
-        pos.pos = pt
+    e.components[comps.Location] = pt
 
     write_log(
         w, "factory", f"Adding entity {e.components[comps.Name]} to {map_id} at {pt}"

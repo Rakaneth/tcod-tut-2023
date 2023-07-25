@@ -15,16 +15,6 @@ class Renderable:
 
 
 @dataclass
-class Location:
-    """Describes an entity's position on a map."""
-
-    pos: Point
-
-    def __str__(self) -> str:
-        return f"{self.pos}"
-
-
-@dataclass
 class TryMove:
     """Represents an entity wanting to move to a location."""
 
@@ -101,6 +91,7 @@ BumpAttacking = ("bump_attacking", Entity)
 CollidesWith = ("collides_with", Entity)
 EffectsList = ("effect_list", list[GameEffect])
 CheckOnHits = ("check_on_hits", Entity)
+Location = ("location", Point)
 
 # Relation tags
 MapId = "map_id"

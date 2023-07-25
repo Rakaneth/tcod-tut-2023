@@ -50,7 +50,7 @@ def entities(w: World, map_id: str = None) -> Query:
 
 def entities_at(w: World, pt: Point, map_id: str = None):
     es = entities(w, map_id)
-    return filter(lambda e: e.components[comps.Location].pos == pt, es)
+    return filter(lambda e: e.components[comps.Location] == pt, es)
 
 
 def blockers_at(w: World, pt: Point, map_id: str = None):
