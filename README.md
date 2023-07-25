@@ -72,9 +72,8 @@ Monster stats are being rebalanced, though I am trying to hold off on a balance 
 
 #### Development Improvements
 
-There is now a gamelog that displays game events, out-of-world, as they happen. There is a DEBUG switch in `constants.py` that controls the logging, as I suspect that this will get quite large over a session.
-
-In addition, screen names have been pulled into a static class `ScreenNames` to prevent accidental misspelling and get IDE help.
+* There is now a gamelog that displays game events, out-of-world, as they happen. There is a DEBUG switch in `constants.py` that controls the logging, as I suspect that this will get quite large over a session.
+* Screen names have been pulled into a static class `ScreenNames` to prevent accidental misspelling and get IDE help.
 
 ### THE GREAT REFACTOR 2023-07-25
 
