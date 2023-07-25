@@ -97,7 +97,7 @@ In creating a reusable template by harvesting the most useful plumbing from this
     Now, there is only one big `match...case` statement in the base `Screen` class that calls the correct method. Screens override the ones they need; the others do nothing by default.
 
 * The map updates its own FOV field.
-
+* Many, many circular import issues were fixed.
 
 
 ## Week 3

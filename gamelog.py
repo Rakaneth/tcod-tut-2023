@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING
 from tcod.ecs import World
 from constants import DEBUG
 import components as comps
@@ -16,6 +15,6 @@ def write_log(w: World, category: str, text: str):
 
 def dump_log(w: World):
     if DEBUG:
-        log_file = w[None].components[comps.GameFileName].replace(".sav", ".log")
-        with open(f"logs/{log_file}", "a") as f:
+        log_file = w[None].components[comps.GameFileName]
+        with open(f"logs/{log_file}.log", "a") as f:
             f.writelines(GAMELOG)
