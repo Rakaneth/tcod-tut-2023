@@ -30,6 +30,12 @@ SIGNALS = {
 }
 
 
+class ScreenNames:
+    MAIN = "main"
+    TITLE = "title"
+    TEST_UI = "test_ui"
+
+
 class Screen(tcod.event.EventDispatch):
     """
     Describes a game screen.

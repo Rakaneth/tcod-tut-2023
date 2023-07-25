@@ -3,7 +3,7 @@ import re
 
 from typing import TYPE_CHECKING
 from constants import VERSION
-from screen import Screen
+from screen import Screen, ScreenNames
 from tcod.ecs import World
 from tcod.console import Console
 from components import (
@@ -31,7 +31,7 @@ class TitleScreen(Screen):
     """Title screen."""
 
     def __init__(self, engine: Engine):
-        super().__init__("title", engine)
+        super().__init__(ScreenNames.TITLE, engine)
         file_list = sorted(glob.glob("saves/*.sav"))
         world_list = [_load_world(file) for file in file_list]
         self.load_choices = dict()
@@ -67,7 +67,7 @@ class TitleScreen(Screen):
         raise SystemExit()
 
     def on_draw(self, con: Console):
-        self.menu.draw(con)
+        self.menu.draw()
 
     def on_up(self):
         self.menu.move_up()
@@ -84,5 +84,4 @@ class TitleScreen(Screen):
         else:
             self.engine.load_game(self.load_choices[result])
 
-        self.engine.cur_scr_name = "main"
-        self.engine.should_update = True
+        self.engine.switch_screen(ScreenNames.MAIN)

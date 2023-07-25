@@ -6,9 +6,10 @@ import components as comps
 
 from tcod.ecs import World
 from gamelog import dump_log
-from screen import Screen
+from screen import Screen, ScreenNames
 from mainscreen import MainScreen
 from titlescreen import TitleScreen
+from testuiscreen import TestUIScreen
 from ui import SCR_W, SCR_H
 from constants import SAVING, VERSION
 from datetime import datetime
@@ -25,7 +26,7 @@ class Engine:
             tcod.tileset.CHARMAP_CP437,
         )
         self.screens: dict[str, Screen] = dict()
-        self.cur_scr_name = "title"
+        self.cur_scr_name = ScreenNames.TITLE
         self.context = tcod.context.new(
             columns=SCR_W, rows=SCR_H, tileset=tileset, vsync=True
         )
@@ -44,6 +45,10 @@ class Engine:
     def _register_sc(self, sc: Screen):
         self.screens[sc.name] = sc
 
+    def switch_screen(self, scr_id: str):
+        self.cur_scr_name = scr_id
+        self.should_update = True
+
     def setup(self):
         if not os.path.exists("saves/"):
             os.mkdir("saves")
@@ -51,6 +56,7 @@ class Engine:
             os.mkdir("logs")
         self._register_sc(MainScreen(self))
         self._register_sc(TitleScreen(self))
+        self._register_sc(TestUIScreen(self))
 
     def input(self):
         for evt in tcod.event.wait():

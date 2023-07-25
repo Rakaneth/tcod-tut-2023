@@ -6,6 +6,7 @@ from tcod.ecs import World
 from queries import messages
 
 import numpy as np
+import textwrap
 
 MAP_W = 20
 MAP_H = 20
@@ -75,11 +76,11 @@ def draw_msgs(w: World, con: Console):
     con.draw_frame(0, MAP_H, MSG_W, MSG_H, title="Messages")
     counter = 0
     for msg in messages(w)[::-1]:
+        if measure(msg.message, MSG_W - 2) + counter >= MSG_H - 1:
+            break
         counter += con.print_box(
             1, MAP_H + counter + 1, MSG_W - 2, MSG_H - 2, msg.message, msg.color
         )
-        if counter >= MSG_H - 2:
-            break
 
 
 def draw_dmap(m: GameMap, cam: Camera, con: Console):
@@ -116,29 +117,49 @@ def draw_bar(
             con.print(sx + x, y, s)
 
 
-class Menu:
-    """
-    Describes an in-game menu.
-    """
+def measure(text: str, w: int) -> int:
+    return len(textwrap.wrap(text, w))
+
+
+class UIElement:
+    """Base UI element class."""
 
     def __init__(
         self,
-        options: list[str],
         con: Console,
+        w: int,
+        h: int,
         *,
-        x: int = None,
-        y: int = None,
+        x: int,
+        y: int,
         title: str = "",
-    ) -> None:
+        options: list[str] = None,
+    ):
         self.console = con
-        self.options = options
-        w = max(map(len, options))
-        self.width = max(w, len(title)) + 4
-        self.height = len(options) + 2
+        self.width = w
+        self.height = h
         self.x = (con.width - self.width) // 2 if x is None else x
         self.y = (con.height - self.height) // 2 if y is None else y
-        self.index = 0
         self.title = title
+        self.options = options
+
+
+class Selector(UIElement):
+    """Base class for elements that select."""
+
+    def __init__(
+        self,
+        con: Console,
+        w: int,
+        h: int,
+        *,
+        x: int,
+        y: int,
+        title: str = "",
+        options: list[str] = None,
+    ):
+        super().__init__(con, w, h, x=x, y=y, title=title, options=options)
+        self.index = 0
 
     def move_up(self):
         self.index -= 1
@@ -154,12 +175,99 @@ class Menu:
     def selected(self) -> str:
         return self.options[self.index]
 
-    def draw(self, con: Console):
-        con.draw_frame(self.x, self.y, self.width, self.height, self.title)
-        fg = con.default_fg
-        bg = con.default_bg
+
+LOREM_IPSUM = """Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec efficitur mi. Aenean et nulla non velit tempor pellentesque. Nullam ornare quis tellus at malesuada. Aenean eu ligula orci. Quisque nibh eros, blandit non odio quis, pretium tincidunt felis. Nulla bibendum velit non nulla tincidunt, at tempor ex vestibulum. Donec pulvinar dolor tellus, sit amet pellentesque erat ullamcorper quis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ornare libero congue elit aliquet dapibus. Cras dapibus in purus quis luctus."""  # noqa: E501
+
+SMALL_PARA = """This is a long bit of text that might be expected to present as a single dialog or textbox. It is not, however, quite so long as the Lorem Ipsum."""  # noqa: E501
+
+
+class Menu(Selector):
+    """
+    Describes an in-game menu.
+    """
+
+    def __init__(
+        self,
+        options: list[str],
+        con: Console,
+        *,
+        x: int = None,
+        y: int = None,
+        title: str = "",
+    ) -> None:
+        w = max(map(len, options))
+        width = max(w, len(title)) + 4
+        height = len(options) + 2
+        super().__init__(con, width, height, x=x, y=y, title=title, options=options)
+        self.index = 0
+
+    def draw(self):
+        self.console.draw_frame(self.x, self.y, self.width, self.height, self.title)
+        fg = self.console.default_fg
+        bg = self.console.default_bg
         for i, opt in enumerate(self.options):
             f, b = fg, bg
             if i == self.index:
                 f, b = bg, fg
-            con.print(self.x + 1, self.y + i + 1, opt, f, b)
+            self.console.print(self.x + 1, self.y + i + 1, opt, f, b)
+
+
+class TextBox(UIElement):
+    """Describes a box with text and optional title."""
+
+    def __init__(
+        self,
+        con: Console,
+        w: int,
+        h: int,
+        text: str,
+        *,
+        x: int = None,
+        y: int = None,
+        title: str = "",
+    ):
+        super().__init__(con, w, h, x=x, y=y, title=title)
+        self.text = text
+
+    def draw(self):
+        self.console.draw_frame(self.x, self.y, self.width, self.height, self.title)
+        self.console.print_box(
+            self.x + 1, self.y + 1, self.width - 2, self.height - 2, self.text
+        )
+
+
+class Dialog(Selector):
+    """Describes a text box with choices."""
+
+    def __init__(
+        self,
+        con: Console,
+        w: int,
+        text: str,
+        options: list[str],
+        *,
+        x: int = None,
+        y: int = None,
+        title: str = "",
+    ):
+        h = min(len(textwrap.wrap(text, w - 2)) + 3 + len(options), con.height - 4)
+        self.text = text
+        super().__init__(con, w, h, x=x, y=y, title=title, options=options)
+
+    def draw(self):
+        fg = self.console.default_fg
+        bg = self.console.default_bg
+        opts_y = (self.y + self.height - 1) - len(self.options)
+        self.console.draw_frame(self.x, self.y, self.width, self.height, self.title)
+        self.console.print_box(
+            self.x + 1,
+            self.y + 1,
+            self.width - 2,
+            self.height - len(self.options) - 1,
+            self.text,
+        )
+        for i, opt in enumerate(self.options):
+            f, b = fg, bg
+            if i == self.index:
+                f, b = bg, fg
+            self.console.print(self.x + 1, i + opts_y, opt, f, b)

@@ -64,11 +64,17 @@ Monster stats are being rebalanced, though I am trying to hold off on a balance 
 
 #### UI Improvements
 
-The UI now shows active effects, as well as a map name.
+* The UI now shows active effects, as well as a map name.
+* Messages no longer occasionally spill out of the messages box.
+* The UI classes were refactored to encapsulate some shared functionality. This enabled the creation of two new UI elements (currently unused):
+    * TextBox - a simple box showing text
+    * Dialog - a box showing text and additional options
 
 #### Development Improvements
 
 There is now a gamelog that displays game events, out-of-world, as they happen. There is a DEBUG switch in `constants.py` that controls the logging, as I suspect that this will get quite large over a session.
+
+In addition, screen names have been pulled into a static class `ScreenNames` to prevent accidental misspelling and get IDE help.
 
 ### THE GREAT REFACTOR 2023-07-25
 

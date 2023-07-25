@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from gamelog import write_log
-from screen import Screen
+from screen import Screen, ScreenNames
 from tcod.console import Console
 from gamemap import GameMap
 from tcod.path import hillclimb2d
@@ -25,7 +25,7 @@ class MainScreen(Screen):
     """Main playing area."""
 
     def __init__(self, engine: Engine):
-        super().__init__("main", engine)
+        super().__init__(ScreenNames.MAIN, engine)
         self.camera = ui.Camera(ui.MAP_W, ui.MAP_H)
 
     @property
