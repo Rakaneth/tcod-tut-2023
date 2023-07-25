@@ -40,6 +40,8 @@ def make_char(
     e = None
     z = 4 if player else 3
     on_hit = template.get("on_hit", None)
+    desc = template.get("desc", None)
+    full_name = template.get("full_name", None)
 
     c = {
         comps.Name: nm,
@@ -61,6 +63,12 @@ def make_char(
             c |= {
                 comps.OnHit: comps.OnHit(effects.BleedEffect(duration, potency), chance)
             }
+
+    if full_name:
+        c |= {comps.FullName: full_name}
+
+    if desc:
+        c |= {comps.Description: desc}
 
     if player:
         e = world["player"]

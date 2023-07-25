@@ -82,6 +82,14 @@ def is_hostile(e1: Entity, e2: Entity) -> bool:
     return any(group in e2.tags for group in hostile_groups)
 
 
+def is_dead(e: Entity) -> bool:
+    return "dead" in e.tags
+
+
+def is_player(e: Entity) -> bool:
+    return "player" in e.tags
+
+
 def messages(w: World) -> list[comps.GameMessage]:
     return w[None].components[comps.Messages]
 

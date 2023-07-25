@@ -40,7 +40,10 @@ class TitleScreen(Screen):
 
         for w in world_list:
             fn = w["player"].components[Name]
-            if w[None].components[GameVersion] == VERSION:
+            if (
+                w[None].components[GameVersion] == VERSION
+                and "dead" not in w["player"].tags
+            ):
                 if fn == last_name:
                     counter += 1
                     fn = f"{fn}-{counter}"

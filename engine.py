@@ -6,6 +6,7 @@ import components as comps
 
 from tcod.ecs import World
 from gamelog import dump_log
+from gameoverscreen import GameOverScreen
 from screen import Screen, ScreenNames
 from mainscreen import MainScreen
 from titlescreen import TitleScreen
@@ -54,9 +55,9 @@ class Engine:
             os.mkdir("saves")
         if not os.path.exists("logs/"):
             os.mkdir("logs")
-        self._register_sc(MainScreen(self))
-        self._register_sc(TitleScreen(self))
-        self._register_sc(TestUIScreen(self))
+
+        for sc in [MainScreen, TitleScreen, TestUIScreen, GameOverScreen]:
+            self._register_sc(sc(self))
 
     def input(self):
         for evt in tcod.event.wait():
@@ -108,6 +109,8 @@ class Engine:
         fac.place_entity(world, player, "cave")
         fac.populate_all_maps(world)
         self.world = world
+        for sc in self.screens.values():
+            sc.setup()
 
     def shutdown(self):
         dump_log(self.world)

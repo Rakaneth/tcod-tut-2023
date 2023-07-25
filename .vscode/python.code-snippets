@@ -1,0 +1,19 @@
+{
+    "screen": {
+        "prefix": "screen",
+        "body": [
+            "from __future__ import annotations",
+            "from typing import TYPE_CHECKING",
+            "from screen import Screen, ScreenNames",
+            "from tcod.console import Console",
+            "\nimport ui",
+            "\nif TYPE_CHECKING:",
+            "\tfrom engine import Engine",
+            "\n\nclass ${1:NewScreen}(Screen):",
+            "\tdef __init__(self, engine: Engine):",
+            "\t\tsuper().__init__(${2:ScreenNames.}, engine)"
+        ],
+        "description": "Screen preamble",
+        "scope": "python"
+    }
+}

@@ -87,6 +87,8 @@ EffectsList = ("effect_list", list[effects.GameEffect])
 CheckOnHits = ("check_on_hits", Entity)
 Location = ("location", Point)
 TryMove = ("try_move", Point)
+FullName = ("full_name", str)
+Description = ("desc", str)
 
 # Relation tags
 MapId = "map_id"

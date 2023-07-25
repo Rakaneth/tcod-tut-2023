@@ -1,10 +1,12 @@
 from __future__ import annotations
+from turtle import setup
 
 import tcod
 import tcod.event
 
-from tcod.ecs import World
+from tcod.ecs import World, Entity
 from typing import TYPE_CHECKING
+
 
 if TYPE_CHECKING:
     from engine import Engine
@@ -34,6 +36,7 @@ class ScreenNames:
     MAIN = "main"
     TITLE = "title"
     TEST_UI = "test_ui"
+    GAME_OVER = "game_over"
 
 
 class Screen(tcod.event.EventDispatch):
@@ -64,6 +67,13 @@ class Screen(tcod.event.EventDispatch):
     @property
     def world(self) -> World:
         return self.__engine.world
+
+    @property
+    def player(self) -> Entity:
+        return self.__engine.world["player"]
+
+    def setup(self):
+        pass
 
     def on_quit(self):
         self.engine.running = False

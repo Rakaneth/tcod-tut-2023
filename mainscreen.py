@@ -32,10 +32,6 @@ class MainScreen(Screen):
     def cur_map(self) -> GameMap:
         return q.cur_map(self.world)
 
-    @property
-    def player(self) -> Entity:
-        return q.player(self.world)
-
     def on_draw(self, con: Console):
         w = self.world
         cur_map = self.cur_map
@@ -73,11 +69,13 @@ class MainScreen(Screen):
             self.end_turn()
             self.update_fov()
 
-            if player.components[comps.Actor].energy >= 100:
+            if player.components[comps.Actor].energy >= 100 or q.is_dead(self.player):
                 break
 
         pos = player.components[comps.Location]
         self.camera.center = pos
+        if q.is_dead(self.player):
+            self.engine.switch_screen(ScreenNames.GAME_OVER)
 
     def check_collisions(self):
         for e, target in self.world.Q[Entity, comps.CollidesWith]:
@@ -171,9 +169,7 @@ class MainScreen(Screen):
             attacker.components.pop(comps.BumpAttacking)
 
     def check_deaths(self):
-        query = self.world.Q.all_of(components=[comps.Combatant]).none_of(
-            tags=["player", "dead"]
-        )
+        query = self.world.Q.all_of(components=[comps.Combatant]).none_of(tags=["dead"])
         for e, stats in query[Entity, comps.Combatant]:
             if stats.dead:
                 u.add_msg_about(e, "<entity> has fallen!")
