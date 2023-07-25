@@ -106,6 +106,12 @@ In creating a reusable template by harvesting the most useful plumbing from this
 
 ![refactor](/screenshots/refactor.gif)
 
+### Post-refactor
+
+* Death screen is added. There is now a proper loss condition.
+
+![gameover](/screenshots/gameover.png)
+
 
 ## Week 3
 
