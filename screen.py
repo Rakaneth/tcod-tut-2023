@@ -1,5 +1,4 @@
 from __future__ import annotations
-from turtle import setup
 
 import tcod
 import tcod.event
