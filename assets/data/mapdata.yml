@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=maps.schema.json
 ---
 cave:
   gen: drunkard

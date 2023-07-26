@@ -1,0 +1,104 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://rakaneth.com/maps.schema.json",
+    "title": "Map Data",
+    "description": "Maps in the mapdata.yml raw file",
+    "type": "object",
+    "additionalProperties": {
+        "type": "object",
+        "properties": {
+            "gen": {
+                "description": "Generation method",
+                "type": "string",
+                "enum": ["arena", "drunkard"]
+            },
+            "name": {
+                "description": "Display name",
+                "type": "string"
+            },
+            "width": {
+                "description": "[min, max] array of possible map widths",
+                "type": "array",
+                "maxItems": 2,
+                "minItems": 2,
+                "items": {
+                    "type": "integer",
+                    "minimum": 11
+                }
+            },
+            "height": {
+                "description": "[min, max] array of possible map heights",
+                "type": "array",
+                "maxItems": 2,
+                "minItems": 2,
+                "items": {
+                    "type": "integer",
+                    "minimum": 11
+                }
+            },
+            "tier": {
+                "description": "General difficulty of the dungeon",
+                "type": "integer",
+                "minimum": 1
+            },
+            "dark": {
+                "description": "Is this dungeon dark?",
+                "type": "boolean",
+                "default": true
+            },
+            "monsters": {
+                "type": "object",
+                "description": "Data determining the monsters that should appear in the dungeon",
+                "properties": {
+                    "number": {
+                        "type": "array",
+                        "description": "[low, high] array of possible quantity of monsters",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "types": {
+                        "type": "array",
+                        "description": "An array of possible monster types to appear in the dungeon",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    }
+                }
+            },
+            "items": {
+                "type": "object",
+                "description": "Data determining the items that should appear in the dungeon",
+                "properties": {
+                    "number": {
+                        "type": "array",
+                        "description": "[low, high] array of possible quantity of items",
+                        "minItems": 2,
+                        "maxItems": 2,
+                        "items": {
+                            "type": "integer"
+                        }
+                    },
+                    "types": {
+                        "type": "array",
+                        "description": "An array of possible monster item to appear in the dungeon",
+                        "items": {
+                            "type": "string"
+                        },
+                        "minItems": 1
+                    }
+                }
+            }
+        },
+        "required": [
+            "gen",
+            "name",
+            "width",
+            "height",
+            "tier"
+        ]
+    }
+}
