@@ -7,7 +7,7 @@ from gamemap import GameMap
 from tcod.path import hillclimb2d
 from geom import Point, Direction
 from typing import TYPE_CHECKING
-from swatch import HP_EMPTY, HP_FILLED
+from swatch import HP_EMPTY, HP_FILLED, TARGET
 
 from tcod.ecs import Entity
 
@@ -27,6 +27,7 @@ class MainScreen(Screen):
     def __init__(self, engine: Engine):
         super().__init__(ScreenNames.MAIN, engine)
         self.camera = ui.Camera(ui.MAP_W, ui.MAP_H)
+        self.look_target: Point = None
 
     @property
     def cur_map(self) -> GameMap:
@@ -53,6 +54,7 @@ class MainScreen(Screen):
         ui.draw_msgs(w, con)
         self.draw_stats(con)
         self.draw_fx(con)
+        self.draw_look(con)
 
     def on_update(self):
         player = self.player
@@ -234,6 +236,10 @@ class MainScreen(Screen):
         self.engine.running = False
         self.engine.should_update = False
 
+    def on_mouse_move(self, x: int, y: int):
+        if self.camera.in_view(x, y):
+            self.look_target = self.camera.to_map_coords(x, y, self.cur_map)
+
     def update_fov(self):
         player_loc = self.player.components[comps.Location]
         self.cur_map.update_fov(player_loc.x, player_loc.y, 8)
@@ -243,16 +249,15 @@ class MainScreen(Screen):
         name = self.player.components[comps.Name]
         map_name = self.cur_map.name
         loc = self.player.components[comps.Location]
+        hp_txt = f"HP: {stats.hp_str}"
 
         con.print(ui.MAP_W, 0, f"{name}")
         con.print(ui.MAP_W, 1, f"{map_name} - {loc}")
-        con.print(ui.MAP_W, 2, f"HP: {stats.hp_str}")
-        ui.draw_bar(
-            ui.MAP_W, 3, stats.cur_hp, stats.max_hp, 10, HP_FILLED, HP_EMPTY, con
-        )
-        con.print(ui.MAP_W, 4, f"ATP: {stats.atp}")
-        con.print(ui.MAP_W, 5, f"DFP: {stats.dfp}")
-        con.print(ui.MAP_W, 6, f"DMG: {stats.dmg_str}")
+        con.print(ui.MAP_W, 2, hp_txt)
+        self.draw_hp_bar(ui.MAP_W + len(hp_txt), 2, 8, self.player, con)
+        con.print(ui.MAP_W, 3, f"ATP: {stats.atp}")
+        con.print(ui.MAP_W, 4, f"DFP: {stats.dfp}")
+        con.print(ui.MAP_W, 5, f"DMG: {stats.dmg_str}")
 
     def draw_fx(self, con: Console):
         effects = self.player.components[comps.EffectsList]
@@ -261,3 +266,33 @@ class MainScreen(Screen):
         con.draw_frame(ui.MSG_W, ui.MAP_H, ui.SCR_W - ui.MSG_W, ui.MSG_H, "Effects")
         for i, eff in enumerate(effects[-8:]):
             con.print(x + 1, y + i + 1, f"{eff}")
+
+    def draw_hp_bar(self, x: int, y: int, w: int, e: Entity, con: Console):
+        vitals = e.components.get(comps.Combatant)
+        if not vitals:
+            return
+
+        ui.draw_bar(x, y, vitals.cur_hp, vitals.max_hp, w, HP_FILLED, HP_EMPTY, con)
+
+    def draw_look(self, con: Console):
+        lt = self.look_target
+        if lt:
+            ui.draw_on_map(lt.x, lt.y, "X", self.camera, con, self.cur_map, TARGET)
+
+            es = list(q.entities_at(self.world, lt))
+            if es:
+                con.print(ui.MAP_W, 7, "Things here:")
+                for i, e in enumerate(es):
+                    name = e.components[comps.Name]
+                    dead = q.is_dead(e)
+                    if dead:
+                        name = f"{name} (dead)"
+                    y = 8 + i
+                    con.print(
+                        ui.MAP_W,
+                        y,
+                        name,
+                        e.components[comps.Renderable].color,
+                    )
+                    if not dead:
+                        self.draw_hp_bar(ui.MAP_W + len(name), y, 5, e, con)

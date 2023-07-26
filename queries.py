@@ -82,6 +82,13 @@ def is_hostile(e1: Entity, e2: Entity) -> bool:
     return any(group in e2.tags for group in hostile_groups)
 
 
+def is_faction(e1: Entity, e2: Entity) -> bool:
+    faction_tags = ["player", "enemy", "friendly"]
+    return any(
+        faction for faction in faction_tags if faction in e1.tags if faction in e2.tags
+    )
+
+
 def is_dead(e: Entity) -> bool:
     return "dead" in e.tags
 

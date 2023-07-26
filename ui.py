@@ -35,6 +35,10 @@ class Camera:
     def in_view(self, x: int, y: int) -> bool:
         return 0 <= x < self.width and 0 <= y < self.height
 
+    def to_map_coords(self, x: int, y: int, m: GameMap) -> Point:
+        sp = self.start_point(m)
+        return Point(sp.x + x, sp.y + y)
+
 
 def draw_on_map(
     x: int,
