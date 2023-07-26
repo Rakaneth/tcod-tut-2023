@@ -27,6 +27,10 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 ## Week 4
 
+### Most Recent Screenshot:
+
+![more_ui](/screenshots/more_ui.gif)
+
 So...I'm a whole week ahead now. Bump-attacking is in place, and entities that are slain have their appearances changed, become immobile, and stop blocking. There is currently no death check for the player in place. The player's stats are drawn on the right side of the screen, and things that are hostile to each other deal damage when bumping. I created `combat.py` to group all of the combat-based functions together.
 
 ![combat](/screenshots/week4.gif)
