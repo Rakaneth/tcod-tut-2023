@@ -239,6 +239,8 @@ class MainScreen(Screen):
     def on_mouse_move(self, x: int, y: int):
         if self.camera.in_view(x, y):
             self.look_target = self.camera.to_map_coords(x, y, self.cur_map)
+        else:
+            self.look_target = None
 
     def update_fov(self):
         player_loc = self.player.components[comps.Location]
@@ -281,7 +283,7 @@ class MainScreen(Screen):
             ui.draw_on_map(lt.x, lt.y, "X", self.camera, con, self.cur_map, TARGET)
 
             es = list(q.entities_at(self.world, lt))
-            if es:
+            if es and self.cur_map.visible[lt.x, lt.y]:
                 con.print(ui.MAP_W, 8, "Things here:")
                 for i, e in enumerate(es):
                     name = e.components[comps.Name]
