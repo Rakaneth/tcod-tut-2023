@@ -2,8 +2,5 @@
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
-    "bookmarks.saveBookmarksInProject": true,
-    "ruff.args": [
-        "--config=pyproject.toml"
-    ]
+    "bookmarks.saveBookmarksInProject": true
 }
