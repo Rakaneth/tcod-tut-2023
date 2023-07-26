@@ -37,6 +37,9 @@ def make_char(
     atp = template.get("atp", None)
     dfp = template.get("dfp", None)
     dmg = template.get("dmg", None)
+    st = template.get("st", None)
+    wl = template.get("wl", None)
+    ag = template.get("ag", None)
     e = None
     z = 4 if player else 3
     on_hit = template.get("on_hit", None)
@@ -51,8 +54,12 @@ def make_char(
         comps.EffectsList: list(),
     }
 
-    if hp is not None and atp is not None and dfp is not None and dmg is not None:
-        c |= {comps.Combatant: comps.Combatant(hp, hp, atp, dfp, tuple(sorted(dmg)))}
+    if not any(s is None for s in [hp, atp, dfp, dmg, st, ag, wl]):
+        c |= {
+            comps.Combatant: comps.Combatant(
+                hp, hp, atp, dfp, tuple(sorted(dmg)), st, ag, wl
+            )
+        }
 
     if on_hit:
         bleed_data = on_hit.get("bleed", None)

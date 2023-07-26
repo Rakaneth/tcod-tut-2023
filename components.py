@@ -29,9 +29,12 @@ class Combatant:
 
     cur_hp: int
     max_hp: int
-    atp: int
-    dfp: int
-    dmg: Tuple[int, int]
+    at: int
+    df: int
+    dm: Tuple[int, int]
+    st: int
+    ag: int
+    wl: int
 
     @property
     def dmg_str(self) -> str:
@@ -45,6 +48,23 @@ class Combatant:
     @property
     def dead(self) -> bool:
         return self.cur_hp <= 0
+
+    @property
+    def atp(self) -> int:
+        return (self.ag * 2) + self.at
+
+    @property
+    def dfp(self) -> int:
+        return (self.ag * 2) + self.df
+
+    @property
+    def str_mod(self) -> int:
+        return self.st // 4
+
+    @property
+    def dmg(self) -> Tuple[int, int]:
+        bl, bh = self.dm
+        return (bl + self.str_mod, bh + self.str_mod)
 
     def heal(self):
         self.cur_hp = self.max_hp

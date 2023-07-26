@@ -108,10 +108,29 @@ In creating a reusable template by harvesting the most useful plumbing from this
 
 ### Post-refactor
 
+#### More UI Improvements
+
 * Death screen is added. There is now a proper loss condition.
+* The player can mouse over a tile to see everything in that tile. An HP bar will be shown if a creature is in the tile.
+
+#### More Combat improvements
+
+* A broad first pass has been made over combat. The player, currently, should easily dispatch most tier 1 creatures. 
+* Three new stats were added:
+    * `ST` - strength and stamina
+        * Increases `HP`
+        * Increases `DMG`
+    * `AG` - agility and dexterity
+        * Increases `ATP`
+        * Increases `DFP`
+    * `WL` - willpower and charisma
+        * Increases/improves scroll use (not yet implemented)
+
+
+### Screenshots from Week 4
 
 ![gameover](/screenshots/gameover.png)
-
+![rikkas](/screenshots/rikkas.png)
 
 ## Week 3
 

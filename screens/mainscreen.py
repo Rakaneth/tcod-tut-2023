@@ -255,9 +255,10 @@ class MainScreen(Screen):
         con.print(ui.MAP_W, 1, f"{map_name} - {loc}")
         con.print(ui.MAP_W, 2, hp_txt)
         self.draw_hp_bar(ui.MAP_W + len(hp_txt), 2, 8, self.player, con)
-        con.print(ui.MAP_W, 3, f"ATP: {stats.atp}")
-        con.print(ui.MAP_W, 4, f"DFP: {stats.dfp}")
-        con.print(ui.MAP_W, 5, f"DMG: {stats.dmg_str}")
+        con.print(ui.MAP_W, 3, f"ST: {stats.st} AG: {stats.ag} WL: {stats.wl}")
+        con.print(ui.MAP_W, 4, f"ATP: {stats.atp}")
+        con.print(ui.MAP_W, 5, f"DFP: {stats.dfp}")
+        con.print(ui.MAP_W, 6, f"DMG: {stats.dmg_str}")
 
     def draw_fx(self, con: Console):
         effects = self.player.components[comps.EffectsList]
@@ -281,13 +282,13 @@ class MainScreen(Screen):
 
             es = list(q.entities_at(self.world, lt))
             if es:
-                con.print(ui.MAP_W, 7, "Things here:")
+                con.print(ui.MAP_W, 8, "Things here:")
                 for i, e in enumerate(es):
                     name = e.components[comps.Name]
                     dead = q.is_dead(e)
                     if dead:
                         name = f"{name} (dead)"
-                    y = 8 + i
+                    y = 9 + i
                     con.print(
                         ui.MAP_W,
                         y,
