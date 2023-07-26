@@ -70,6 +70,10 @@ class Combatant:
         bl, bh = self.dm
         return (bl + self.str_mod, bh + self.str_mod)
 
+    @property
+    def base_reduce(self) -> int:
+        return self.st // 10
+
     def heal(self):
         self.cur_hp = self.max_hp
 

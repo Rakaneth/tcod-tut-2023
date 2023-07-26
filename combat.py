@@ -30,8 +30,9 @@ def bump_attack(attacker: Entity, defender: Entity) -> AttackResult:
     atk_stat = attacker.components[Combatant].atp
     def_stat = defender.components[Combatant].dfp
 
-    roll = pct() - 40
-    raw_margin = (atk_stat + roll) - def_stat
+    roll = pct()
+    target = (atk_stat * (100 - def_stat)) // 100
+    raw_margin = target - roll
     hit = raw_margin > 0
     return AttackResult(hit, abs(raw_margin))
 
