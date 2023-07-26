@@ -7,6 +7,7 @@ from queries import messages
 
 import numpy as np
 import textwrap
+import swatch as sw
 
 MAP_W = 20
 MAP_H = 20
@@ -206,14 +207,14 @@ class Menu(Selector):
         self.index = 0
 
     def draw(self):
-        self.console.draw_frame(self.x, self.y, self.width, self.height, self.title)
-        fg = self.console.default_fg
-        bg = self.console.default_bg
+        fg = sw.WHITE
+        bg = sw.BLACK
+        self.console.draw_frame(
+            self.x, self.y, self.width, self.height, self.title, fg=fg, bg=bg
+        )
         for i, opt in enumerate(self.options):
-            f, b = fg, bg
-            if i == self.index:
-                f, b = bg, fg
-            self.console.print(self.x + 1, self.y + i + 1, opt, f, b)
+            fg = sw.TARGET if i == self.index else sw.WHITE
+            self.console.print(self.x + 1, self.y + i + 1, opt, fg, bg)
 
 
 class TextBox(UIElement):
@@ -234,14 +235,16 @@ class TextBox(UIElement):
         self.text = text
 
     def draw(self):
+        fg = sw.WHITE
+        bg = sw.BLACK
         self.console.draw_frame(
             self.x,
             self.y,
             self.width,
             self.height,
             self.title,
-            fg=self.console.default_fg,
-            bg=self.console.default_bg,
+            fg=fg,
+            bg=bg,
         )
         self.console.print_box(
             self.x + 1, self.y + 1, self.width - 2, self.height - 2, self.text
@@ -267,10 +270,12 @@ class Dialog(Selector):
         super().__init__(con, w, h, x=x, y=y, title=title, options=options)
 
     def draw(self):
-        fg = self.console.default_fg
-        bg = self.console.default_bg
+        fg = sw.WHITE
+        bg = sw.BLACK
         opts_y = (self.y + self.height - 1) - len(self.options)
-        self.console.draw_frame(self.x, self.y, self.width, self.height, self.title)
+        self.console.draw_frame(
+            self.x, self.y, self.width, self.height, self.title, fg=fg, bg=bg
+        )
         self.console.print_box(
             self.x + 1,
             self.y + 1,
@@ -279,10 +284,8 @@ class Dialog(Selector):
             self.text,
         )
         for i, opt in enumerate(self.options):
-            f, b = fg, bg
-            if i == self.index:
-                f, b = bg, fg
-            self.console.print(self.x + 1, i + opts_y, opt, f, b)
+            fg = sw.TARGET if i == self.index else sw.WHITE
+            self.console.print(self.x + 1, i + opts_y, opt, fg, bg)
 
 
 class YesNoMenu(Menu):
