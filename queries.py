@@ -35,7 +35,7 @@ def current_actors(w: World) -> list[Entity]:
 def turn_actors(w: World):
     def f(e: Entity) -> bool:
         return (
-            e.components[comps.Actor].energy >= 100
+            e.components[comps.Actor].energy >= 0
             and not e.components[comps.Combatant].dead
         )
 

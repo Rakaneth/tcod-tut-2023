@@ -21,6 +21,11 @@ if TYPE_CHECKING:
     from engine import Engine
 
 
+class GameStates:
+    MAIN = "main"
+    SAVE = "save"
+
+
 class MainScreen(Screen):
     """Main playing area."""
 
@@ -28,10 +33,15 @@ class MainScreen(Screen):
         super().__init__(ScreenNames.MAIN, engine)
         self.camera = ui.Camera(ui.MAP_W, ui.MAP_H)
         self.look_target: Point = None
+        self.mode = GameStates.MAIN
+        self.save_menu = ui.YesNoMenu(self.engine.root, "Save Game?")
 
     @property
     def cur_map(self) -> GameMap:
         return q.cur_map(self.world)
+
+    def on_enter(self):
+        self.mode = GameStates.MAIN
 
     def on_draw(self, con: Console):
         w = self.world
@@ -55,28 +65,31 @@ class MainScreen(Screen):
         self.draw_stats(con)
         self.draw_fx(con)
         self.draw_look(con)
+        if self.mode == GameStates.SAVE:
+            self.save_menu.draw()
 
     def on_update(self):
         player = self.player
 
         while True:
             self.update_dmap()
-            self.update_energy()
             self.get_npc_moves()
             self.check_moves()
             self.check_collisions()
             self.resolve_bumps()
             self.check_on_hits()
             self.check_deaths()
+            self.update_energy()
             self.end_turn()
             self.update_fov()
 
-            if player.components[comps.Actor].energy >= 100 or q.is_dead(self.player):
+            if player.components[comps.Actor].energy >= 0 or q.is_dead(self.player):
                 break
 
         pos = player.components[comps.Location]
         self.camera.center = pos
         if q.is_dead(self.player):
+            self.engine.save_game()
             self.engine.switch_screen(ScreenNames.GAME_OVER)
 
     def check_collisions(self):
@@ -200,47 +213,71 @@ class MainScreen(Screen):
     def end_turn(self):
         query = q.current_actors(self.world)
         sentinel = self.world[None].components[comps.Actor]
-        if sentinel.energy == 100:
+        if sentinel.energy == 0:
             for e in query:
                 u.tick_effects(e, 1)
-            sentinel.energy = 0
+            sentinel.energy = -100
             self.world[None].components[comps.GameTurn] += 1
             write_log(self.world, "end turn", "Turn ends")
 
     def on_up(self):
-        pos = self.player.components[comps.Location]
-        self.player.components[comps.TryMove] = pos + Direction.UP
-        self.engine.should_update = True
+        match self.mode:
+            case GameStates.MAIN:
+                pos = self.player.components[comps.Location]
+                self.player.components[comps.TryMove] = pos + Direction.UP
+                self.engine.should_update = True
+            case GameStates.SAVE:
+                self.save_menu.move_up()
 
     def on_down(self):
-        pos = self.player.components[comps.Location]
-        self.player.components[comps.TryMove] = pos + Direction.DOWN
-        self.engine.should_update = True
+        match self.mode:
+            case GameStates.MAIN:
+                pos = self.player.components[comps.Location]
+                self.player.components[comps.TryMove] = pos + Direction.DOWN
+                self.engine.should_update = True
+            case GameStates.SAVE:
+                self.save_menu.move_down()
 
     def on_left(self):
-        pos = self.player.components[comps.Location]
-        self.player.components[comps.TryMove] = pos + Direction.LEFT
-        self.engine.should_update = True
+        if self.mode == GameStates.MAIN:
+            pos = self.player.components[comps.Location]
+            self.player.components[comps.TryMove] = pos + Direction.LEFT
+            self.engine.should_update = True
 
     def on_right(self):
-        pos = self.player.components[comps.Location]
-        self.player.components[comps.TryMove] = pos + Direction.RIGHT
-        self.engine.should_update = True
+        if self.mode == GameStates.MAIN:
+            pos = self.player.components[comps.Location]
+            self.player.components[comps.TryMove] = pos + Direction.RIGHT
+            self.engine.should_update = True
 
     def on_wait(self):
-        pos = self.player.components[comps.Location]
-        self.player.components[comps.TryMove] = pos
-        self.engine.should_update = True
+        if self.mode == GameStates.MAIN:
+            pos = self.player.components[comps.Location]
+            self.player.components[comps.TryMove] = pos
+            self.engine.should_update = True
 
     def on_cancel(self):
-        self.engine.running = False
-        self.engine.should_update = False
+        match self.mode:
+            case GameStates.MAIN:
+                self.mode = GameStates.SAVE
+            case GameStates.SAVE:
+                self.mode = GameStates.MAIN
 
     def on_mouse_move(self, x: int, y: int):
-        if self.camera.in_view(x, y):
-            self.look_target = self.camera.to_map_coords(x, y, self.cur_map)
-        else:
-            self.look_target = None
+        if self.mode == GameStates.MAIN:
+            if self.camera.in_view(x, y):
+                self.look_target = self.camera.to_map_coords(x, y, self.cur_map)
+            else:
+                self.look_target = None
+
+    def on_confirm(self):
+        if self.mode == GameStates.SAVE:
+            if self.save_menu.confirmed:
+                self.engine.save_game()
+                self.engine.switch_screen(ScreenNames.TITLE)
+                return
+
+            self.mode = GameStates.MAIN
 
     def update_fov(self):
         player_loc = self.player.components[comps.Location]

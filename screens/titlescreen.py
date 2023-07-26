@@ -32,9 +32,18 @@ class TitleScreen(Screen):
 
     def __init__(self, engine: Engine):
         super().__init__(ScreenNames.TITLE, engine)
+        self.load_choices = dict()
+        self.new_choices = {
+            "Falwyn": "falwyn",
+            "Farin": "farin",
+            "Rikkas": "rikkas",
+            "Thrakir": "thrakir",
+        }
+        self.menu: Menu = None
+
+    def on_enter(self):
         file_list = sorted(glob.glob("saves/*.sav"))
         world_list = [_load_world(file) for file in file_list]
-        self.load_choices = dict()
         last_name = ""
         counter = 1
 
@@ -52,18 +61,13 @@ class TitleScreen(Screen):
                     counter = 1
 
                 self.load_choices[fn] = w
-
-        self.new_choices = {
-            "Falwyn": "falwyn",
-            "Farin": "farin",
-            "Rikkas": "rikkas",
-            "Thrakir": "thrakir",
-        }
         new_game_list = [f"New Game - {hero}" for hero in self.new_choices.keys()]
         save_games = list(self.load_choices.keys())
 
         self.menu = Menu(
-            new_game_list + save_games, self.engine.root, title="Select File"
+            new_game_list + save_games + ["Exit Game"],
+            self.engine.root,
+            title="Select File",
         )
 
     def on_quit(self):
@@ -84,6 +88,8 @@ class TitleScreen(Screen):
 
         if mo:
             self.engine.new_game(self.new_choices[mo.group("hero")])
+        elif result == "Exit Game":
+            raise SystemExit()
         else:
             self.engine.load_game(self.load_choices[result])
 

@@ -107,6 +107,9 @@ class Screen(tcod.event.EventDispatch):
     def on_wait(self):
         pass
 
+    def on_enter(self):
+        pass
+
     def ev_keydown(self, event: tcod.event.KeyDown):
         signal = SIGNALS.get(event.sym)
         match signal:

@@ -25,7 +25,7 @@ class Engine:
             tcod.tileset.CHARMAP_CP437,
         )
         self.screens: dict[str, Screen] = dict()
-        self.cur_scr_name = ScreenNames.TITLE
+        self.cur_scr_name = ""
         self.context = tcod.context.new(
             columns=SCR_W, rows=SCR_H, tileset=tileset, vsync=True
         )
@@ -47,6 +47,7 @@ class Engine:
     def switch_screen(self, scr_id: str):
         self.cur_scr_name = scr_id
         self.should_update = True
+        self.cur_screen.on_enter()
 
     def setup(self):
         if not os.path.exists("saves/"):
@@ -56,6 +57,8 @@ class Engine:
 
         for sc in [MainScreen, TitleScreen, TestUIScreen, GameOverScreen]:
             self._register_sc(sc(self))
+
+        self.switch_screen(ScreenNames.TITLE)
 
     def input(self):
         for evt in tcod.event.wait():
@@ -90,6 +93,7 @@ class Engine:
     def load_game(self, world: World):
         if SAVING:
             self.world = world
+            self.setup_screens()
 
     def new_game(self, hero_id: str):
         now = datetime.now()
@@ -107,8 +111,7 @@ class Engine:
         fac.place_entity(world, player, "cave")
         fac.populate_all_maps(world)
         self.world = world
-        for sc in self.screens.values():
-            sc.setup()
+        self.setup_screens()
 
     def shutdown(self):
         dump_log(self.world)
@@ -119,3 +122,7 @@ class Engine:
         with open(f"logs/{game_file}.txt", "w") as fl:
             msg_list = [f"{msg.message}\n" for msg in msgs]
             fl.writelines(msg_list)
+
+    def setup_screens(self):
+        for sc in self.screens.values():
+            sc.setup()

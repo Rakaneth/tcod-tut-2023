@@ -234,7 +234,15 @@ class TextBox(UIElement):
         self.text = text
 
     def draw(self):
-        self.console.draw_frame(self.x, self.y, self.width, self.height, self.title)
+        self.console.draw_frame(
+            self.x,
+            self.y,
+            self.width,
+            self.height,
+            self.title,
+            fg=self.console.default_fg,
+            bg=self.console.default_bg,
+        )
         self.console.print_box(
             self.x + 1, self.y + 1, self.width - 2, self.height - 2, self.text
         )
@@ -275,3 +283,14 @@ class Dialog(Selector):
             if i == self.index:
                 f, b = bg, fg
             self.console.print(self.x + 1, i + opts_y, opt, f, b)
+
+
+class YesNoMenu(Menu):
+    """Describes a simple Yes/No dialog"""
+
+    def __init__(self, con: Console, title: str, *, x: int = None, y: int = None):
+        super().__init__(["Yes", "No"], con, x=x, y=y, title=title)
+
+    @property
+    def confirmed(self) -> bool:
+        return self.selected == "Yes"

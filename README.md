@@ -126,6 +126,13 @@ In creating a reusable template by harvesting the most useful plumbing from this
     * `WL` - willpower and charisma
         * Increases/improves scroll use (not yet implemented)
 
+### Addendum 2023-07-26
+
+#### UI Improvements
+
+* Pressing `ESC` during normal play will prompt the player with a dialog to save. Choosing `Yes` will save the game and return to the title screen.
+* An `Exit Game` option has been added to the title screen, allowing the game to exit without having to close the window
+
 
 ### Screenshots from Week 4
 
