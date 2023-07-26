@@ -28,7 +28,7 @@ class Combatant:
     """Describes an entity that can fight."""
 
     cur_hp: int
-    max_hp: int
+    base_max_hp: int
     at: int
     df: int
     dm: Tuple[int, int]
@@ -60,6 +60,10 @@ class Combatant:
     @property
     def str_mod(self) -> int:
         return self.st // 4
+
+    @property
+    def max_hp(self) -> int:
+        return self.str_mod * 2 + self.base_max_hp
 
     @property
     def dmg(self) -> Tuple[int, int]:

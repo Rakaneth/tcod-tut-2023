@@ -55,11 +55,9 @@ def make_char(
     }
 
     if not any(s is None for s in [hp, atp, dfp, dmg, st, ag, wl]):
-        c |= {
-            comps.Combatant: comps.Combatant(
-                hp, hp, atp, dfp, tuple(sorted(dmg)), st, ag, wl
-            )
-        }
+        cbt = comps.Combatant(hp, hp, atp, dfp, tuple(sorted(dmg)), st, ag, wl)
+        cbt.heal()
+        c |= {comps.Combatant: cbt}
 
     if on_hit:
         bleed_data = on_hit.get("bleed", None)

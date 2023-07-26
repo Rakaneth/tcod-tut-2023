@@ -29,7 +29,6 @@ farin:
   full_name: Lord Farin Oglebane
   desc: A mysterious necromancer from Grakis, seeking knowledge.
   color: [255, 0, 255]
-  hp: 15
   atp: 5
   st: 5
   wl: 20
@@ -41,7 +40,6 @@ thrakir:
   full_name: Thrakir af Vitkulle
   desc: A mighty warrior from the wintry land of Falakia.
   color: [192, 16, 16]
-  hp: 30
   dfp: 10
   st: 20
   wl: 5
@@ -54,7 +52,7 @@ rikkas:
   desc: A stout Dwarf guard from Mithril Gate.
   color: [192, 101, 64]
   speed: 15
-  hp: 45
+  hp: 25
   atp: 15
   dfp: 30
   st: 15
