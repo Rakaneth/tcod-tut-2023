@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=./char.schema.json
 ---
 # Player templates
 base_hero: &hero
@@ -12,6 +13,9 @@ base_hero: &hero
   ag: 10
   wl: 10
   dmg: [1, 2]
+  tags:
+    - player
+    - blocker
 
 falwyn:
   <<: *hero
@@ -87,6 +91,8 @@ bandit:
   speed: 20
   freq: 10
 
+# Orc templates
+
 base_orc: &orc
   name: Orc
   glyph: 'o'
@@ -122,8 +128,7 @@ chidani:
   name: Chidani Orc
   color: [0x9D, 0, 0]
   speed: 25
-  st: 13
-  ag: 12
+  ag: 15
   tier: 2
   freq: 2
 
