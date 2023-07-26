@@ -61,7 +61,8 @@
                 "minItems": 2,
                 "items": {
                     "type": "integer"
-                }
+                },
+                "default": [1, 1]
             },
             "st": {
                 "description": "The creature's strength and stamina.",
@@ -90,8 +91,33 @@
             "freq": {
                 "description": "How frequently the creature should appear. Higher means more frequent",
                 "type": "integer"
+            },
+            "on_hit": {
+                "type": "object",
+                "description": "Effects applied when this creature successfully lands an attack",
+                "additionalProperties": {
+                    "type": "object",
+                    "properties": {
+                        "duration": {
+                            "description": "The duration of the effect. -1 for infinite.",
+                            "type": "integer",
+                            "minimum": -1
+                        },
+                        "potency": {
+                            "description": "The potency of the effect.",
+                            "type": "integer",
+                            "minimum": 0
+                        },
+                        "chance": {
+                            "description": "The chance (percentage out of 100) that the effect applies.",
+                            "type": "integer",
+                            "minimum": 0
+                        }
+                    }
+                }
             }
         },
+        
         "required": [
             "name",
             "glyph",

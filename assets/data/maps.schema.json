@@ -24,7 +24,8 @@
                 "items": {
                     "type": "integer",
                     "minimum": 11
-                }
+                },
+                "default": [11, 11]
             },
             "height": {
                 "description": "[min, max] array of possible map heights",
@@ -34,7 +35,8 @@
                 "items": {
                     "type": "integer",
                     "minimum": 11
-                }
+                },
+                "default": [11, 11]
             },
             "tier": {
                 "description": "General difficulty of the dungeon",
