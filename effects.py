@@ -3,6 +3,8 @@ from __future__ import annotations
 from tcod.ecs import Entity
 from updates import add_msg_about
 
+import components as comps
+
 
 class GameEffect:
     """Describes a persistent effect on an Entity."""
@@ -60,6 +62,7 @@ class BleedEffect(GameEffect):
 
     def on_tick(self, e: Entity, num_ticks: int):
         dmg = self.potency * num_ticks
+        e.components[comps.Combatant].damage(1)
         add_msg_about(e, f"<entity> bleeds for {dmg} damage!")
 
     def on_merge(self, eff: GameEffect):

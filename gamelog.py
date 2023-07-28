@@ -18,3 +18,4 @@ def dump_log(w: World):
         log_file = w[None].components[comps.GameFileName]
         with open(f"logs/{log_file}.log", "a") as f:
             f.writelines(GAMELOG)
+        GAMELOG.clear()

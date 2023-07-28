@@ -113,15 +113,18 @@ class Engine:
         self.world = world
         self.setup_screens()
 
-    def shutdown(self):
-        dump_log(self.world)
+    def dump_game_file(self):
         game_file = self.world[None].components[comps.GameFileName]
         msgs = self.world[None].components[comps.Messages]
-        self.save_game()
 
         with open(f"logs/{game_file}.txt", "w") as fl:
             msg_list = [f"{msg.message}\n" for msg in msgs]
             fl.writelines(msg_list)
+
+    def shutdown(self):
+        dump_log(self.world)
+        self.dump_game_file()
+        self.save_game()
 
     def setup_screens(self):
         for sc in self.screens.values():

@@ -89,7 +89,7 @@ class MainScreen(Screen):
         pos = player.components[comps.Location]
         self.camera.center = pos
         if q.is_dead(self.player):
-            self.engine.save_game()
+            self.engine.shutdown()
             self.engine.switch_screen(ScreenNames.GAME_OVER)
 
     def check_collisions(self):
@@ -213,7 +213,7 @@ class MainScreen(Screen):
     def end_turn(self):
         query = q.current_actors(self.world)
         sentinel = self.world[None].components[comps.Actor]
-        if sentinel.energy == 0:
+        if sentinel.energy >= 0:
             for e in query:
                 u.tick_effects(e, 1)
             sentinel.energy = -100
@@ -273,7 +273,7 @@ class MainScreen(Screen):
     def on_confirm(self):
         if self.mode == GameStates.SAVE:
             if self.save_menu.confirmed:
-                self.engine.save_game()
+                self.engine.shutdown()
                 self.engine.switch_screen(ScreenNames.TITLE)
                 return
 
