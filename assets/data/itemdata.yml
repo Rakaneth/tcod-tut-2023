@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=item.schema.json
+---
+#Healing Potions
+potion_base: &healing
+  name: "Potion"
+  glyph: '!'
+  color: [0x9D, 0, 0]
+  desc: A murky brown liquid, smelling faintly of blood.
+  effect: health
+  duration: 5
+  tags:
+    - potion
+    - healing
+
+potion_healing_minor:
+  <<: *healing
+  name: Healing Potion, Min
+  potency: 2
+  tier: 1
+  freq: 5
+
+potion_healing_medium:
+  <<: *healing
+  name: Healing Potion, Med
+  potency: 4
+  tier: 2
+  freq: 5
+
+potion_healing_major:
+  <<: *healing
+  name: Healing Potion, Maj
+  potency: 8
+  tier: 3
+  freq: 5
+
+# Poison Potions
+
+potion_poison_base: &poison
+  name: Poison
+  desc: A foul-smelling, viscous liquid.
+  glyph: '!'
+  color: [16, 0x9D, 16]
+  effect: "poison"
+  duration: 5
+  tags:
+    - potion
+    - thrown
+    - poison
+
+potion_poison_minor:
+  <<: *poison
+  name: Poison Potion, Min
+  potency: 1
+  tier: 1
+  freq: 3
+
+potion_poison_medium:
+  <<: *poison
+  name: Poison Potion, Med
+  potency: 2
+  tier: 2
+  freq: 3
+
+potion_poison_major:
+  <<: *poison
+  name: Poison Potion, Maj
+  potency: 3
+  tier: 3
+  freq: 3
+
+
+
+
+
+

@@ -15,8 +15,7 @@ cave:
   items:
     number: [1, 5]
     types:
-      - equipment
-      - consumable
+      - potion
 
 cavern:
   gen: drunkard
@@ -35,7 +34,6 @@ cavern:
     number: [5, 15]
     tiers: [1, 2]
     types:
-      - equipment
-      - consumable
+      - potion
   
   

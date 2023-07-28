@@ -22,6 +22,7 @@ DATAFOLDER = "./assets/data/"
 
 CHARDATA = GameData(f"{DATAFOLDER}characterdata.yml")
 MAPDATA = GameData(f"{DATAFOLDER}/mapdata.yml")
+ITEMDATA = GameData(f"{DATAFOLDER}/itemdata.yml")
 
 
 def make_char(
@@ -100,6 +101,29 @@ def make_char(
     return e
 
 
+def make_consumable(w: World, item_id: str) -> Entity:
+    template = ITEMDATA.data[item_id]
+    name = template["name"]
+    glyph = template["glyph"]
+    color = tuple(template["color"])
+    tags = template["tags"]
+    desc = template["desc"]
+    effect = template["effect"]
+    duration = template.get("duration", -1)
+    potency = template.get("potency", 0)
+    thrown = "thrown" in tags
+
+    c = {
+        comps.Name: name,
+        comps.Renderable: comps.Renderable(glyph, color),
+        comps.Description: desc,
+        comps.Item: comps.Item(thrown, effect, duration, potency),
+    }
+
+    e = w.new_entity(c)
+    return e
+
+
 def add_map(w: World, m: GameMap):
     w[None].components[(m.id, GameMap)] = m
 
@@ -165,18 +189,38 @@ def populate_map(w: World, m: GameMap):
 
     tier = template["tier"]
     monster_data = template["monsters"]
+    item_data = template["items"]
     m_low, m_high = monster_data["number"]
+    i_low, i_high = item_data["number"]
     num_monsters = randint(m_low, m_high)
+    num_items = randint(i_low, i_high)
     m_types = monster_data["types"]
+    i_types = item_data["types"]
     m_tiers = monster_data.get("tiers", list())
+    i_tiers = item_data.get("tiers", list())
 
-    monster_cands = {
-        key: val["freq"]
-        for key, val in CHARDATA.data.items()
-        if val.get("freq", 0) > 0
-        if (m_tiers and val.get("tier", 99) in m_tiers) or val.get("tier", 99) == tier
-        if any(tag in val.get("tags", []) for tag in m_types)
-    }
+    def cands(
+        repo: GameData, type_list: list, default_tier: int, tier_list: list = None
+    ):
+        return {
+            key: val["freq"]
+            for key, val in repo.data.items()
+            if val.get("freq", 0) > 0
+            if (tier_list and val.get("tier", 99) in tier_list)
+            or val.get("tier", 99) == default_tier
+            if any(tag in val.get("tags", []) for tag in type_list)
+        }
+
+    monster_cands = cands(CHARDATA, m_types, tier, m_tiers)
+    item_cands = cands(ITEMDATA, i_types, tier, i_tiers)
+
+    # monster_cands = {
+    #     key: val["freq"]
+    #     for key, val in CHARDATA.data.items()
+    #     if val.get("freq", 0) > 0
+    #     if (m_tiers and val.get("tier", 99) in m_tiers) or val.get("tier", 99) == tier
+    #     if any(tag in val.get("tags", []) for tag in m_types)
+    # }
 
     if monster_cands:
         monster_choice_ids = choices(
@@ -188,3 +232,14 @@ def populate_map(w: World, m: GameMap):
             place_entity(w, monster, m.id)
     else:
         gl.write_log(w, "factory", f"No monster choices for map {m.id}; check data")
+
+    if item_cands:
+        item_choice_ids = choices(
+            list(item_cands.keys()), list(item_cands.values()), k=num_items
+        )
+
+        for i_id in item_choice_ids:
+            item = make_consumable(w, i_id)
+            place_entity(w, item, m.id)
+    else:
+        gl.write_log(w, "factory", f"No item choices for map {m.id}; check data")

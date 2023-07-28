@@ -72,3 +72,35 @@ class BleedEffect(GameEffect):
 
     def on_remove(self, e: Entity):
         add_msg_about(e, "<entity> is no longer bleeding.")
+
+
+class HealingEffect(GameEffect):
+    def __init__(self, duration: int, potency: int):
+        super().__init__("Healing", duration, potency)
+
+    def on_apply(self, e: Entity):
+        add_msg_about(e, "<entity> is healing!")
+
+    def on_tick(self, e: Entity, num_ticks: int):
+        amt = self.potency * num_ticks
+        e.components[comps.Combatant].heal(amt)
+        add_msg_about(e, f"<entity> heals {amt} damage!")
+
+    def on_remove(self, e: Entity):
+        add_msg_about(e, "<entity> is no longer healing.")
+
+
+class PoisonEffect(GameEffect):
+    def __init__(self, duration: int, potency: int):
+        super().__init__("Poison", duration, potency)
+
+    def on_apply(self, e: Entity):
+        add_msg_about(e, "<entity> is poisoned!")
+
+    def on_tick(self, e: Entity, num_ticks: int):
+        amt = self.potency * num_ticks
+        e.components[comps.Combatant].damage(amt)
+        add_msg_about(e, f"<entity> takes {amt} damage from poison!")
+
+    def on_remove(self, e: Entity):
+        add_msg_about(e, "<entity> is no longer poisoned.")

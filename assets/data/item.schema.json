@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://rakaneth.com/item.schema.json",
+    "title": "Consumable Item Data",
+    "description": "Consumable items in the itemdata.yml raw file",
+    "type": "object",
+    "additionalProperties": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "description": "The display name of the item.",
+                "type": "string"
+            },
+            "glyph": {
+                "description": "The single character being used to represent the item on screen",
+                "type":"string",
+                "maxLength": 1,
+                "minLength": 1
+            },
+            "desc": {
+                "description": "The in-game description of the item",
+                "type": "string"
+            },
+            "color": {
+                "description": " An [R, G, B] array describing the color of the item",
+                "type": "array",
+                "minItems": 3,
+                "maxItems": 3,
+                "items": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 255
+                },
+                "default": [255, 255, 255]
+            },
+            "effect": {
+                "description": "The effect of the item",
+                "type": "string",
+                "enum": ["health", "poison"]
+            },
+            "duration": {
+                "description": "The duration of the item's effect",
+                "type": "integer",
+                "minimum": -1
+            },
+            "potency": {
+                "description": "The potency of the item's effect",
+                "type": "integer",
+                "minimum": 1
+            },
+            "tier": {
+                "description": "A measure of the item's power",
+                "type": "integer"
+            },
+            "freq": {
+                "description": "How frequently the item appears relative to others on its tier",
+                "type": "integer"
+            },
+            "tags": {
+                "description": "Tags used to group items together",
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "default": []
+            }
+        },
+        "required": [
+            "name",
+            "glyph",
+            "color",
+            "tags"
+        ]
+    }
+}

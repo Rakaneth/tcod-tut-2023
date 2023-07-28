@@ -74,11 +74,12 @@ class Combatant:
     def base_reduce(self) -> int:
         return self.st // 10
 
-    def heal(self):
-        self.cur_hp = self.max_hp
+    def heal(self, amt: int = None):
+        if amt:
+            self.cur_hp = min(self.max_hp, self.cur_hp + amt)
+            return
 
-    def restore(self, amt: int):
-        self.cur_hp = min(self.max_hp, self.cur_hp + amt)
+        self.cur_hp = self.max_hp
 
     def damage(self, amt: int):
         self.cur_hp -= amt
@@ -98,6 +99,16 @@ class OnHit:
 
     eff: effects.GameEffect
     chance: int
+
+
+@dataclass(frozen=True)
+class Item:
+    """Describes a consumable item."""
+
+    thrown: bool
+    item_effect: str
+    eff_duration: int
+    eff_potency: int
 
 
 # Named components - global Entity
