@@ -82,6 +82,7 @@ class MainScreen(Screen):
             self.check_collisions()
             self.resolve_bumps()
             self.check_on_hits()
+            self.check_item_users()
             self.check_deaths()
             self.update_energy()
             self.end_turn()
@@ -209,6 +210,13 @@ class MainScreen(Screen):
                 )
             attacker.components.pop(comps.CheckOnHits)
 
+    def check_item_users(self):
+        for e, item_e in q.trying_to_use_item(self.world):
+            u.apply_item(item_e, e)
+            item_e.clear()
+            e.components[comps.Actor].energy -= 100
+            e.components.pop(comps.SelfUseItem)
+
     def end_turn(self):
         query = q.current_actors(self.world)
         sentinel = self.world[None].components[comps.Actor]
@@ -263,7 +271,7 @@ class MainScreen(Screen):
         match self.mode:
             case GameStates.MAIN:
                 self.mode = GameStates.SAVE
-            case GameStates.SAVE:
+            case GameStates.SAVE | GameStates.ITEM:
                 self.mode = GameStates.MAIN
 
     def on_mouse_move(self, x: int, y: int):
@@ -291,7 +299,20 @@ class MainScreen(Screen):
                 item_comp = item_to_use.components[comps.Item]
                 if item_comp.thrown:
                     return
-                self.player.relation_components[comps.Item][self.player] = item_comp
+                self.player.components[comps.SelfUseItem] = item_to_use
+                self.mode = GameStates.MAIN
+                self.engine.should_update = True
+
+    def on_inventory(self):
+        inv = q.inventory(self.player)
+        if inv:
+            opts_dict = {f"{i+1} - {q.name(e)}": e for i, e in enumerate(inv)}
+            self.item_menu = ui.MenuWithValues(
+                self.engine.root, opts_dict, title="Inventory"
+            )
+            self.mode = GameStates.ITEM
+        else:
+            u.add_msg(self.world, "(Nothing in the pack.)", TARGET)
 
     def update_fov(self):
         player_loc = self.player.components[comps.Location]

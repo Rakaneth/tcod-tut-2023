@@ -309,7 +309,7 @@ class MenuWithValues(Menu):
         *,
         x: int = None,
         y: int = None,
-        title: str = None,
+        title: str = "",
     ):
         super().__init__(list(opts_dict.keys()), con, x=x, y=y, title=title)
         self.opts_dict = opts_dict

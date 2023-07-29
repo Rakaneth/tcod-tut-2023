@@ -12,7 +12,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 * [x] Part 5 - Placing enemies and kicking them (harmlessly)
 * [x] Part 6 - Doing (and taking) some damage
 * [x] Part 7 - Creating the interface
-* [ ] Part 8 - Items and Inventory
+* [-] Part 8 - Items and Inventory
 * [ ] Part 9 - Ranged Scrolls and Targeting
 * [x] Part 10 - Saving and loading
 * [ ] Part 11 - Delving into the Dungeon
@@ -137,11 +137,30 @@ In creating a reusable template by harvesting the most useful plumbing from this
 * Pressing `ESC` during normal play will prompt the player with a dialog to save. Choosing `Yes` will save the game and return to the title screen.
 * An `Exit Game` option has been added to the title screen, allowing the game to exit without having to close the window
 
+### Addendum 2023-7-29
+
+#### Combat Improvements
+
+* Potions of various kinds spawn in the world.
+    * Healing potions apply a regeneration effect that scales with the potency of the potion.
+    * Poison potions apply a poison effect that deals damage that scales with the potency of the potion.
+
+#### UI Improvements
+
+* `i` brings up the inventory menu, and `ENTER`/`RETURN` select an item to use. `ESC` closes the item menu (and most other menus).
+* There is a `MenuWithValues` class that allows the selected string to stand for some underlying value. 
+
+#### Development Improvements
+
+* Upgraded `tcod-ecs` from 3.4 to 4.2.1, thanks to HexDecimal's help.
+
 
 ### Screenshots from Week 4
 
 ![gameover](/screenshots/gameover.png)
 ![rikkas](/screenshots/rikkas.png)
+
+
 
 ## Week 3
 

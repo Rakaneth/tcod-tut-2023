@@ -114,7 +114,7 @@ def apply_item(item: Entity, target: Entity):
     ef = applicators[item_comp.item_effect](
         item_comp.eff_duration, item_comp.eff_potency
     )
-    write_log(item.world, f"{q.name(item)} used on {q.name(target)}")
+    write_log(item.world, "item", f"{q.name(item)} used on {q.name(target)}")
     apply_effect(target, ef)
 
 

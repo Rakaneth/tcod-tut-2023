@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from tcod.ecs import World, Entity
 from tcod.ecs.query import WorldQuery
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 from gamemap import GameMap
 from geom import Point
 import components as comps
@@ -146,3 +146,7 @@ def find_effect(e: Entity, eff_name: str) -> GameEffect | None:
 
 def inventory(e: Entity) -> list[Entity]:
     return list(e.world.Q.all_of(relations=[(comps.HeldBy, e)]))
+
+
+def trying_to_use_item(w: World):
+    return w.Q[Entity, comps.SelfUseItem]

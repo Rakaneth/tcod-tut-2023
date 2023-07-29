@@ -131,10 +131,12 @@ FullName = ("full_name", str)
 Description = ("desc", str)
 InventoryMax = ("inv_max", int)
 GameMapComp = ("game_map", GameMap)
+SelfUseItem = ("self_use_item", Entity)
 
 # Relation tags
 HostileTo = "hostile_to"
 HeldBy = "held_by"
 MapId = "map_id"
+
 
 # Relation components

@@ -28,6 +28,7 @@ SIGNALS = {
     tcod.event.KeySym.KP_ENTER: "confirm",
     tcod.event.KeySym.ESCAPE: "cancel",
     tcod.event.KeySym.SPACE: "wait",
+    tcod.event.KeySym.i: "inventory",
 }
 
 
@@ -110,6 +111,9 @@ class Screen(tcod.event.EventDispatch):
     def on_enter(self):
         pass
 
+    def on_inventory(self):
+        pass
+
     def ev_keydown(self, event: tcod.event.KeyDown):
         signal = SIGNALS.get(event.sym)
         match signal:
@@ -127,6 +131,8 @@ class Screen(tcod.event.EventDispatch):
                 return self.on_cancel()
             case "wait":
                 return self.on_wait()
+            case "inventory":
+                return self.on_inventory()
             case _:
                 return None
 
