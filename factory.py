@@ -119,7 +119,7 @@ def make_consumable(w: World, item_id: str) -> Entity:
 
     c = {
         comps.Name: name,
-        comps.Renderable: comps.Renderable(glyph, color),
+        comps.Renderable: comps.Renderable(glyph, color, 2),
         comps.Description: desc,
         comps.Item: comps.Item(thrown, effect, duration, potency),
     }
