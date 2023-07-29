@@ -104,7 +104,7 @@ class Engine:
         world[None].components[
             comps.GameFileName
         ] = f"{hero_id}-{(now.strftime('%Y%m%d_%H%M%S'))}"
-        world[None].components[comps.Actor] = comps.Actor(0, 20)
+        world[None].components[comps.GameTicks] = 0
         world[None].components[comps.GameTurn] = 0
         player = fac.make_char(world, hero_id, player=True)
         fac.build_all_maps(world)

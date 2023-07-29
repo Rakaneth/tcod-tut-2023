@@ -130,6 +130,7 @@ GameVersion = ("game_version", str)
 GameSaved = ("game_saved", bool)
 GameFileName = ("game_file_name", str)
 GameTurn = ("game_turn", int)
+GameTicks = ("game_ticks", int)
 
 # Named components
 Name = ("name", str)

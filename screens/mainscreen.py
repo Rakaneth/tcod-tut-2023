@@ -153,8 +153,6 @@ class MainScreen(Screen):
                 "energy",
                 f"{q.name(e)} gains {act_comp.speed} energy, has {act_comp.energy}",
             )
-        sent_comp = self.world[None].components[comps.Actor]
-        sent_comp.energy += sent_comp.speed
 
     def resolve_bumps(self):
         for attacker, defender in q.bumpers(self.world):
@@ -223,16 +221,16 @@ class MainScreen(Screen):
             wl_mod = e.components[comps.Combatant].wl_mod
             match item_comp.item_delivery:
                 case "throw":
-                    u.apply_item(item, target)
                     if q.is_visible(e) and q.is_visible(target):
                         u.add_msg_about(
                             e, f"<entity> throws {item_name} at {target_name}!"
                         )
+                    u.apply_item(item, target)
                     item.clear()
                 case "drink":
-                    u.apply_item(item, e)
                     if q.is_visible(e):
                         u.add_msg_about(e, f"<entity> drinks {item_name}.")
+                    u.apply_item(item, e)
                     item.clear()
                 case "read":
                     dur = item_comp.eff_duration + wl_mod
@@ -254,13 +252,15 @@ class MainScreen(Screen):
 
     def end_turn(self):
         query = q.current_actors(self.world)
-        sentinel = self.world[None].components[comps.Actor]
-        if sentinel.energy >= 0:
+        sentinel = self.world[None].components[comps.GameTicks]
+        if sentinel == 5:
             for e in query:
                 u.tick_effects(e, 1)
-            sentinel.energy = -100
+            self.world[None].components[comps.GameTicks] = 0
             self.world[None].components[comps.GameTurn] += 1
             write_log(self.world, "end turn", "Turn ends")
+        else:
+            self.world[None].components[comps.GameTicks] += 1
 
     def check_target(self):
         if self.select_target and (
@@ -397,7 +397,11 @@ class MainScreen(Screen):
         con.print(ui.MAP_W, 6, f"Target: {target_name}")
 
     def draw_fx(self, con: Console):
-        effects = self.player.components[comps.EffectsList]
+        effects = list(
+            filter(
+                lambda eff: not eff.expired, self.player.components[comps.EffectsList]
+            )
+        )
         x = ui.MSG_W
         y = ui.MAP_H
         con.draw_frame(ui.MSG_W, ui.MAP_H, ui.SCR_W - ui.MSG_W, ui.MSG_H, "Effects")
