@@ -8,6 +8,7 @@ potion_base: &healing
   color: [0x9D, 0, 0]
   desc: A murky brown liquid, smelling faintly of blood.
   effect: health
+  delivery: drink
   duration: 5
   tags:
     - potion
@@ -42,6 +43,7 @@ potion_poison_base: &poison
   glyph: '!'
   color: [16, 0x9D, 16]
   effect: "poison"
+  delivery: throw
   duration: 5
   tags:
     - potion
@@ -69,6 +71,26 @@ potion_poison_major:
   tier: 3
   freq: 3
 
+# Scrolls
+
+scroll_base: &scroll
+  name: Scroll
+  desc: A scroll with arcane runes written on it.
+  glyph: '~'
+  color: [192, 128, 32]
+  delivery: read
+  tags:
+    - scroll
+    - magic
+  
+scroll_lightning:
+  <<: *scroll
+  name: Lightning Scroll
+  color: [192, 192, 0]
+  effect: lightning
+  tier: 1
+  potency: 10
+  freq: 4
 
 
 

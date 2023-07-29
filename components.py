@@ -63,6 +63,10 @@ class Combatant:
         return self.st // 4
 
     @property
+    def wl_mod(self) -> int:
+        return self.wl // 4
+
+    @property
     def max_hp(self) -> int:
         return self.str_mod * 2 + self.base_max_hp
 
@@ -106,10 +110,18 @@ class OnHit:
 class Item:
     """Describes a consumable item."""
 
-    thrown: bool
+    item_delivery: str
     item_effect: str
     eff_duration: int
     eff_potency: int
+
+
+@dataclass
+class UseItemOn:
+    """Describes an item being used."""
+
+    target: Entity
+    item: Entity
 
 
 # Named components - global Entity
@@ -137,6 +149,7 @@ SelfUseItem = ("self_use_item", Entity)
 HostileTo = "hostile_to"
 HeldBy = "held_by"
 MapId = "map_id"
+UseItem = "use_item"
 
 
 # Relation components

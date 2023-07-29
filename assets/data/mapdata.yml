@@ -16,6 +16,7 @@ cave:
     number: [1, 5]
     types:
       - potion
+      - scroll
 
 cavern:
   gen: drunkard
@@ -35,5 +36,6 @@ cavern:
     tiers: [1, 2]
     types:
       - potion
+      - scroll
   
   

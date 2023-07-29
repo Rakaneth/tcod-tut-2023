@@ -33,10 +33,16 @@
                 },
                 "default": [255, 255, 255]
             },
+            "delivery": {
+                "description": "The delivery method of the item",
+                "type": "string",
+                "enum": ["throw", "read", "drink"],
+                "default": "drink"
+            },
             "effect": {
                 "description": "The effect of the item",
                 "type": "string",
-                "enum": ["health", "poison"]
+                "enum": ["health", "poison", "lightning"]
             },
             "duration": {
                 "description": "The duration of the item's effect",
@@ -69,7 +75,8 @@
             "name",
             "glyph",
             "color",
-            "tags"
+            "tags",
+            "delivery"
         ]
     }
 }

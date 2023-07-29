@@ -103,21 +103,19 @@ def drop_item(item: Entity, holder: Entity):
     write_log(item.world, "inventory", f"{q.name(holder)} drops {q.name(item)}")
 
 
-def apply_item(item: Entity, target: Entity):
+def apply_item(
+    item: Entity, target: Entity, *, duration: int = None, potency: int = None
+):
     item_comp = item.components[comps.Item]
     ef: eff.GameEffect = None
+    dur = item_comp.eff_duration if duration is None else duration
+    pot = item_comp.eff_potency if potency is None else potency
     applicators = {
-        "health": eff.HealingEffect,
-        "poison": eff.PoisonEffect,
+        "health": eff.HealingEffect(dur, pot),
+        "poison": eff.PoisonEffect(dur, pot),
+        "lightning": eff.LightningEffect(pot),
     }
 
-    ef = applicators[item_comp.item_effect](
-        item_comp.eff_duration, item_comp.eff_potency
-    )
+    ef = applicators[item_comp.item_effect]
     write_log(item.world, "item", f"{q.name(item)} used on {q.name(target)}")
     apply_effect(target, ef)
-
-
-# def remove_entity(e: Entity):
-#     """DANGEROUS! DO NOT DO THIS IN A LOOP"""
-#     e.world.

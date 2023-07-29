@@ -104,3 +104,12 @@ class PoisonEffect(GameEffect):
 
     def on_remove(self, e: Entity):
         add_msg_about(e, "<entity> is no longer poisoned.")
+
+
+class LightningEffect(GameEffect):
+    def __init__(self, potency: int):
+        super().__init__("Lightning", 0, potency)
+
+    def on_apply(self, e: Entity):
+        e.components[comps.Combatant].damage(self.potency)
+        add_msg_about(e, f"<entity> is struck by lightning for {self.potency} damage!")

@@ -113,18 +113,22 @@ def make_consumable(w: World, item_id: str) -> Entity:
     tags = template["tags"]
     desc = template["desc"]
     effect = template["effect"]
-    duration = template.get("duration", -1)
+    duration = template.get("duration", 0)
     potency = template.get("potency", 0)
-    thrown = "thrown" in tags
+    delivery = template["delivery"]
 
     c = {
         comps.Name: name,
         comps.Renderable: comps.Renderable(glyph, color, 2),
         comps.Description: desc,
-        comps.Item: comps.Item(thrown, effect, duration, potency),
+        comps.Item: comps.Item(delivery, effect, duration, potency),
     }
 
     e = w.new_entity(c)
+
+    for tag in tags:
+        e.tags.add(tag)
+
     return e
 
 

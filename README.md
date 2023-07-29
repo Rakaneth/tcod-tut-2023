@@ -12,8 +12,8 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 * [x] Part 5 - Placing enemies and kicking them (harmlessly)
 * [x] Part 6 - Doing (and taking) some damage
 * [x] Part 7 - Creating the interface
-* [-] Part 8 - Items and Inventory
-* [ ] Part 9 - Ranged Scrolls and Targeting
+* [x] Part 8 - Items and Inventory
+* [x] Part 9 - Ranged Scrolls and Targeting
 * [x] Part 10 - Saving and loading
 * [ ] Part 11 - Delving into the Dungeon
 * [ ] Part 12 - Increasing Difficulty
@@ -27,18 +27,26 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 ## Week 5
 
+I am ahead still, but since I'm anticipating having a lot less time soon, I'm going to continue to forge ahead and even possibly finish ahead of schedule.
+
+### Screenshots
+
+![item](/screenshots/item.png)
+
 ### 2023-7-29
 
 #### Combat Improvements
 
-* Potions of various kinds spawn in the world.
+* Items of various kinds spawn in the world.
     * Healing potions apply a regeneration effect that scales with the potency of the potion.
     * Poison potions apply a poison effect that deals damage that scales with the potency of the potion.
+    * Lightning scrolls apply a large amount of damage to a single, visible target.
 
 #### UI Improvements
 
 * `i` brings up the inventory menu, and `ENTER`/`RETURN` select an item to use. `ESC` closes the item menu (and most other menus).
 * There is a `MenuWithValues` class that allows the selected string to stand for some underlying value. 
+* Clicking on a monster will set it as target. If the monster dies or steps out of view, it is deselected.
 
 #### Development Improvements
 

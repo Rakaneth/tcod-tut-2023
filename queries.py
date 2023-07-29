@@ -149,4 +149,4 @@ def inventory(e: Entity) -> list[Entity]:
 
 
 def trying_to_use_item(w: World):
-    return w.Q[Entity, comps.SelfUseItem]
+    return w.Q[Entity, comps.UseItemOn]

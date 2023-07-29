@@ -34,6 +34,7 @@ class MainScreen(Screen):
         super().__init__(ScreenNames.MAIN, engine)
         self.camera = ui.Camera(ui.MAP_W, ui.MAP_H)
         self.look_target: Point = None
+        self.select_target: Entity = None
         self.mode = GameStates.MAIN
         self.save_menu = ui.YesNoMenu(self.engine.root, "Save Game?")
         self.item_menu: ui.MenuWithValues = None
@@ -85,6 +86,7 @@ class MainScreen(Screen):
             self.check_item_users()
             self.check_deaths()
             self.update_energy()
+            self.check_target()
             self.end_turn()
             self.update_fov()
 
@@ -211,11 +213,44 @@ class MainScreen(Screen):
             attacker.components.pop(comps.CheckOnHits)
 
     def check_item_users(self):
-        for e, item_e in q.trying_to_use_item(self.world):
-            u.apply_item(item_e, e)
-            item_e.clear()
-            e.components[comps.Actor].energy -= 100
-            e.components.pop(comps.SelfUseItem)
+        for e, use_info in q.trying_to_use_item(self.world):
+            item = use_info.item
+            item_comp = item.components[comps.Item]
+            target = use_info.target
+            user_name = q.name(e)
+            target_name = q.name(target)
+            item_name = q.name(item)
+            wl_mod = e.components[comps.Combatant].wl_mod
+            match item_comp.item_delivery:
+                case "throw":
+                    u.apply_item(item, target)
+                    if q.is_visible(e) and q.is_visible(target):
+                        u.add_msg_about(
+                            e, f"<entity> throws {item_name} at {target_name}!"
+                        )
+                    item.clear()
+                case "drink":
+                    u.apply_item(item, e)
+                    if q.is_visible(e):
+                        u.add_msg_about(e, f"<entity> drinks {item_name}.")
+                    item.clear()
+                case "read":
+                    dur = item_comp.eff_duration + wl_mod
+                    pot = item_comp.eff_potency + wl_mod // 2
+                    if q.is_visible(e):
+                        if e is target:
+                            u.add_msg_about(e, f"<entity> reads {item_name}!")
+                        else:
+                            u.add_msg_about(
+                                e,
+                                f"<entity> reads {item_name}, pointing at {target_name}!",
+                            )
+                    u.apply_item(item, target, duration=dur, potency=pot)
+
+            write_log(
+                self.world, "item", f"{user_name} uses {item_name} on {target_name}"
+            )
+            e.components.pop(comps.UseItemOn)
 
     def end_turn(self):
         query = q.current_actors(self.world)
@@ -226,6 +261,12 @@ class MainScreen(Screen):
             sentinel.energy = -100
             self.world[None].components[comps.GameTurn] += 1
             write_log(self.world, "end turn", "Turn ends")
+
+    def check_target(self):
+        if self.select_target and (
+            not q.is_visible(self.select_target) or q.is_dead(self.select_target)
+        ):
+            self.select_target = None
 
     def on_up(self):
         match self.mode:
@@ -297,9 +338,19 @@ class MainScreen(Screen):
             case GameStates.ITEM:
                 item_to_use: Entity = self.item_menu.selected_val
                 item_comp = item_to_use.components[comps.Item]
-                if item_comp.thrown:
+                if item_comp.item_delivery == "drink":
+                    target = self.player
+                else:
+                    target = self.select_target
+
+                if not target:
+                    u.add_msg(self.world, "(No target for selected item.)", TARGET)
+                    self.mode = GameStates.MAIN
                     return
-                self.player.components[comps.SelfUseItem] = item_to_use
+
+                self.player.components[comps.UseItemOn] = comps.UseItemOn(
+                    target, item_to_use
+                )
                 self.mode = GameStates.MAIN
                 self.engine.should_update = True
 
@@ -314,6 +365,14 @@ class MainScreen(Screen):
         else:
             u.add_msg(self.world, "(Nothing in the pack.)", TARGET)
 
+    def on_mouse_click(self, x: int, y: int):
+        if self.mode == GameStates.MAIN:
+            blocker_list = list(q.blockers_at(self.world, self.look_target))
+            if blocker_list:
+                blocker = blocker_list[0]
+                if q.is_visible(blocker):
+                    self.select_target = blocker
+
     def update_fov(self):
         player_loc = self.player.components[comps.Location]
         self.cur_map.update_fov(player_loc.x, player_loc.y, 8)
@@ -324,6 +383,9 @@ class MainScreen(Screen):
         map_name = self.cur_map.name
         loc = self.player.components[comps.Location]
         hp_txt = f"HP: {stats.hp_str}"
+        target_name = (
+            self.select_target.components[comps.Name] if self.select_target else "None"
+        )
 
         con.print(ui.MAP_W, 0, f"{name}")
         con.print(ui.MAP_W, 1, f"{map_name} - {loc}")
@@ -332,6 +394,7 @@ class MainScreen(Screen):
         con.print(ui.MAP_W, 3, f"ST: {stats.st} AG: {stats.ag} WL: {stats.wl}")
         con.print(ui.MAP_W, 4, f"ATP: {stats.atp} DFP: {stats.dfp}")
         con.print(ui.MAP_W, 5, f"DMG: {stats.dmg_str}")
+        con.print(ui.MAP_W, 6, f"Target: {target_name}")
 
     def draw_fx(self, con: Console):
         effects = self.player.components[comps.EffectsList]

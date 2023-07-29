@@ -87,6 +87,9 @@ class Screen(tcod.event.EventDispatch):
     def on_mouse_move(self, x: int, y: int):
         pass
 
+    def on_mouse_click(self, x: int, y: int):
+        pass
+
     def on_up(self):
         pass
 
@@ -141,3 +144,7 @@ class Screen(tcod.event.EventDispatch):
 
     def ev_mousemotion(self, event: tcod.event.MouseMotion):
         return self.on_mouse_move(event.tile.x, event.tile.y)
+
+    def ev_mousebuttonup(self, event: tcod.event.MouseButtonUp):
+        if event.button == tcod.event.MouseButton.LEFT:
+            return self.on_mouse_click(event.tile.x, event.tile.y)
