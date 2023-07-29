@@ -241,7 +241,7 @@ class MainScreen(Screen):
                         else:
                             u.add_msg_about(
                                 e,
-                                f"<entity> reads {item_name}, pointing at {target_name}!",
+                                f"<entity> reads {item_name}, pointing at {target_name}!",  # noqa: E501
                             )
                     u.apply_item(item, target, duration=dur, potency=pot)
 
