@@ -1,6 +1,7 @@
 # yaml-language-server: $schema=item.schema.json
 ---
 #Healing Potions
+
 potion_base: &healing
   name: "Potion"
   glyph: '!'

@@ -115,6 +115,12 @@
                         }
                     }
                 }
+            },
+            "inventory": {
+                "type": "integer",
+                "description": "The maximum number of items this creature can hold",
+                "minimum": 0,
+                "default": 0
             }
         },
         

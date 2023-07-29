@@ -1,7 +1,8 @@
 from __future__ import annotations
 
-from tcod.ecs import World, Entity, Query
-from typing import TYPE_CHECKING
+from tcod.ecs import World, Entity
+from tcod.ecs.query import WorldQuery
+from typing import TYPE_CHECKING, Self
 from gamemap import GameMap
 from geom import Point
 import components as comps
@@ -19,12 +20,12 @@ def name(e: Entity) -> str:
 
 
 def get_map(w: World, map_id: str) -> GameMap:
-    return w[None].components[(map_id, GameMap)]
+    return w[map_id].components[comps.GameMapComp]
 
 
 def cur_map(w: World) -> GameMap:
-    cur_map_id = player(w).relation_tag[comps.MapId]
-    return get_map(w, cur_map_id)
+    cur_map_e = player(w).relation_tag[comps.MapId]
+    return cur_map_e.components[comps.GameMapComp]
 
 
 def current_actors(w: World) -> list[Entity]:
@@ -42,10 +43,9 @@ def turn_actors(w: World):
     return filter(f, current_actors(w))
 
 
-def entities(w: World, map_id: str = None) -> Query:
-    if map_id is None:
-        map_id = cur_map(w).id
-    return w.Q.all_of(components=[comps.Location], relations=[(comps.MapId, map_id)])
+def entities(w: World, map_id: str = None) -> WorldQuery:
+    m_e = player(w).relation_tag[comps.MapId] if map_id is None else w[map_id]
+    return w.Q.all_of(components=[comps.Location], relations=[(comps.MapId, m_e)])
 
 
 def entities_at(w: World, pt: Point, map_id: str = None):
@@ -53,16 +53,51 @@ def entities_at(w: World, pt: Point, map_id: str = None):
     return filter(lambda e: e.components[comps.Location] == pt, es)
 
 
+def items_at(w: World, pt: Point, map_id: str = None):
+    es = entities(w, map_id)
+    items = es.all_of(components=[comps.Item])
+    return filter(lambda e: e.components[comps.Location] == pt, items)
+
+
 def blockers_at(w: World, pt: Point, map_id: str = None):
     return filter(lambda e: "blocker" in e.tags, entities_at(w, pt, map_id))
 
 
+def is_visible(e: Entity) -> bool:
+    pos = e.world["player"].components[comps.Location]
+    return cur_map(e.world).visible[pos.x, pos.y]
+
+
 def drawable_entities(w: World) -> list[Entity]:
+    cur_map_e = player(w).relation_tag[comps.MapId]
     fil = w.Q.all_of(
         components=[comps.Renderable, comps.Location],
-        relations=[(comps.MapId, cur_map(w).id)],
+        relations=[(comps.MapId, cur_map_e)],
     )
     return sorted(list(fil), key=lambda i: i.components[comps.Renderable].z)
+
+
+def trying_to_move(w: World) -> WorldQuery:
+    m_e = player(w).relation_tag[comps.MapId]
+    return w.Q.all_of(
+        components=[comps.Location, comps.TryMove], relations=[(comps.MapId, m_e)]
+    )
+
+
+def collisions(w: World) -> WorldQuery:
+    return w.Q[Entity, comps.CollidesWith]
+
+
+def bumpers(w: World) -> WorldQuery:
+    return w.Q[Entity, comps.BumpAttacking]
+
+
+def living(w: World) -> WorldQuery:
+    return w.Q.all_of(components=[comps.Combatant]).none_of(tags=["dead"])
+
+
+def on_hits(w: World) -> WorldQuery:
+    return w.Q[Entity, comps.CheckOnHits, comps.OnHit]
 
 
 def is_enemy(e: Entity) -> bool:
@@ -107,3 +142,7 @@ def find_effect(e: Entity, eff_name: str) -> GameEffect | None:
         return f[0]
 
     return None
+
+
+def inventory(e: Entity) -> list[Entity]:
+    return list(e.world.Q.all_of(relations=[(comps.HeldBy, e)]))

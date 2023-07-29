@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Tuple
 from geom import Point
 from tcod.ecs import Entity
+from gamemap import GameMap
 
 import effects
 
@@ -128,7 +129,12 @@ Location = ("location", Point)
 TryMove = ("try_move", Point)
 FullName = ("full_name", str)
 Description = ("desc", str)
+InventoryMax = ("inv_max", int)
+GameMapComp = ("game_map", GameMap)
 
 # Relation tags
-MapId = "map_id"
 HostileTo = "hostile_to"
+HeldBy = "held_by"
+MapId = "map_id"
+
+# Relation components

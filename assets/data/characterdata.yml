@@ -13,6 +13,7 @@ base_hero: &hero
   ag: 10
   wl: 10
   dmg: [1, 2]
+  inventory: 8
   tags:
     - player
     - blocker
@@ -78,6 +79,7 @@ base_human: &human
   st: 8
   ag: 8
   wl: 8
+  inventory: 2
   tags:
     - enemy 
     - humanoid

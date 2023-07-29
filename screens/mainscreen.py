@@ -24,6 +24,7 @@ if TYPE_CHECKING:
 class GameStates:
     MAIN = "main"
     SAVE = "save"
+    ITEM = "item"
 
 
 class MainScreen(Screen):
@@ -35,6 +36,7 @@ class MainScreen(Screen):
         self.look_target: Point = None
         self.mode = GameStates.MAIN
         self.save_menu = ui.YesNoMenu(self.engine.root, "Save Game?")
+        self.item_menu: ui.MenuWithValues = None
 
     @property
     def cur_map(self) -> GameMap:
@@ -67,6 +69,8 @@ class MainScreen(Screen):
         self.draw_look(con)
         if self.mode == GameStates.SAVE:
             self.save_menu.draw()
+        if self.mode == GameStates.ITEM:
+            self.item_menu.draw()
 
     def on_update(self):
         player = self.player
@@ -93,7 +97,7 @@ class MainScreen(Screen):
             self.engine.switch_screen(ScreenNames.GAME_OVER)
 
     def check_collisions(self):
-        for e, target in self.world.Q[Entity, comps.CollidesWith]:
+        for e, target in q.collisions(self.world):
             e_actor_comp = e.components[comps.Actor]
 
             if target == e:
@@ -108,10 +112,7 @@ class MainScreen(Screen):
 
     def check_moves(self):
         cur_map = self.cur_map
-        for e in self.world.Q.all_of(
-            components=[comps.Location, comps.TryMove],
-            relations=[(comps.MapId, cur_map.id)],
-        ):
+        for e in q.trying_to_move(self.world):
             dest = e.components[comps.TryMove]
 
             if cur_map.walkable(dest.x, dest.y):
@@ -153,7 +154,7 @@ class MainScreen(Screen):
         sent_comp.energy += sent_comp.speed
 
     def resolve_bumps(self):
-        for attacker, defender in self.world.Q[Entity, comps.BumpAttacking]:
+        for attacker, defender in q.bumpers(self.world):
             atk_name = q.name(attacker)
             def_name = q.name(defender)
 
@@ -184,16 +185,14 @@ class MainScreen(Screen):
             attacker.components.pop(comps.BumpAttacking)
 
     def check_deaths(self):
-        query = self.world.Q.all_of(components=[comps.Combatant]).none_of(tags=["dead"])
+        query = q.living(self.world)
         for e, stats in query[Entity, comps.Combatant]:
             if stats.dead:
                 u.add_msg_about(e, "<entity> has fallen!")
                 u.kill(e)
 
     def check_on_hits(self):
-        for attacker, defender, on_hit in self.world.Q[
-            Entity, comps.CheckOnHits, comps.OnHit
-        ]:
+        for attacker, defender, on_hit in q.on_hits(self.world):
             atk_name = q.name(attacker)
             def_name = q.name(defender)
             write_log(
@@ -228,6 +227,8 @@ class MainScreen(Screen):
                 self.engine.should_update = True
             case GameStates.SAVE:
                 self.save_menu.move_up()
+            case GameStates.ITEM:
+                self.item_menu.move_up()
 
     def on_down(self):
         match self.mode:
@@ -237,6 +238,8 @@ class MainScreen(Screen):
                 self.engine.should_update = True
             case GameStates.SAVE:
                 self.save_menu.move_down()
+            case GameStates.ITEM:
+                self.item_menu.move_down()
 
     def on_left(self):
         if self.mode == GameStates.MAIN:
@@ -271,13 +274,24 @@ class MainScreen(Screen):
                 self.look_target = None
 
     def on_confirm(self):
-        if self.mode == GameStates.SAVE:
-            if self.save_menu.confirmed:
-                self.engine.shutdown()
-                self.engine.switch_screen(ScreenNames.TITLE)
-                return
+        match self.mode:
+            case GameStates.SAVE:
+                if self.save_menu.confirmed:
+                    self.engine.shutdown()
+                    self.engine.switch_screen(ScreenNames.TITLE)
+                    return
 
-            self.mode = GameStates.MAIN
+                self.mode = GameStates.MAIN
+            case GameStates.MAIN:
+                items = q.items_at(self.world, self.player.components[comps.Location])
+                for item in items:
+                    u.pick_up_item(item, self.player)
+            case GameStates.ITEM:
+                item_to_use: Entity = self.item_menu.selected_val
+                item_comp = item_to_use.components[comps.Item]
+                if item_comp.thrown:
+                    return
+                self.player.relation_components[comps.Item][self.player] = item_comp
 
     def update_fov(self):
         player_loc = self.player.components[comps.Location]

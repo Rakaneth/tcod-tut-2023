@@ -1,6 +1,6 @@
 from random import choices, randint
 from tcod.ecs import World, Entity
-from queries import blockers_at, get_map
+from queries import blockers_at
 from geom import Point
 from yaml import load, SafeLoader
 from gamemap import GameMap, arena, drunk_walk
@@ -46,6 +46,7 @@ def make_char(
     on_hit = template.get("on_hit", None)
     desc = template.get("desc", None)
     full_name = template.get("full_name", None)
+    inv_max = template.get("inventory", None)
 
     c = {
         comps.Name: nm,
@@ -75,6 +76,9 @@ def make_char(
 
     if desc:
         c |= {comps.Description: desc}
+
+    if inv_max:
+        c |= {comps.InventoryMax: inv_max}
 
     if player:
         e = world["player"]
@@ -125,12 +129,15 @@ def make_consumable(w: World, item_id: str) -> Entity:
 
 
 def add_map(w: World, m: GameMap):
-    w[None].components[(m.id, GameMap)] = m
+    # w[None].components[(m.id, GameMap)] = m
+    m_e = w[m.id]
+    m_e.components[comps.GameMapComp] = m
 
 
 def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
-    e.relation_tag[comps.MapId] = map_id
-    m = get_map(w, map_id)
+    m_e = w[map_id]
+    e.relation_tag[comps.MapId] = m_e
+    m = m_e.components[comps.GameMapComp]
     if pt is None:
         pt = m.get_random_floor()
 
@@ -152,8 +159,7 @@ def build_all_maps(w: World):
 
 
 def populate_all_maps(w: World):
-    maps = (item for item in w[None].components.values() if isinstance(item, GameMap))
-    for m in maps:
+    for _, m in w.Q[Entity, comps.GameMapComp]:
         gl.write_log(w, "factory", f"Populating map {m.id}")
         populate_map(w, m)
 
@@ -206,21 +212,13 @@ def populate_map(w: World, m: GameMap):
             key: val["freq"]
             for key, val in repo.data.items()
             if val.get("freq", 0) > 0
-            if (tier_list and val.get("tier", 99) in tier_list)
-            or val.get("tier", 99) == default_tier
+            if (tier_list and val.get("tier", -1) in tier_list)
+            or val.get("tier", -1) == default_tier
             if any(tag in val.get("tags", []) for tag in type_list)
         }
 
     monster_cands = cands(CHARDATA, m_types, tier, m_tiers)
     item_cands = cands(ITEMDATA, i_types, tier, i_tiers)
-
-    # monster_cands = {
-    #     key: val["freq"]
-    #     for key, val in CHARDATA.data.items()
-    #     if val.get("freq", 0) > 0
-    #     if (m_tiers and val.get("tier", 99) in m_tiers) or val.get("tier", 99) == tier
-    #     if any(tag in val.get("tags", []) for tag in m_types)
-    # }
 
     if monster_cands:
         monster_choice_ids = choices(

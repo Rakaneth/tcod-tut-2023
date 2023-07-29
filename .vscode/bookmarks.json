@@ -4,9 +4,19 @@
 			"path": "factory.py",
 			"bookmarks": [
 				{
-					"line": 187,
+					"line": 193,
 					"column": 0,
 					"label": "TODO: equipment"
+				}
+			]
+		},
+		{
+			"path": "screens/mainscreen.py",
+			"bookmarks": [
+				{
+					"line": 292,
+					"column": 0,
+					"label": "TODO: thrown items"
 				}
 			]
 		}

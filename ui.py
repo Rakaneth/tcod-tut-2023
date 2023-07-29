@@ -297,3 +297,23 @@ class YesNoMenu(Menu):
     @property
     def confirmed(self) -> bool:
         return self.selected == "Yes"
+
+
+class MenuWithValues(Menu):
+    """Describes a menu whose display items differ from return values."""
+
+    def __init__(
+        self,
+        con: Console,
+        opts_dict: dict,
+        *,
+        x: int = None,
+        y: int = None,
+        title: str = None,
+    ):
+        super().__init__(list(opts_dict.keys()), con, x=x, y=y, title=title)
+        self.opts_dict = opts_dict
+
+    @property
+    def selected_val(self):
+        return self.opts_dict[self.selected]
