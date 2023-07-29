@@ -25,59 +25,37 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # DevLog
 
+## Week 5
+
+### 2023-7-29
+
+#### Combat Improvements
+
+* Potions of various kinds spawn in the world.
+    * Healing potions apply a regeneration effect that scales with the potency of the potion.
+    * Poison potions apply a poison effect that deals damage that scales with the potency of the potion.
+
+#### UI Improvements
+
+* `i` brings up the inventory menu, and `ENTER`/`RETURN` select an item to use. `ESC` closes the item menu (and most other menus).
+* There is a `MenuWithValues` class that allows the selected string to stand for some underlying value. 
+
+#### Development Improvements
+
+* Upgraded `tcod-ecs` from 3.4 to 4.2.1, thanks to HexDecimal's help.
+
 ## Week 4
 
 ### Most Recent Screenshot:
 
 ![more_ui](/screenshots/more_ui.gif)
 
-So...I'm a whole week ahead now. Bump-attacking is in place, and entities that are slain have their appearances changed, become immobile, and stop blocking. There is currently no death check for the player in place. The player's stats are drawn on the right side of the screen, and things that are hostile to each other deal damage when bumping. I created `combat.py` to group all of the combat-based functions together.
-
-![combat](/screenshots/week4.gif)
-
-### Addendum 2023-7-22
-
-Working on a title screen. Currently, it just shows a list of saved games. With a lot of hacking, save games can be selected from the menu. (Oh, yeah. I implemented a `Menu` class to handle those.) It even has version checks! Currently, an exception is thrown if the game versions do not match.
-
-Maps are now generated based on some map data that describes the layout, items, general difficulty (there I go skipping ahead again), and available monsters types.
-
-I think saving and loading is complete now. The world stores the game save name, which is determined by the starting hero and a timestamp. A `saves` directory is created if one does not exist when the game loads. This is where the game saves are stored. This folder can be deleted wholesale to remove the saved games. I honestly think saving and loading should be done sooner in the project and tested throughout. I am glad to have a version I am happy with.
-
-Also, there are four distinct heroes, with different strengths and weaknesses. All the plumbing done earlier is paying off here; with a few changes to `assets/data/characterdata.yml` and `titlescreen.py`, I can easily add new heroes to the game. Monsters and maps are easier to add.
-
-Now, back to pondering my combat system - and items.
-
-![saving](/screenshots/saving.gif)
-
-### Addendum 2023-7-23
-
-So here I am, up late again, brimming with inspiration.
-
-#### Game Message Improvements
-
-The game messages got a lot of improvements:
-
-* Messages about a specific entity use that entity's render color.
-* Messages are now dumped along with save files in a separate `logs/` folder. Considering the size, I will likely use an appending strategy and have the `World` dump the messages at a certain benchmark to keep save file size down.
-
-#### Combat Improvements
-
-There is now a rudimentary on-hit system in place, as well as an effect system. Some attacks or enemies have a chance to cause effects when they hit. The effects are defined in `effects.py` and have a uniform, flexible format. The hope is that some equipment will produce these on-hit effects.
-
-Monster stats are being rebalanced, though I am trying to hold off on a balance pass until I get items in - which I am not far from at this point.
+### 2023-07-26
 
 #### UI Improvements
 
-* The UI now shows active effects, as well as a map name.
-* Messages no longer occasionally spill out of the messages box.
-* The UI classes were refactored to encapsulate some shared functionality. This enabled the creation of two new UI elements (currently unused):
-    * TextBox - a simple box showing text
-    * Dialog - a box showing text and additional options
-
-#### Development Improvements
-
-* There is now a gamelog that displays game events, out-of-world, as they happen. There is a DEBUG switch in `constants.py` that controls the logging, as I suspect that this will get quite large over a session.
-* Screen names have been pulled into a static class `ScreenNames` to prevent accidental misspelling and get IDE help.
+* Pressing `ESC` during normal play will prompt the player with a dialog to save. Choosing `Yes` will save the game and return to the title screen.
+* An `Exit Game` option has been added to the title screen, allowing the game to exit without having to close the window
 
 ### THE GREAT REFACTOR 2023-07-25
 
@@ -130,37 +108,58 @@ In creating a reusable template by harvesting the most useful plumbing from this
     * `WL` - willpower and charisma
         * Increases/improves scroll use (not yet implemented)
 
-### Addendum 2023-07-26
+### 2023-7-23
 
-#### UI Improvements
+So here I am, up late again, brimming with inspiration.
 
-* Pressing `ESC` during normal play will prompt the player with a dialog to save. Choosing `Yes` will save the game and return to the title screen.
-* An `Exit Game` option has been added to the title screen, allowing the game to exit without having to close the window
+#### Game Message Improvements
 
-### Addendum 2023-7-29
+The game messages got a lot of improvements:
+
+* Messages about a specific entity use that entity's render color.
+* Messages are now dumped along with save files in a separate `logs/` folder. Considering the size, I will likely use an appending strategy and have the `World` dump the messages at a certain benchmark to keep save file size down.
 
 #### Combat Improvements
 
-* Potions of various kinds spawn in the world.
-    * Healing potions apply a regeneration effect that scales with the potency of the potion.
-    * Poison potions apply a poison effect that deals damage that scales with the potency of the potion.
+There is now a rudimentary on-hit system in place, as well as an effect system. Some attacks or enemies have a chance to cause effects when they hit. The effects are defined in `effects.py` and have a uniform, flexible format. The hope is that some equipment will produce these on-hit effects.
+
+Monster stats are being rebalanced, though I am trying to hold off on a balance pass until I get items in - which I am not far from at this point.
 
 #### UI Improvements
 
-* `i` brings up the inventory menu, and `ENTER`/`RETURN` select an item to use. `ESC` closes the item menu (and most other menus).
-* There is a `MenuWithValues` class that allows the selected string to stand for some underlying value. 
+* The UI now shows active effects, as well as a map name.
+* Messages no longer occasionally spill out of the messages box.
+* The UI classes were refactored to encapsulate some shared functionality. This enabled the creation of two new UI elements (currently unused):
+    * TextBox - a simple box showing text
+    * Dialog - a box showing text and additional options
 
 #### Development Improvements
 
-* Upgraded `tcod-ecs` from 3.4 to 4.2.1, thanks to HexDecimal's help.
+* There is now a gamelog that displays game events, out-of-world, as they happen. There is a DEBUG switch in `constants.py` that controls the logging, as I suspect that this will get quite large over a session.
+* Screen names have been pulled into a static class `ScreenNames` to prevent accidental misspelling and get IDE help.
 
+So...I'm a whole week ahead now. Bump-attacking is in place, and entities that are slain have their appearances changed, become immobile, and stop blocking. There is currently no death check for the player in place. The player's stats are drawn on the right side of the screen, and things that are hostile to each other deal damage when bumping. I created `combat.py` to group all of the combat-based functions together.
+
+![combat](/screenshots/week4.gif)
+
+### 2023-7-22
+
+Working on a title screen. Currently, it just shows a list of saved games. With a lot of hacking, save games can be selected from the menu. (Oh, yeah. I implemented a `Menu` class to handle those.) It even has version checks! Currently, an exception is thrown if the game versions do not match.
+
+Maps are now generated based on some map data that describes the layout, items, general difficulty (there I go skipping ahead again), and available monsters types.
+
+I think saving and loading is complete now. The world stores the game save name, which is determined by the starting hero and a timestamp. A `saves` directory is created if one does not exist when the game loads. This is where the game saves are stored. This folder can be deleted wholesale to remove the saved games. I honestly think saving and loading should be done sooner in the project and tested throughout. I am glad to have a version I am happy with.
+
+Also, there are four distinct heroes, with different strengths and weaknesses. All the plumbing done earlier is paying off here; with a few changes to `assets/data/characterdata.yml` and `titlescreen.py`, I can easily add new heroes to the game. Monsters and maps are easier to add.
+
+Now, back to pondering my combat system - and items.
+
+![saving](/screenshots/saving.gif)
 
 ### Screenshots from Week 4
 
 ![gameover](/screenshots/gameover.png)
 ![rikkas](/screenshots/rikkas.png)
-
-
 
 ## Week 3
 
@@ -172,7 +171,11 @@ I also implemented a `drunk_walk` map generator that needs to be tweaked to cons
 
 Week 3 is, in theory, complete.
 
-### Addendum 2023-7-20
+### 2023-7-21
+
+I skipped...*way* ahead. It turns out that the main motivation behind me wanting to clean up the gamestate was so that I could do some preliminary saving and loading, and it turns out that my efforts have paid off. Now the world pickles just fine, and I can load the game from a previous save. I tried to do this with the GameState class and it wasn't pickling properly. 
+
+### 2023-7-20
 
 I may have been mistaken about that.
 
@@ -185,10 +188,6 @@ A *lot* of cleanup and refactoring happened. There is now a speed system in plac
 Among the things that got refactored was the `GameState` class. It worked initally until I got some help from @HexDecimal regarding proper use of the World to store arbitrary data. In a night of feverish inspiration (and an unhealthy dose of insomnia), I have removed that class and cleaned up all the functions that relied on the helpers there.
 
 *Now* week 3 is complete. I will likely start week 4 early while I have inspiration.
-
-### Addendum 2023-7-21
-
-I skipped...*way* ahead. It turns out that the main motivation behind me wanting to clean up the gamestate was so that I could do some preliminary saving and loading, and it turns out that my efforts have paid off. Now the world pickles just fine, and I can load the game from a previous save. I tried to do this with the GameState class and it wasn't pickling properly. 
 
 ## Week 2
 
