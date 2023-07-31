@@ -53,46 +53,48 @@
                 "description": "Data determining the monsters that should appear in the dungeon",
                 "properties": {
                     "number": {
-                        "type": "array",
-                        "description": "[low, high] array of possible quantity of monsters",
-                        "minItems": 2,
-                        "maxItems": 2,
-                        "items": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/$defs/number"
                     },
                     "types": {
-                        "type": "array",
-                        "description": "An array of possible monster types to appear in the dungeon",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 1
+                        "$ref": "#/$defs/types"
+                    },
+                    "tiers": {
+                        "$ref": "#/$defs/tiers"
                     }
-                }
+                },
+                "required": ["number"]
             },
             "items": {
                 "type": "object",
                 "description": "Data determining the items that should appear in the dungeon",
                 "properties": {
                     "number": {
-                        "type": "array",
-                        "description": "[low, high] array of possible quantity of items",
-                        "minItems": 2,
-                        "maxItems": 2,
-                        "items": {
-                            "type": "integer"
-                        }
+                        "$ref": "#/$defs/number"
                     },
                     "types": {
-                        "type": "array",
-                        "description": "An array of possible monster item to appear in the dungeon",
-                        "items": {
-                            "type": "string"
-                        },
-                        "minItems": 1
+                        "$ref": "#/$defs/types"
+                    },
+                    "tiers": {
+                        "$ref": "#/$defs/tiers"
                     }
-                }
+                },
+                "required": ["number"]
+            },
+            "equips": {
+                "type": "object",
+                "description": "Data determining the equipment that should appear in the dungeon",
+                "properties": {
+                    "number": {
+                        "$ref": "#/$defs/number"
+                    },
+                    "types": {
+                        "$ref": "#/$defs/types"
+                    },
+                    "tiers": {
+                        "$ref": "#/$defs/tiers"
+                    }
+                },
+                "required": ["number"]
             }
         },
         "required": [
@@ -102,5 +104,32 @@
             "height",
             "tier"
         ]
+    },
+    
+    "$defs": {
+        "number": {
+            "type": "array",
+            "description": "[low, high] array of possible quantity of items",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": {
+                "type": "integer"
+            }
+        },
+        "types": {
+            "type": "array",
+            "description": "An array of possible item types to appear in the dungeon",
+            "items": {
+                "type": "string"
+            },
+            "minItems": 1
+        },
+        "tiers": {
+            "type": "array",
+            "description": "An array of tiers of this item that should appear in the dungeon",
+            "items": {
+                "type": "integer"
+            }
+        }
     }
 }

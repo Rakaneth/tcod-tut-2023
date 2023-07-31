@@ -15,8 +15,11 @@ cave:
   items:
     number: [1, 5]
     types:
-      - potion
-      - scroll
+      - item
+  equips:
+    number: [0, 5]
+    types:
+      - equip
 
 cavern:
   gen: drunkard
@@ -35,7 +38,10 @@ cavern:
     number: [5, 15]
     tiers: [1, 2]
     types:
-      - potion
-      - scroll
+      - item
+  equips:
+    number: [0, 10]
+    types:
+      - equip
   
   
