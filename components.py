@@ -124,6 +124,19 @@ class UseItemOn:
     item: Entity
 
 
+@dataclass
+class Equipment:
+    """Describes a piece of equipment."""
+
+    atp: int = 0
+    dfp: int = 0
+    dmg: Tuple[int, int] | None = None
+    encumbrance: int = 0
+    durability: int = 0
+    reduction: int = 0
+    on_hit: OnHit | None = None
+
+
 # Named components - global Entity
 Messages = ("messages", list[GameMessage])
 GameVersion = ("game_version", str)
@@ -151,6 +164,9 @@ HostileTo = "hostile_to"
 HeldBy = "held_by"
 MapId = "map_id"
 UseItem = "use_item"
-
+EquippedArmor = "armor"
+EquippedWeapon = "weapon"
+EquippedTrinket = "trinket"
+Equipped = "equipped"
 
 # Relation components

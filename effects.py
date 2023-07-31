@@ -115,3 +115,33 @@ class LightningEffect(GameEffect):
         dmg = cbt.gauss_roll(self.potency)
         e.components[comps.Combatant].damage(dmg)
         add_msg_about(e, f"<entity> is struck by lightning for {dmg} damage!")
+
+
+class BurningEffect(GameEffect):
+    def __init__(self, duration: int, potency: int):
+        super().__init__("Burning", duration, potency)
+
+    def on_apply(self, e: Entity):
+        add_msg_about(e, "<entity> is burning!")
+
+    def on_tick(self, e: Entity, num_ticks: int):
+        e.components[comps.comps.Combatant].damage(self.potency)
+        add_msg_about(e, f"<entity> burns for {self.potency} damage!")
+
+    def on_merge(self, eff: GameEffect):
+        # Burn stacks duration
+        self.duration += eff.duration
+
+    def on_remove(self, e: Entity):
+        add_msg_about(e, "<entity>'s flames burn out.")
+
+
+class StunnedEffect(GameEffect):
+    def __init__(self, duration):
+        super().__init__("Stunned", duration, 0)
+
+    def on_apply(self, e: Entity):
+        add_msg_about(e, "<entity> is stunned!")
+
+    def on_remove(self, e: Entity):
+        add_msg_about(e, "<entity> is no longer stunned.")

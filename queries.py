@@ -1,8 +1,9 @@
 from __future__ import annotations
+from functools import reduce
 
 from tcod.ecs import World, Entity
 from tcod.ecs.query import WorldQuery
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 from gamemap import GameMap
 from geom import Point
 import components as comps
@@ -150,3 +151,64 @@ def inventory(e: Entity) -> list[Entity]:
 
 def trying_to_use_item(w: World):
     return w.Q[Entity, comps.UseItemOn]
+
+
+def is_equipment(e: Entity) -> bool:
+    return "equip" in e.tags
+
+
+def is_armor(e: Entity) -> bool:
+    return "armor" in e.tags
+
+
+def is_weapon(e: Entity) -> bool:
+    return "weapon" in e.tags
+
+
+def is_trinket(e: Entity) -> bool:
+    return "trinket" in e.tags
+
+
+def get_equipped(e: Entity) -> WorldQuery:
+    return e.all_of(relations=[(e, comps.Equipped, None)])
+
+
+StatValue = Literal[
+    "atp",
+    "dfp",
+    "reduction",
+]
+
+
+def get_stat(e: Entity, stat: StatValue) -> int:
+    def fn(acc: int, n: Entity) -> int:
+        n_stat = getattr(n.components[comps.Equipment], stat)
+        return acc + n_stat
+
+    comb = e.components[comps.Combatant]
+    s = reduce(fn, get_equipped(e), 0)
+
+    match stat:
+        case "atp":
+            return comb.atp + s
+        case "dfp":
+            return comb.dfp + s
+        case "reduction":
+            return comb.base_reduce + s
+
+
+def get_armor(e: Entity) -> Entity | None:
+    return e.relation_tags.get(comps.EquippedArmor)
+
+
+def get_weapon(e: Entity) -> Entity | None:
+    return e.relation_tags.get(comps.EquippedWeapon)
+
+
+def get_trinket(e: Entity) -> Entity | None:
+    return e.relation_tags.get(comps.EquippedTrinket)
+
+
+def equips_at(w: World, pt: Point, map_id: str = None):
+    base = entities_at(w, pt, map_id)
+    return filter(lambda e: "equip" in e.tags, base)

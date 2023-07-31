@@ -25,6 +25,7 @@ base_sword: &sword
 sword_iron:
   <<: *sword
   name: Iron Sword
+  desc: A trusty, reliable, well-worn blade.
   color: [32, 32, 192] 
   atp: 5
   dfp: 5
@@ -35,6 +36,7 @@ sword_iron:
 sword_flame:
   <<: *sword
   name: Flame Sword
+  desc: A fiery blade, hot to the touch and smelling of brimstone.
   color: [0xFF, 0x4D, 0x03] 
   atp: 10
   dfp: 10

@@ -1,6 +1,7 @@
 from random import choices, randint
+from typing import Callable, Literal
 from tcod.ecs import World, Entity
-from queries import blockers_at
+from queries import blockers_at, equips_at, items_at
 from geom import Point
 from yaml import load, SafeLoader
 from gamemap import GameMap, arena, drunk_walk
@@ -133,6 +134,38 @@ def make_consumable(w: World, item_id: str) -> Entity:
     return e
 
 
+def make_equipment(w: World, build_id: str) -> Entity:
+    template = EQUIPDATA.data[build_id]
+    name = template["name"]
+    desc = template["desc"]
+    glyph = template["glyph"]
+    color = template["color"]
+    tags = template["tags"]
+    encumbrance = template.get("encumbrance", 0)
+    on_hit = template.get("on_hit")
+    dmg = template.get("dmg")
+    atp = template.get("atp", 0)
+    dfp = template.get("dfp", 0)
+    reduction = template.get("reduction", 0)
+    durability = template.get("durability", 0)
+
+    c = {
+        comps.Name: name,
+        comps.Renderable: comps.Renderable(glyph, color, 2),
+        comps.Description: desc,
+        comps.Equipment: comps.Equipment(
+            atp, dfp, dmg, encumbrance, durability, reduction, on_hit
+        ),
+    }
+
+    e = w.new_entity(components=c)
+
+    for tag in tags:
+        e.tags.add(tag)
+
+    return e
+
+
 def add_map(w: World, m: GameMap):
     # w[None].components[(m.id, GameMap)] = m
     m_e = w[m.id]
@@ -146,7 +179,11 @@ def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
     if pt is None:
         pt = m.get_random_floor()
 
-    while len(list(blockers_at(w, pt))) > 0:
+    blockers_here = bool(len(list(blockers_at(w, pt))))
+    equips_here = bool(len(list(equips_at(w, pt))))
+    items_here = bool(len(list(items_at(w, pt))))
+
+    while blockers_here or equips_here or items_here:
         pt = m.get_random_floor()
 
     e.components[comps.Location] = pt
@@ -201,16 +238,21 @@ def populate_map(w: World, m: GameMap):
     tier = template["tier"]
     monster_data = template["monsters"]
     item_data = template["items"]
+    equip_data = template["equips"]
     m_low, m_high = monster_data["number"]
     i_low, i_high = item_data["number"]
+    e_low, e_high = equip_data["number"]
     num_monsters = randint(m_low, m_high)
     num_items = randint(i_low, i_high)
+    num_equips = randint(e_low, e_high)
     m_types = monster_data["types"]
     i_types = item_data["types"]
+    e_types = equip_data["types"]
     m_tiers = monster_data.get("tiers", list())
     i_tiers = item_data.get("tiers", list())
+    e_tiers = equip_data.get("tiers", list())
 
-    def cands(
+    def _cands(
         repo: GameData, type_list: list, default_tier: int, tier_list: list = None
     ):
         return {
@@ -222,27 +264,24 @@ def populate_map(w: World, m: GameMap):
             if any(tag in val.get("tags", []) for tag in type_list)
         }
 
-    monster_cands = cands(CHARDATA, m_types, tier, m_tiers)
-    item_cands = cands(ITEMDATA, i_types, tier, i_tiers)
+    monster_cands = _cands(CHARDATA, m_types, tier, m_tiers)
+    item_cands = _cands(ITEMDATA, i_types, tier, i_tiers)
+    equip_cands = _cands(EQUIPDATA, e_types, tier, e_tiers)
 
-    if monster_cands:
-        monster_choice_ids = choices(
-            list(monster_cands.keys()), list(monster_cands.values()), k=num_monsters
-        )
+    Repo = Literal["monsters", "items", "equips"]
 
-        for m_id in monster_choice_ids:
-            monster = make_char(w, m_id)
-            place_entity(w, monster, m.id)
-    else:
-        gl.write_log(w, "factory", f"No monster choices for map {m.id}; check data")
+    def _popu(tbl: dict, fn: Callable[[World, str], Entity], num: int, repo: Repo):
+        if tbl:
+            choice_ids = choices(list(tbl.keys()), list(tbl.values()), k=num)
 
-    if item_cands:
-        item_choice_ids = choices(
-            list(item_cands.keys()), list(item_cands.values()), k=num_items
-        )
+            for c_id in choice_ids:
+                thing = fn(w, c_id)
+                place_entity(w, thing, m.id)
+        else:
+            gl.write_log(
+                w, "factory", f"No valid choices for {repo} in map {m.id}; check data"
+            )
 
-        for i_id in item_choice_ids:
-            item = make_consumable(w, i_id)
-            place_entity(w, item, m.id)
-    else:
-        gl.write_log(w, "factory", f"No item choices for map {m.id}; check data")
+    _popu(monster_cands, make_char, num_monsters, "monsters")
+    _popu(item_cands, make_consumable, num_items, "items")
+    _popu(equip_cands, make_equipment, num_equips, "equips")
