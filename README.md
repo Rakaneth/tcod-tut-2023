@@ -35,6 +35,7 @@ Equipment - and *most* of the necessary combat adjustments - are in. The player 
 
 * Weapons, armor, and trinkets added
 * Weapons have their own damage values, which are used if the player is armed
+* Some weapons have on-hit effects. (Not yet implemented)
 * Armor has a reduction value that reduces *most* damage by that value; damage-over-time effects are not affected.
 * Armor has a durability value that is reduced whenever damage is received in that armor. At 0, the armor is destroyed. (Not yet implemented)
 * Armor has an encumbrance value that slows down movement. (Not yet implemented)
@@ -50,6 +51,7 @@ Equipment - and *most* of the necessary combat adjustments - are in. The player 
 * [ ] Investigate lockup occuring sometimes during world generation
 * [ ] Implement encumbrance
 * [ ] Implement durability
+* [ ] Implement weapon on-hit effects
 
 ### Stretch
 
