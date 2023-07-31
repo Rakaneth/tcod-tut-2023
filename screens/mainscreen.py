@@ -127,6 +127,11 @@ class MainScreen(Screen):
                     e.components[comps.Actor].energy -= 100
                     write_log(self.world, "action", f"{q.name(e)} moved")
 
+                    if e.components.get(comps.InventoryMax) is not None:
+                        items = q.items_at(self.world, e.components[comps.Location])
+                        for item in items:
+                            u.pick_up_item(item, e)
+
             e.components.pop(comps.TryMove)
 
     def get_npc_moves(self):
@@ -233,8 +238,8 @@ class MainScreen(Screen):
                     u.apply_item(item, e)
                     item.clear()
                 case "read":
-                    dur = item_comp.eff_duration + wl_mod
-                    pot = item_comp.eff_potency + wl_mod // 2
+                    dur = item_comp.eff_duration + wl_mod // 2
+                    pot = item_comp.eff_potency + wl_mod
                     if q.is_visible(e):
                         if e is target:
                             u.add_msg_about(e, f"<entity> reads {item_name}!")
@@ -331,10 +336,6 @@ class MainScreen(Screen):
                     return
 
                 self.mode = GameStates.MAIN
-            case GameStates.MAIN:
-                items = q.items_at(self.world, self.player.components[comps.Location])
-                for item in items:
-                    u.pick_up_item(item, self.player)
             case GameStates.ITEM:
                 item_to_use: Entity = self.item_menu.selected_val
                 item_comp = item_to_use.components[comps.Item]

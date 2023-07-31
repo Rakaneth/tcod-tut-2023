@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 from random import randint
 from tcod.ecs import Entity
-from components import Combatant
+
+import components as comps
 
 
 @dataclass(frozen=True)
@@ -27,8 +28,8 @@ def pct_chance(chance: int) -> bool:
 
 
 def bump_attack(attacker: Entity, defender: Entity) -> AttackResult:
-    atk_stat = attacker.components[Combatant].atp
-    def_stat = defender.components[Combatant].dfp
+    atk_stat = attacker.components[comps.Combatant].atp
+    def_stat = defender.components[comps.Combatant].dfp
 
     roll = pct()
     target = (atk_stat * (100 - def_stat)) // 100
@@ -46,5 +47,5 @@ def gauss_roll(low: int, high: int) -> int:
 
 
 def roll_dmg(attacker: Entity) -> int:
-    low, high = attacker.components[Combatant].dmg
+    low, high = attacker.components[comps.Combatant].dmg
     return gauss_roll(low, high)

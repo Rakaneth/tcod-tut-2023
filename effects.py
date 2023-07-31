@@ -4,6 +4,7 @@ from tcod.ecs import Entity
 from updates import add_msg_about
 
 import components as comps
+import combat as cbt
 
 
 class GameEffect:
@@ -111,5 +112,6 @@ class LightningEffect(GameEffect):
         super().__init__("Lightning", 0, potency)
 
     def on_apply(self, e: Entity):
-        e.components[comps.Combatant].damage(self.potency)
-        add_msg_about(e, f"<entity> is struck by lightning for {self.potency} damage!")
+        dmg = cbt.gauss_roll(self.potency)
+        e.components[comps.Combatant].damage(dmg)
+        add_msg_about(e, f"<entity> is struck by lightning for {dmg} damage!")
