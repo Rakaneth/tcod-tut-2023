@@ -84,7 +84,7 @@ vajra:
   <<: *mace
   name: Vajra
   desc: A holy scepter wielded by immortals.
-  color: [0xFF, 0x9F, 0]
+  color: &gold [0xFF, 0x9F, 0]
   atp: -5
   dfp: 0
   dmg: [2, 12]
@@ -232,8 +232,20 @@ plate:
   tier: 2
   freq: 2
 
+# Trinkets
 
-
-
-
-
+brave_necklace:
+  name: Proof of Bravery
+  desc: A silver necklace with a golden cross. Said to be a sign of bravery.
+  glyph: '"'
+  color: *gold
+  tags:
+    - trinket
+    - item
+    - equip
+  atp: 5
+  dfp: 5
+  reduction: 1
+  tier: 3
+  freq: 1
+  
