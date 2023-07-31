@@ -25,7 +25,7 @@ base_sword: &sword
 sword_iron:
   <<: *sword
   name: Iron Sword
-  color: &iron [32, 32, 192] 
+  color: [32, 32, 192] 
   atp: 5
   dfp: 5
   dmg: [1, 6]
@@ -69,7 +69,7 @@ mace_iron:
   <<: *mace
   name: Iron Mace
   desc: A sturdy mace forged from iron. Good for stunning foes.
-  color: *iron
+  color: [32, 32, 192]
   atp: 0
   dfp: 0
   dmg: [1, 8]
@@ -84,7 +84,7 @@ vajra:
   <<: *mace
   name: Vajra
   desc: A holy scepter wielded by immortals.
-  color: &gold [0xFF, 0x9F, 0]
+  color: [0xFF, 0x9F, 0]
   atp: -5
   dfp: 0
   dmg: [2, 12]
@@ -117,7 +117,7 @@ staff_oak:
   <<: *staff
   name: Oak Staff
   desc: A long, unshod oaken staff. A wanderer's boon companion.
-  color: &brown [192, 101, 64]
+  color: [192, 101, 64]
   atp: 5
   dfp: 10
   dmg: [1, 4]
@@ -162,7 +162,7 @@ leather:
   <<: *armor_light
   name: Leather Armor
   desc: A boiled leather jerkin.
-  color: *brown
+  color: [192, 101, 64]
   encumbrance: 5
   tier: 1
   freq: 4
@@ -194,7 +194,7 @@ chain:
   <<: *armor_med
   name: Chainmail
   desc: Links of heavy chain, forged into a hauberk.
-  color: *iron
+  color: [32, 32, 192]
   durability: 90
   encumbrance: 15
   tier: 2
@@ -204,7 +204,7 @@ scale:
   <<: *armor_med
   name: Scale Mail
   desc: Heavy metal scales arranged in a lamellar pattern.
-  color: *brown
+  color: [192, 101, 64]
   durability: 65
   encumbrance: 8
   tier: 1
@@ -228,7 +228,7 @@ plate:
   <<: *armor_heavy
   name: Full Plate
   desc: A full suit of heavy plate armor.
-  color: *iron
+  color: [32, 32, 192]
   tier: 2
   freq: 2
 
@@ -238,14 +238,14 @@ brave_necklace:
   name: Proof of Bravery
   desc: A silver necklace with a golden cross. Said to be a sign of bravery.
   glyph: '"'
-  color: *gold
-  tags:
-    - trinket
-    - item
-    - equip
+  color: [0xFF, 0x9F, 0]
   atp: 5
   dfp: 5
   reduction: 1
   tier: 3
   freq: 1
+  tags:
+    - trinket
+    - item
+    - equip
   
