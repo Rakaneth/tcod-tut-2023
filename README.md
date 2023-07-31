@@ -27,7 +27,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 ## 2023-7-31
 
-I am ahead still, but since I'm anticipating having a lot less time soon, I'm going to continue to forge ahead and even possibly finish ahead of schedule. Because I'm driving to finish early, I will no longer be updating by week, since I'll be moving from task to task.
+I am ahead still, but since I'm anticipating having a lot less time soon, I'm going to continue to forge ahead and even possibly finish ahead of schedule. Because I'm driving to finish early, I will no longer be updating by week, since I'll be moving from task to task in a different order.
 
 Equipment - and *most* of the necessary combat adjustments - are in. The player can pick up, equip, and remove equipment, seeing the adjustments to stats in real time. Equipment uses inventory slots (of which the player has 8). 
 
@@ -50,6 +50,11 @@ Equipment - and *most* of the necessary combat adjustments - are in. The player 
 * [ ] Investigate lockup occuring sometimes during world generation
 * [ ] Implement encumbrance
 * [ ] Implement durability
+
+### Stretch
+
+* [ ] Separate screen/dialog for full character sheet
+* [ ] More ergonomic keyboard/mouse shortcuts
 
 ### Screenshots
 
