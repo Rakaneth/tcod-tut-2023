@@ -8,30 +8,25 @@
         "type": "object",
         "properties": {
             "name": {
-                "description": "The display name of the item.",
-                "type": "string"
+                "$ref": "./common.schema.json#/definitions/name"
             },
             "glyph": {
-                "description": "The single character being used to represent the item on screen",
-                "type":"string",
-                "maxLength": 1,
-                "minLength": 1
+                "$ref": "./common.schema.json#/definitions/glyph"
             },
             "desc": {
-                "description": "The in-game description of the item",
-                "type": "string"
+                "$ref": "./common.schema.json#/definitions/desc"
             },
             "color": {
-                "description": " An [R, G, B] array describing the color of the item",
-                "type": "array",
-                "minItems": 3,
-                "maxItems": 3,
-                "items": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 255
-                },
-                "default": [255, 255, 255]
+                "$ref": "./common.schema.json#/definitions/color"
+            },
+            "tags": {
+                "$ref": "./common.schema.json#/definitions/tags"
+            },
+            "tier": {
+                "$ref": "./common.schema.json#/definitions/tier"
+            },
+            "freq": {
+                "$ref": "./common.schema.json#/definitions/freq"
             },
             "delivery": {
                 "description": "The delivery method of the item",
@@ -53,22 +48,6 @@
                 "description": "The potency of the item's effect",
                 "type": "integer",
                 "minimum": 1
-            },
-            "tier": {
-                "description": "A measure of the item's power",
-                "type": "integer"
-            },
-            "freq": {
-                "description": "How frequently the item appears relative to others on its tier",
-                "type": "integer"
-            },
-            "tags": {
-                "description": "Tags used to group items together",
-                "type": "array",
-                "items": {
-                    "type": "string"
-                },
-                "default": []
             }
         },
         "required": [

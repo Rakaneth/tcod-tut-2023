@@ -7,36 +7,27 @@
     "additionalProperties": {
         "type": "object",
         "properties": {
-            "name": {
-                "description": "The display name of the creature.",
-                "type": "string"
+            "glyph": {
+                "$ref": "./common.schema.json#/definitions/glyph"
+            },
+            "desc": {
+                "$ref": "./common.schema.json#/definitions/desc"
+            },
+            "color": {
+                "$ref": "./common.schema.json#/definitions/color"
+            },
+            "tags": {
+                "$ref": "./common.schema.json#/definitions/tags"
+            },
+            "tier": {
+                "$ref": "./common.schema.json#/definitions/tier"
+            },
+            "freq": {
+                "$ref": "./common.schema.json#/definitions/freq"
             },
             "full_name": {
                 "description": "The full name of the creature, if it has one",
                 "type": "string"
-            },
-            "desc": {
-                "description": "A description of the creature",
-                "type": "string"
-            },
-            "glyph": {
-                "description": "The single character being used to represent the creature on screen",
-                "type": "string",
-                "maxLength": 1,
-                "minLength": 1,
-                "default": "@"
-            },
-            "color": {
-                "description": "An [R, G, B] array describing the color of the creature.",
-                "type": "array",
-                "maxItems": 3,
-                "minItems": 3,
-                "items": {
-                    "type": "integer",
-                    "minimum": 0,
-                    "maximum": 255
-                },
-                "default": [255, 255, 255]
             },
             "speed": {
                 "description": "The speed of the creature. Higher is faster.",
@@ -74,22 +65,6 @@
             },
             "wl": {
                 "description": "The creature's willpower and charisma",
-                "type": "integer"
-            },
-            "tier": {
-                "description": "A measure of the creature's power. Determines which dungeons it will appear in.",
-                "type": "integer"
-            },
-            "tags": {
-                "description": "Tags used to group creatures together.",
-                "type": "array",
-                "items": {
-                    "type" : "string"
-                },
-                "default": []
-            },
-            "freq": {
-                "description": "How frequently the creature should appear. Higher means more frequent",
                 "type": "integer"
             },
             "on_hit": {

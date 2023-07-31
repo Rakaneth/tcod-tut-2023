@@ -13,6 +13,7 @@ potion_base: &healing
   tags:
     - potion
     - healing
+    - item
 
 potion_healing_minor:
   <<: *healing
@@ -49,6 +50,7 @@ potion_poison_base: &poison
     - potion
     - thrown
     - poison
+    - item
 
 potion_poison_minor:
   <<: *poison
@@ -82,6 +84,7 @@ scroll_base: &scroll
   tags:
     - scroll
     - magic
+    - item
   
 scroll_lightning:
   <<: *scroll
