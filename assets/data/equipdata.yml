@@ -1,0 +1,239 @@
+# yaml-language-server: $schema=equip.schema.json
+---
+# Weapons
+
+base_weapon: &weapon
+  name: Weapon
+  glyph: '_'
+  color: [255, 255, 255]
+  tags:
+    - weapon
+    - item
+    - equip
+  
+base_sword: &sword
+  <<: *weapon
+  name: Sword
+  glyph: '|'
+  tags:
+    - weapon
+    - item
+    - equip
+    - sword
+
+
+sword_iron:
+  <<: *sword
+  name: Iron Sword
+  color: &iron [32, 32, 192] 
+  atp: 5
+  dfp: 5
+  dmg: [1, 6]
+  tier: 1
+  freq: 5
+
+sword_flame:
+  <<: *sword
+  name: Flame Sword
+  color: [0xFF, 0x4D, 0x03] 
+  atp: 10
+  dfp: 10
+  dmg: [2, 8]
+  tier: 2
+  on_hit:
+    burning:
+      duration: 3
+      potency: 5
+      chance: 20
+  freq: 1
+  tags:
+    - weapon
+    - item
+    - equip
+    - sword
+    - fire
+
+# Maces
+
+base_mace: &mace
+  <<: *weapon
+  name: Mace
+  glyph: '-'
+  tags:
+    - weapon
+    - item
+    - equip
+    - mace
+
+mace_iron:
+  <<: *mace
+  name: Iron Mace
+  desc: A sturdy mace forged from iron. Good for stunning foes.
+  color: *iron
+  atp: 0
+  dfp: 0
+  dmg: [1, 8]
+  tier: 1
+  freq: 5
+  on_hit:
+    stunned:
+      duration: 1
+      chance: 10
+
+vajra:
+  <<: *mace
+  name: Vajra
+  desc: A holy scepter wielded by immortals.
+  color: [0xFF, 0x9F, 0]
+  atp: -5
+  dfp: 0
+  dmg: [2, 12]
+  tier: 2
+  freq: 1
+  on_hit:
+    stunned:
+      duration: 2
+      chance: 20
+  tags:
+    - weapon
+    - item
+    - equip
+    - mace
+    - holy
+
+# Staves
+
+base_staff: &staff
+  <<: *weapon
+  name: Staff
+  glyph: '_'
+  tags:
+    - weapon
+    - item
+    - equip
+    - staff
+
+staff_oak:
+  <<: *staff
+  name: Oak Staff
+  desc: A long, unshod oaken staff. A wanderer's boon companion.
+  color: &brown [192, 101, 64]
+  atp: 5
+  dfp: 10
+  dmg: [1, 4]
+  tier: 1
+  freq: 4
+
+staff_ash:
+  <<: *staff
+  name: Ash Staff
+  desc: A finely-crafted staff made from ash wood.
+  color: [0xB2, 0xBE, 0xB5]
+  atp: 15
+  dfp: 20
+  dmg: [1, 6]
+  tier: 2
+  freq: 2
+
+# Light Armors
+
+base_armor: &armor
+  name: Armor
+  glyph: ']'
+  color: [255, 255, 255]
+  tags:
+    - armor
+    - equip
+    - item
+  
+base_armor_light: &armor_light
+  <<: *armor
+  glyph: '('
+  reduction: 1
+  durability: 50
+  encumbrance: 0
+  tags:
+    - armor
+    - equip
+    - item
+    - light
+  
+leather:
+  <<: *armor_light
+  name: Leather Armor
+  desc: A boiled leather jerkin.
+  color: *brown
+  encumbrance: 5
+  tier: 1
+  freq: 4
+
+padded:
+  <<: *armor_light
+  name: Padded Vest
+  desc: A padded vest.
+  color: [192, 192, 192]
+  durability: 35
+  tier: 1
+  freq: 5
+
+# Medium Armors
+
+base_armor_med: &armor_med
+  <<: *armor
+  glyph: '{'
+  reduction: 3
+  durability: 75
+  encumbrance: 10
+  tags:
+    - armor
+    - equip
+    - item
+    - medium
+  
+chain:
+  <<: *armor_med
+  name: Chainmail
+  desc: Links of heavy chain, forged into a hauberk.
+  color: *iron
+  durability: 90
+  encumbrance: 15
+  tier: 2
+  freq: 3
+
+scale:
+  <<: *armor_med
+  name: Scale Mail
+  desc: Heavy metal scales arranged in a lamellar pattern.
+  color: *brown
+  durability: 65
+  encumbrance: 8
+  tier: 1
+  freq: 2
+
+# Heavy Armors
+
+base_armor_heavy: &armor_heavy
+  <<: *armor
+  glyph: '['
+  reduction: 5
+  durability: 100
+  encumbrance: 15
+  tags:
+    - armor
+    - item
+    - equip
+    - heavy
+  
+plate:
+  <<: *armor_heavy
+  name: Full Plate
+  desc: A full suit of heavy plate armor.
+  color: *iron
+  tier: 2
+  freq: 2
+
+
+
+
+
+

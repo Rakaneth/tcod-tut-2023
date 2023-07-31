@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://rakaneth.com/equip.schema.json",
+    "title": "Equip Item Data",
+    "description": "Equipment data in the equipdata.yml file",
+    "type": "object",
+    "additionalProperties": {
+        "type": "object",
+        "properties": {
+            "name": {
+                "$ref": "./common.schema.json#/definitions/name"
+            },
+            "glyph": {
+                "$ref": "./common.schema.json#/definitions/glyph"
+            },
+            "desc": {
+                "$ref": "./common.schema.json#/definitions/desc"
+            },
+            "color": {
+                "$ref": "./common.schema.json#/definitions/color"
+            },
+            "tags": {
+                "$ref": "./common.schema.json#/definitions/tags"
+            },
+            "tier": {
+                "$ref": "./common.schema.json#/definitions/tier"
+            },
+            "freq": {
+                "$ref": "./common.schema.json#/definitions/freq"
+            },
+            "atp": {
+                "description": "Attack power modifier of the equipment",
+                "type": "integer"
+            },
+            "dfp": {
+                "description": "Defense power modifier of the equipment",
+                "type": "integer"
+            },
+            "dmg": {
+                "description": "[low, high] base damage of the equipment (usually weapon)",
+                "type": "array",
+                "minLength": 2,
+                "maxLength": 2,
+                "items": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            },
+            "on_hit": {
+                "$ref": "./char.schema.json#/additionalProperties/properties/on_hit"
+            },
+            "reduction": {
+                "description": "How much damage the equipment (usually armor) can reduce from an enemy",
+                "type": "integer",
+                "minimum": 0
+            },
+            "durability": {
+                "description": "How much damage the equipment (usually armor) can absorb before it breaks.",
+                "type": "integer",
+                "default": 50
+            },
+            "encumbrance": {
+                "description": "How much the equipment (usually armor) hinders movement",
+                "type": "integer"
+            }
+        },
+        "required": [
+            "name",
+            "glyph",
+            "color",
+            "tags"
+        ]
+    }
+}
