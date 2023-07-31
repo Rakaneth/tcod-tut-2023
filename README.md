@@ -17,7 +17,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 * [x] Part 10 - Saving and loading
 * [ ] Part 11 - Delving into the Dungeon
 * [ ] Part 12 - Increasing Difficulty
-* [ ] Part 13 - Gearing up
+* [-] Part 13 - Gearing up
 
 # Libraries used
 
@@ -25,9 +25,31 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # DevLog
 
-## Week 5
+## 2023-7-31
 
-I am ahead still, but since I'm anticipating having a lot less time soon, I'm going to continue to forge ahead and even possibly finish ahead of schedule.
+I am ahead still, but since I'm anticipating having a lot less time soon, I'm going to continue to forge ahead and even possibly finish ahead of schedule. Because I'm driving to finish early, I will no longer be updating by week, since I'll be moving from task to task.
+
+Equipment - and *most* of the necessary combat adjustments - are in. The player can pick up, equip, and remove equipment, seeing the adjustments to stats in real time. Equipment uses inventory slots (of which the player has 8). 
+
+### Combat Improvements
+
+* Weapons, armor, and trinkets added
+* Weapons have their own damage values, which are used if the player is armed
+* Armor has a reduction value that reduces *most* damage by that value; damage-over-time effects are not affected.
+* Armor has a durability value that is reduced whenever damage is received in that armor. At 0, the armor is destroyed. (Not yet implemented)
+* Armor has an encumbrance value that slows down movement. (Not yet implemented)
+* The player can have one weapon, one armor, and one trinket equipped.
+
+### UI Improvements
+
+* Equipment shows up in the inventory screen.
+* UI updates stat values correctly when switching equipment.
+
+### TODO
+
+* [ ] Investigate lockup occuring sometimes during world generation
+* [ ] Implement encumbrance
+* [ ] Implement durability
 
 ### Screenshots
 

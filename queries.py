@@ -3,7 +3,7 @@ from functools import reduce
 
 from tcod.ecs import World, Entity
 from tcod.ecs.query import WorldQuery
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Literal, Tuple
 from gamemap import GameMap
 from geom import Point
 import components as comps
@@ -177,6 +177,10 @@ def get_equipped(e: Entity) -> WorldQuery:
     return e.world.Q.all_of(relations=[(e, comps.Equipped, None)])
 
 
+def is_equipped_to(item: Entity, e: Entity):
+    return item in e.relation_tags_many[comps.Equipped]
+
+
 StatValue = Literal[
     "atp",
     "dfp",
@@ -202,17 +206,30 @@ def get_stat(e: Entity, stat: StatValue) -> int:
 
 
 def get_armor(e: Entity) -> Entity | None:
-    return e.relation_tags.get(comps.EquippedArmor)
+    return e.relation_tag.get(comps.EquippedArmor)
 
 
 def get_weapon(e: Entity) -> Entity | None:
-    return e.relation_tags.get(comps.EquippedWeapon)
+    return e.relation_tag.get(comps.EquippedWeapon)
 
 
 def get_trinket(e: Entity) -> Entity | None:
-    return e.relation_tags.get(comps.EquippedTrinket)
+    return e.relation_tag.get(comps.EquippedTrinket)
 
 
 def equips_at(w: World, pt: Point, map_id: str = None):
     base = entities_at(w, pt, map_id)
     return filter(lambda e: "equip" in e.tags, base)
+
+
+def dmg(e: Entity) -> Tuple[int, int]:
+    maybe_wpn = get_weapon(e)
+    comb = e.components[comps.Combatant]
+    st = comb.str_mod
+    dmg = comb.dmg
+
+    if maybe_wpn:
+        eq_low, eq_high = maybe_wpn.components[comps.Equipment].dmg
+        return (eq_low + st, eq_high + st)
+    else:
+        return dmg

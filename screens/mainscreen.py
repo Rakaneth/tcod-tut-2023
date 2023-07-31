@@ -172,16 +172,19 @@ class MainScreen(Screen):
                 f"{atk_name} bumping {def_name}: hit={result.hit}, margin={result.margin}",  # noqa: E501
             )
             if result.hit:
-                raw_dmg = cbt.roll_dmg(attacker)
-                defender.components[comps.Combatant].damage(raw_dmg)
+                dmg_l, dmg_h = q.dmg(attacker)
+                raw_dmg = cbt.gauss_roll(dmg_l, dmg_h)
+                def_redu = q.get_stat(defender, "reduction")
+                final_dmg = max(0, raw_dmg - def_redu)
+                defender.components[comps.Combatant].damage(final_dmg)
                 u.add_msg_about(
                     attacker,
-                    f"<entity> hits {def_name} for {raw_dmg} damage!",
+                    f"<entity> hits {def_name} for {final_dmg} damage!",
                 )
                 write_log(
                     self.world,
                     "combat",
-                    f"{atk_name} bumps {def_name} for {raw_dmg} raw",
+                    f"{atk_name} bumps {def_name} for {raw_dmg} raw, {final_dmg} after armor reduction",  # noqa: E501
                 )
                 attacker.components[comps.CheckOnHits] = defender
             else:
@@ -231,12 +234,10 @@ class MainScreen(Screen):
                             e, f"<entity> throws {item_name} at {target_name}!"
                         )
                     u.apply_item(item, target)
-                    item.clear()
                 case "drink":
                     if q.is_visible(e):
                         u.add_msg_about(e, f"<entity> drinks {item_name}.")
                     u.apply_item(item, e)
-                    item.clear()
                 case "read":
                     dur = item_comp.eff_duration + wl_mod // 2
                     pot = item_comp.eff_potency + wl_mod
@@ -249,7 +250,7 @@ class MainScreen(Screen):
                                 f"<entity> reads {item_name}, pointing at {target_name}!",  # noqa: E501
                             )
                     u.apply_item(item, target, duration=dur, potency=pot)
-
+            item.clear()
             write_log(
                 self.world, "item", f"{user_name} uses {item_name} on {target_name}"
             )
@@ -339,7 +340,10 @@ class MainScreen(Screen):
             case GameStates.ITEM:
                 item_to_use: Entity = self.item_menu.selected_val
                 if q.is_equipment(item_to_use):
-                    u.equip_item(item_to_use, self.player)
+                    if q.is_equipped_to(item_to_use, self.player):
+                        u.unequip_item(item_to_use, self.player)
+                    else:
+                        u.equip_item(item_to_use, self.player)
                 else:
                     item_comp = item_to_use.components[comps.Item]
                     if item_comp.item_delivery == "drink":
@@ -363,7 +367,7 @@ class MainScreen(Screen):
         inv = q.inventory(self.player)
         if inv:
             opts_dict = {
-                f"{i+1} - {q.name(e)}{' (e)' if e in list(q.get_equipped(self.player)) else ''}": e
+                f"{i+1} - {q.name(e)}{' (e)' if e in list(q.get_equipped(self.player)) else ''}": e  # noqa: E501
                 for i, e in enumerate(inv)
             }
             self.item_menu = ui.MenuWithValues(
@@ -404,6 +408,7 @@ class MainScreen(Screen):
         atp = q.get_stat(self.player, "atp")
         dfp = q.get_stat(self.player, "dfp")
         redu = q.get_stat(self.player, "reduction")
+        dmg_l, dmg_h = q.dmg(self.player)
 
         con.print(ui.MAP_W, 0, f"{name}")
         con.print(ui.MAP_W, 1, f"{map_name} - {loc}")
@@ -411,7 +416,7 @@ class MainScreen(Screen):
         self.draw_hp_bar(ui.MAP_W + len(hp_txt), 2, 8, self.player, con)
         con.print(ui.MAP_W, 3, f"ST: {stats.st} AG: {stats.ag} WL: {stats.wl}")
         con.print(ui.MAP_W, 4, f"ATP: {atp} DFP: {dfp}")
-        con.print(ui.MAP_W, 5, f"DMG: {stats.dmg_str} RED: {redu}")
+        con.print(ui.MAP_W, 5, f"DMG: {dmg_l}-{dmg_h} RED: {redu}")
         con.print(ui.MAP_W, 6, f"Weapon: {wpn_txt}")
         con.print(ui.MAP_W, 7, f"Armor: {arm_text}")
         con.print(ui.MAP_W, 8, f"Trinket:  {trink_text}")

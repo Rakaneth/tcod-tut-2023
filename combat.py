@@ -44,8 +44,3 @@ def gauss_roll(low: int, high: int) -> int:
         acc += randint(low, high)
 
     return acc // 3
-
-
-def roll_dmg(attacker: Entity) -> int:
-    low, high = attacker.components[comps.Combatant].dmg
-    return gauss_roll(low, high)

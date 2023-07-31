@@ -20,6 +20,8 @@ def kill(e: Entity):
         e.components.pop(comps.TryMove)
     if comps.CollidesWith in e.components:
         e.components.pop(comps.CollidesWith)
+    for item in q.inventory(e):
+        drop_item(item, e)
     write_log(e.world, "kill", f"{q.name(e)} dies")
 
 
@@ -122,33 +124,46 @@ def apply_item(
     apply_effect(target, ef)
 
 
-def unequip_item(item: Entity, tag: Any, wielder: Entity):
-    item.components[comps.Location] = wielder.components[comps.Location]
-    wielder.relation_tags.pop(tag)
-    wielder.relation_tags_many[comps.Equipped].discard(item)
-
-
 def _eq_item(item: Entity, tag: Any, wielder: Entity):
-    wielder.relation_tags[tag] = item
+    wielder.relation_tag[tag] = item
     wielder.relation_tags_many[comps.Equipped].add(item)
+    write_log(wielder.world, "equip", f"{q.name(wielder)} equips {q.name(item)}")
+
+
+def _uneq_item(item: Entity, tag: Any, wielder: Entity):
+    wielder.relation_tag.pop(tag)
+    wielder.relation_tags_many[comps.Equipped].discard(item)
+    write_log(wielder.world, "equip", f"{q.name(wielder)} unequips {q.name(item)}")
+
+
+def unequip_item(item: Entity, wielder: Entity):
+    if q.is_armor(item):
+        _uneq_item(item, comps.EquippedArmor, wielder)
+    elif q.is_weapon(item):
+        _uneq_item(item, comps.EquippedWeapon, wielder)
+    elif q.is_trinket(item):
+        _uneq_item(item, comps.EquippedTrinket, wielder)
+
+    if q.is_visible(wielder):
+        add_msg_about(wielder, f"<entity> removes {q.name(item)}.")
 
 
 def equip_item(item: Entity, wielder: Entity):
     if q.is_armor(item):
         prev_armor = q.get_armor(wielder)
-        _eq_item(item, comps.EquippedArmor, wielder)
-
         if prev_armor:
-            unequip_item(prev_armor, comps.EquippedArmor, wielder)
+            _uneq_item(prev_armor, comps.EquippedArmor, wielder)
+        _eq_item(item, comps.EquippedArmor, wielder)
     elif q.is_weapon(item):
         prev_weapon = q.get_weapon(wielder)
-        _eq_item(item, comps.EquippedWeapon, wielder)
-
         if prev_weapon:
-            unequip_item(prev_weapon, comps.EquippedWeapon, wielder)
-    elif q.q.is_trinket(item):
+            _uneq_item(prev_weapon, comps.EquippedWeapon, wielder)
+        _eq_item(item, comps.EquippedWeapon, wielder)
+    elif q.is_trinket(item):
         prev_trink = q.get_trinket(wielder)
+        if prev_trink:
+            _uneq_item(prev_trink, comps.EquippedTrinket, wielder)
         _eq_item(item, comps.EquippedTrinket, wielder)
 
-        if prev_trink:
-            unequip_item(prev_weapon, comps.EquippedTrinket, wielder)
+    if q.is_visible(wielder):
+        add_msg_about(wielder, f"<entity> equips {q.name(item)}.")
