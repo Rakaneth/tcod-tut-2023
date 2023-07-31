@@ -23,6 +23,7 @@ DATAFOLDER = "./assets/data/"
 CHARDATA = GameData(f"{DATAFOLDER}characterdata.yml")
 MAPDATA = GameData(f"{DATAFOLDER}/mapdata.yml")
 ITEMDATA = GameData(f"{DATAFOLDER}/itemdata.yml")
+EQUIPDATA = GameData(f"{DATAFOLDER}/equipdata.yml")
 
 
 def make_char(
