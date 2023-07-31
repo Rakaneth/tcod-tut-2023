@@ -338,27 +338,34 @@ class MainScreen(Screen):
                 self.mode = GameStates.MAIN
             case GameStates.ITEM:
                 item_to_use: Entity = self.item_menu.selected_val
-                item_comp = item_to_use.components[comps.Item]
-                if item_comp.item_delivery == "drink":
-                    target = self.player
+                if q.is_equipment(item_to_use):
+                    u.equip_item(item_to_use, self.player)
                 else:
-                    target = self.select_target
+                    item_comp = item_to_use.components[comps.Item]
+                    if item_comp.item_delivery == "drink":
+                        target = self.player
+                    else:
+                        target = self.select_target
 
-                if not target:
-                    u.add_msg(self.world, "(No target for selected item.)", TARGET)
-                    self.mode = GameStates.MAIN
-                    return
+                    if not target:
+                        u.add_msg(self.world, "(No target for selected item.)", TARGET)
+                        self.mode = GameStates.MAIN
+                        return
 
-                self.player.components[comps.UseItemOn] = comps.UseItemOn(
-                    target, item_to_use
-                )
+                    self.player.components[comps.UseItemOn] = comps.UseItemOn(
+                        target, item_to_use
+                    )
+
                 self.mode = GameStates.MAIN
                 self.engine.should_update = True
 
     def on_inventory(self):
         inv = q.inventory(self.player)
         if inv:
-            opts_dict = {f"{i+1} - {q.name(e)}": e for i, e in enumerate(inv)}
+            opts_dict = {
+                f"{i+1} - {q.name(e)}{' (e)' if e in list(q.get_equipped(self.player)) else ''}": e
+                for i, e in enumerate(inv)
+            }
             self.item_menu = ui.MenuWithValues(
                 self.engine.root, opts_dict, title="Inventory"
             )
@@ -387,15 +394,28 @@ class MainScreen(Screen):
         target_name = (
             self.select_target.components[comps.Name] if self.select_target else "None"
         )
+        wpn = q.get_weapon(self.player)
+        arm = q.get_armor(self.player)
+        trink = q.get_trinket(self.player)
+        wpn_txt = q.name(wpn) if wpn else "None"
+        arm_text = q.name(arm) if arm else "None"
+        trink_text = q.name(trink) if trink else "None"
+
+        atp = q.get_stat(self.player, "atp")
+        dfp = q.get_stat(self.player, "dfp")
+        redu = q.get_stat(self.player, "reduction")
 
         con.print(ui.MAP_W, 0, f"{name}")
         con.print(ui.MAP_W, 1, f"{map_name} - {loc}")
         con.print(ui.MAP_W, 2, hp_txt)
         self.draw_hp_bar(ui.MAP_W + len(hp_txt), 2, 8, self.player, con)
         con.print(ui.MAP_W, 3, f"ST: {stats.st} AG: {stats.ag} WL: {stats.wl}")
-        con.print(ui.MAP_W, 4, f"ATP: {stats.atp} DFP: {stats.dfp}")
-        con.print(ui.MAP_W, 5, f"DMG: {stats.dmg_str}")
-        con.print(ui.MAP_W, 6, f"Target: {target_name}")
+        con.print(ui.MAP_W, 4, f"ATP: {atp} DFP: {dfp}")
+        con.print(ui.MAP_W, 5, f"DMG: {stats.dmg_str} RED: {redu}")
+        con.print(ui.MAP_W, 6, f"Weapon: {wpn_txt}")
+        con.print(ui.MAP_W, 7, f"Armor: {arm_text}")
+        con.print(ui.MAP_W, 8, f"Trinket:  {trink_text}")
+        con.print(ui.MAP_W, 9, f"Target: {target_name}")
 
     def draw_fx(self, con: Console):
         effects = list(
@@ -423,13 +443,13 @@ class MainScreen(Screen):
 
             es = list(q.entities_at(self.world, lt))
             if es and self.cur_map.visible[lt.x, lt.y]:
-                con.print(ui.MAP_W, 7, "Things here:")
+                con.print(ui.MAP_W, 10, "Things here:")
                 for i, e in enumerate(es):
                     name = e.components[comps.Name]
                     dead = q.is_dead(e)
                     if dead:
                         name = f"{name} (dead)"
-                    y = 8 + i
+                    y = 11 + i
                     con.print(
                         ui.MAP_W,
                         y,

@@ -124,14 +124,13 @@ def apply_item(
 
 def unequip_item(item: Entity, tag: Any, wielder: Entity):
     item.components[comps.Location] = wielder.components[comps.Location]
-    wielder.relation_tags.pop[tag]
+    wielder.relation_tags.pop(tag)
     wielder.relation_tags_many[comps.Equipped].discard(item)
 
 
 def _eq_item(item: Entity, tag: Any, wielder: Entity):
     wielder.relation_tags[tag] = item
-    wielder.relation_tags_many[comps.Equipped].add
-    item.components.pop(comps.Location)
+    wielder.relation_tags_many[comps.Equipped].add(item)
 
 
 def equip_item(item: Entity, wielder: Entity):

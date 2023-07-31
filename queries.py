@@ -54,7 +54,7 @@ def entities_at(w: World, pt: Point, map_id: str = None):
     return filter(lambda e: e.components[comps.Location] == pt, es)
 
 
-def items_at(w: World, pt: Point, map_id: str = None):
+def consumables_at(w: World, pt: Point, map_id: str = None):
     es = entities(w, map_id)
     items = es.all_of(components=[comps.Item])
     return filter(lambda e: e.components[comps.Location] == pt, items)
@@ -62,6 +62,10 @@ def items_at(w: World, pt: Point, map_id: str = None):
 
 def blockers_at(w: World, pt: Point, map_id: str = None):
     return filter(lambda e: "blocker" in e.tags, entities_at(w, pt, map_id))
+
+
+def items_at(w: World, pt: Point, map_id: str = None):
+    return filter(lambda e: "item" in e.tags, entities_at(w, pt, map_id))
 
 
 def is_visible(e: Entity) -> bool:
@@ -170,7 +174,7 @@ def is_trinket(e: Entity) -> bool:
 
 
 def get_equipped(e: Entity) -> WorldQuery:
-    return e.all_of(relations=[(e, comps.Equipped, None)])
+    return e.world.Q.all_of(relations=[(e, comps.Equipped, None)])
 
 
 StatValue = Literal[

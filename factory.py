@@ -1,7 +1,7 @@
 from random import choices, randint
 from typing import Callable, Literal
 from tcod.ecs import World, Entity
-from queries import blockers_at, equips_at, items_at
+from queries import blockers_at, items_at
 from geom import Point
 from yaml import load, SafeLoader
 from gamemap import GameMap, arena, drunk_walk
@@ -180,10 +180,9 @@ def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
         pt = m.get_random_floor()
 
     blockers_here = bool(len(list(blockers_at(w, pt))))
-    equips_here = bool(len(list(equips_at(w, pt))))
     items_here = bool(len(list(items_at(w, pt))))
 
-    while blockers_here or equips_here or items_here:
+    while blockers_here or items_here:
         pt = m.get_random_floor()
 
     e.components[comps.Location] = pt
@@ -232,6 +231,9 @@ def make_map(build_id: str) -> GameMap:
     return m
 
 
+Repo = Literal["monsters", "items", "equips"]
+
+
 def populate_map(w: World, m: GameMap):
     template = MAPDATA.data[m.id]
 
@@ -267,8 +269,6 @@ def populate_map(w: World, m: GameMap):
     monster_cands = _cands(CHARDATA, m_types, tier, m_tiers)
     item_cands = _cands(ITEMDATA, i_types, tier, i_tiers)
     equip_cands = _cands(EQUIPDATA, e_types, tier, e_tiers)
-
-    Repo = Literal["monsters", "items", "equips"]
 
     def _popu(tbl: dict, fn: Callable[[World, str], Entity], num: int, repo: Repo):
         if tbl:

@@ -112,7 +112,9 @@ class LightningEffect(GameEffect):
         super().__init__("Lightning", 0, potency)
 
     def on_apply(self, e: Entity):
-        dmg = cbt.gauss_roll(self.potency)
+        low = max(0, self.potency - 3)
+        high = self.potency + 3
+        dmg = cbt.gauss_roll(low, high)
         e.components[comps.Combatant].damage(dmg)
         add_msg_about(e, f"<entity> is struck by lightning for {dmg} damage!")
 
