@@ -36,10 +36,13 @@ EFFS = {
 def _check_on_hits(tbl: dict, eff_id: str, eff_type):
     _data = tbl.get(eff_id)
     if _data:
-        duration = _data["duration"]
-        potency = _data["potency"]
+        duration = _data.get("duration", 0)
+        potency = _data.get("potency", 0)
         chance = _data["chance"]
-        eff = eff_type(duration, potency)
+        if eff_id == "stunned":
+            eff = eff_type(duration)
+        else:
+            eff = eff_type(duration, potency)
         return {comps.OnHit: comps.OnHit(eff, chance)}
 
     return None

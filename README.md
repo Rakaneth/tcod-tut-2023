@@ -25,6 +25,14 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # DevLog
 
+## 2023-8-1
+
+### Screenshots
+
+![equipment](/screenshots/equipment.gif)
+
+Equipment is in. Weapons can execute on-hit effects. I have the bones of a playable game. I just need to add dungeon delving, a win condition, and one last balance pass. I can see the light at the end of the tunnel.
+
 ## 2023-7-31
 
 I am ahead still, but since I'm anticipating having a lot less time soon, I'm going to continue to forge ahead and even possibly finish ahead of schedule. Because I'm driving to finish early, I will no longer be updating by week, since I'll be moving from task to task in a different order.
