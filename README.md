@@ -15,8 +15,8 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 * [x] Part 8 - Items and Inventory
 * [x] Part 9 - Ranged Scrolls and Targeting
 * [x] Part 10 - Saving and loading
-* [ ] Part 11 - Delving into the Dungeon
-* [ ] Part 12 - Increasing Difficulty
+* [x] Part 11 - Delving into the Dungeon
+* [x] Part 12 - Increasing Difficulty
 * [x] Part 13 - Gearing up
 
 # Libraries used
