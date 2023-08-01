@@ -168,4 +168,12 @@ EquippedWeapon = "weapon"
 EquippedTrinket = "trinket"
 Equipped = "equipped"
 
+
 # Relation components
+@dataclass(frozen=True)
+class MapConnection:
+    """Describes the connection points between two maps."""
+
+    map_id: str
+    down_stair: Point
+    up_stair: Point

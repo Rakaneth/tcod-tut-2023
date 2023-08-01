@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from tcod.ecs import World, Entity
+from geom import Point
 from swatch import WHITE
 from gamelog import write_log
 from typing import Any
@@ -167,3 +168,8 @@ def equip_item(item: Entity, wielder: Entity):
 
     if q.is_visible(wielder):
         add_msg_about(wielder, f"<entity> equips {q.name(item)}.")
+
+
+def change_map(e: Entity, map_id: str, pt: Point):
+    e.relation_tag[comps.MapId] = e.world[map_id]
+    e.components[comps.Location] = pt

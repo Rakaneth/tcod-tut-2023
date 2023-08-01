@@ -20,6 +20,7 @@ cave:
     number: [0, 5]
     types:
       - equip
+  downto : cavern
 
 cavern:
   gen: drunkard
@@ -43,5 +44,16 @@ cavern:
     number: [0, 10]
     types:
       - equip
+
+town:
+  gen: arena
+  name: Town
+  width: [20, 20]
+  height: [20, 20]
+  tier: 1
+  dark: false
+  downto: cave
+
+
   
   

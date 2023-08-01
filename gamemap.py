@@ -1,11 +1,12 @@
-import numpy as np
 from geom import Point, Rect
-from swatch import STONE_LIGHT, STONE_DARK, BLACK
 from typing import Tuple
 from random import choice
 from tcod.path import maxarray, dijkstra2d
 from tcod.map import compute_fov
 from tcod.constants import FOV_DIAMOND
+
+import swatch as sw
+import numpy as np
 
 render_dt = np.dtype([("ch", np.int32), ("fg", "3B"), ("bg", "3B")])
 
@@ -29,7 +30,7 @@ def new_tile(
     return np.array((walkable, transparent, dark, light), dtype=tile_dt)
 
 
-SHROUD = np.array((ord(" "), (255, 255, 255), (0, 0, 0)), dtype=render_dt)
+SHROUD = np.array((ord(" "), sw.WHITE, sw.BLACK), dtype=render_dt)
 
 
 class GameMap:
@@ -42,8 +43,8 @@ class GameMap:
         width: int,
         height: int,
         dark: bool = False,
-        wall_fg: Tuple[int, int, int] = STONE_LIGHT,
-        floor_fg: Tuple[int, int, int] = STONE_DARK,
+        wall_fg: Tuple[int, int, int] = sw.STONE_LIGHT,
+        floor_fg: Tuple[int, int, int] = sw.STONE_DARK,
     ):
         self.explored = np.zeros((width, height), dtype=bool, order="F")
         self.visible = np.zeros((width, height), dtype=bool, order="F")
@@ -52,21 +53,29 @@ class GameMap:
         self.dark = dark
         self.__id = id
         self.__name = name
-        wr, wb, wg = wall_fg
-        fr, fg, fb = floor_fg
-        wall_fg_dark = (wr // 2, wg // 2, wb // 2)
-        floor_fg_dark = (fr // 2, fg // 2, fb // 2)
         self.wall_tile = new_tile(
             transparent=False,
             walkable=False,
-            light=(ord("#"), wall_fg, BLACK),
-            dark=(ord("#"), wall_fg_dark, BLACK),
+            light=(ord("#"), wall_fg, sw.BLACK),
+            dark=(ord("#"), sw.dark(wall_fg), sw.BLACK),
         )
         self.floor_tile = new_tile(
             transparent=True,
             walkable=True,
-            light=(ord("."), floor_fg, BLACK),
-            dark=(ord("."), floor_fg_dark, BLACK),
+            light=(ord("."), floor_fg, sw.BLACK),
+            dark=(ord("."), sw.dark(floor_fg), sw.BLACK),
+        )
+        self.stairs_down_tile = new_tile(
+            transparent=True,
+            walkable=True,
+            light=(ord(">"), sw.TARGET, sw.BLACK),
+            dark=(ord(">"), sw.dark(sw.TARGET), sw.BLACK),
+        )
+        self.stairs_up_tile = new_tile(
+            transparent=True,
+            walkable=True,
+            light=(ord("<"), sw.TARGET, sw.BLACK),
+            dark=(ord("<"), sw.dark(sw.TARGET), sw.BLACK),
         )
         self.__tiles = np.full((width, height), fill_value=self.wall_tile, order="F")
 
@@ -127,6 +136,12 @@ class GameMap:
             for (i, j) in [(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)]
             if self.in_bounds(i, j)
         ]
+
+    def add_down_stair(self, x: int, y: int):
+        self.tiles[x, y] = self.stairs_down_tile
+
+    def add_up_stair(self, x: int, y: int):
+        self.tiles[x, y] = self.stairs_up_tile
 
     def on_edge(self, x: int, y: int) -> bool:
         return x == 0 or x == self.width - 1 or y == 0 or y == self.height - 1

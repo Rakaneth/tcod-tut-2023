@@ -375,8 +375,26 @@ class MainScreen(Screen):
                         target, item_to_use
                     )
 
+                self.player.components[comps.Actor].energy -= 100
                 self.mode = GameStates.MAIN
                 self.engine.should_update = True
+            case GameStates.MAIN:
+                loc = q.location(self.player)
+                map_conns = q.map_connections(self.world, self.cur_map.id)
+                tile = self.cur_map.tiles[loc.x, loc.y]
+                went_stairs = False
+                if tile == self.cur_map.stairs_down_tile:
+                    new_m, new_loc = map_conns["down"]
+                    u.change_map(self.player, new_m, new_loc)
+                    went_stairs = True
+                elif tile == self.cur_map.stairs_up_tile:
+                    new_m, new_loc = map_conns["up"]
+                    u.change_map(self.player, new_m, new_loc)
+                    went_stairs = True
+
+                if went_stairs:
+                    self.player.components[comps.Actor].energy -= 100
+                    self.engine.should_update = True
 
     def on_inventory(self):
         inv = q.inventory(self.player)

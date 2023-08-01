@@ -1,7 +1,7 @@
 from random import choices, randint
 from typing import Callable, Literal
 from tcod.ecs import World, Entity
-from queries import blockers_at, items_at
+from queries import blockers_at, items_at, get_map
 from geom import Point
 from yaml import load, SafeLoader
 from gamemap import GameMap, arena, drunk_walk
@@ -190,9 +190,21 @@ def make_equipment(w: World, build_id: str) -> Entity:
 
 
 def add_map(w: World, m: GameMap):
-    # w[None].components[(m.id, GameMap)] = m
     m_e = w[m.id]
     m_e.components[comps.GameMapComp] = m
+
+
+def connect_map(w: World, m_from: GameMap, m_to: GameMap):
+    e_m_from = w[m_from.id]
+    e_m_to = w[m_to.id]
+    stairs_down = m_from.get_random_floor()
+    stairs_up = m_to.get_random_floor()
+    m_from.add_down_stair(stairs_down.x, stairs_down.y)
+    m_to.add_up_stair(stairs_up.x, stairs_up.y)
+    e_m_from.relation_components[comps.MapConnection][e_m_to] = comps.MapConnection(
+        m_to.id, stairs_down, stairs_up
+    )
+    gl.write_log(w, "factory", f"Connecting {m_from.id} to {m_to.id}")
 
 
 def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
@@ -230,6 +242,15 @@ def populate_all_maps(w: World):
         populate_map(w, m)
 
 
+def connect_all_maps(w: World):
+    for map_id, map_data in MAPDATA.data.items():
+        downto = map_data.get("downto")
+        if downto:
+            map_from = get_map(w, map_id)
+            map_to = get_map(w, downto)
+            connect_map(w, map_from, map_to)
+
+
 def make_map(build_id: str) -> GameMap:
     """Creates a map based on map data."""
     template = MAPDATA.data[build_id]
@@ -262,23 +283,6 @@ Repo = Literal["monsters", "items", "equips"]
 def populate_map(w: World, m: GameMap):
     template = MAPDATA.data[m.id]
 
-    tier = template["tier"]
-    monster_data = template["monsters"]
-    item_data = template["items"]
-    equip_data = template["equips"]
-    m_low, m_high = monster_data["number"]
-    i_low, i_high = item_data["number"]
-    e_low, e_high = equip_data["number"]
-    num_monsters = randint(m_low, m_high)
-    num_items = randint(i_low, i_high)
-    num_equips = randint(e_low, e_high)
-    m_types = monster_data["types"]
-    i_types = item_data["types"]
-    e_types = equip_data["types"]
-    m_tiers = monster_data.get("tiers", list())
-    i_tiers = item_data.get("tiers", list())
-    e_tiers = equip_data.get("tiers", list())
-
     def _cands(
         repo: GameData, type_list: list, default_tier: int, tier_list: list = None
     ):
@@ -290,10 +294,6 @@ def populate_map(w: World, m: GameMap):
             or val.get("tier", -1) == default_tier
             if any(tag in val.get("tags", []) for tag in type_list)
         }
-
-    monster_cands = _cands(CHARDATA, m_types, tier, m_tiers)
-    item_cands = _cands(ITEMDATA, i_types, tier, i_tiers)
-    equip_cands = _cands(EQUIPDATA, e_types, tier, e_tiers)
 
     def _popu(tbl: dict, fn: Callable[[World, str], Entity], num: int, repo: Repo):
         if tbl:
@@ -307,6 +307,31 @@ def populate_map(w: World, m: GameMap):
                 w, "factory", f"No valid choices for {repo} in map {m.id}; check data"
             )
 
-    _popu(monster_cands, make_char, num_monsters, "monsters")
-    _popu(item_cands, make_consumable, num_items, "items")
-    _popu(equip_cands, make_equipment, num_equips, "equips")
+    tier = template["tier"]
+    monster_data = template.get("monsters")
+    item_data = template.get("items")
+    equip_data = template.get("equips")
+
+    if monster_data:
+        m_low, m_high = monster_data["number"]
+        num_monsters = randint(m_low, m_high)
+        m_types = monster_data["types"]
+        m_tiers = monster_data.get("tiers", list())
+        monster_cands = _cands(CHARDATA, m_types, tier, m_tiers)
+        _popu(monster_cands, make_char, num_monsters, "monsters")
+
+    if item_data:
+        i_low, i_high = item_data["number"]
+        num_items = randint(i_low, i_high)
+        i_types = item_data["types"]
+        i_tiers = item_data.get("tiers", list())
+        item_cands = _cands(ITEMDATA, i_types, tier, i_tiers)
+        _popu(item_cands, make_consumable, num_items, "items")
+
+    if equip_data:
+        e_low, e_high = equip_data["number"]
+        num_equips = randint(e_low, e_high)
+        e_types = equip_data["types"]
+        e_tiers = equip_data.get("tiers", list())
+        equip_cands = _cands(EQUIPDATA, e_types, tier, e_tiers)
+        _popu(equip_cands, make_equipment, num_equips, "equips")

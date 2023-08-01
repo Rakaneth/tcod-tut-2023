@@ -20,6 +20,27 @@ def name(e: Entity) -> str:
     return e.components[comps.Name]
 
 
+def location(e: Entity):
+    return e.components[comps.Location]
+
+
+def map_connections(w: World, m_from_id: str) -> dict:
+    results = {}
+    m_e_from = w[m_from_id]
+    results["down"] = None
+    results["up"] = None
+
+    for e_up in w.Q.all_of(relations=[(comps.MapConnection, m_e_from)]):
+        conn = e_up.relation_components[comps.MapConnection][m_e_from]
+        results["up"] = (e_up.uid, conn.down_stair)
+
+    for e_down in w.Q.all_of(relations=[(m_e_from, comps.MapConnection, None)]):
+        conn = m_e_from.relation_components[comps.MapConnection][e_down]
+        results["down"] = (conn.map_id, conn.up_stair)
+
+    return results
+
+
 def get_map(w: World, map_id: str) -> GameMap:
     return w[map_id].components[comps.GameMapComp]
 

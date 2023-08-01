@@ -95,6 +95,13 @@
                     }
                 },
                 "required": ["number"]
+            },
+            "connections": {
+                "type": "array",
+                "description": "Other maps this map connects to. Connections are two-way by default",
+                "items": {
+                    "type": "string"
+                }
             }
         },
         "required": [

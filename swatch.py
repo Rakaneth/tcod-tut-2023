@@ -9,3 +9,8 @@ CAUTION = (255, 255, 0)
 INFO = (64, 64, 255)
 DEAD = (255, 0, 255)
 TARGET = (255, 255, 0)
+
+
+def dark(color_tuple: tuple[int, int, int]) -> tuple[int, int, int]:
+    r, g, b = color_tuple
+    return (r // 2, g // 2, b // 2)

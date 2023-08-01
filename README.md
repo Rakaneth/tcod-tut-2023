@@ -29,9 +29,14 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 ### Screenshots
 
-![equipment](/screenshots/equipment.gif)
+![dungeon](/screenshots/levels.gif)
 
-Equipment is in. Weapons can execute on-hit effects. I have the bones of a playable game. I just need to add dungeon delving, a win condition, and one last balance pass. I can see the light at the end of the tunnel.
+Equipment is in. Weapons can execute on-hit effects. I have the bones of a playable game. I just need a win condition and one last balance pass. I can see the light at the end of the tunnel.
+
+### Dungeon Improvements
+
+* The player can now go deeper into the dungeon.
+* The player starts in 'town' - currently an empty level. I am considering putting some basic starting equipment in here.
 
 ## 2023-7-31
 

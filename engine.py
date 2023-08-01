@@ -6,6 +6,7 @@ import components as comps
 
 from tcod.ecs import World
 from gamelog import dump_log
+from queries import map_connections
 from screens.gameoverscreen import GameOverScreen
 from screen import Screen, ScreenNames
 from screens import MainScreen, TitleScreen, TestUIScreen
@@ -108,8 +109,9 @@ class Engine:
         world[None].components[comps.GameTurn] = 0
         player = fac.make_char(world, hero_id, player=True)
         fac.build_all_maps(world)
-        fac.place_entity(world, player, "cave")
+        fac.place_entity(world, player, "town")
         fac.populate_all_maps(world)
+        fac.connect_all_maps(world)
         self.world = world
         self.setup_screens()
 
