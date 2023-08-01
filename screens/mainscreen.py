@@ -75,7 +75,6 @@ class MainScreen(Screen):
 
     def on_update(self):
         player = self.player
-
         while True:
             self.update_dmap()
             self.get_npc_moves()
@@ -90,7 +89,11 @@ class MainScreen(Screen):
             self.end_turn()
             self.update_fov()
 
-            if player.components[comps.Actor].energy >= 0 or q.is_dead(self.player):
+            should_break = player.components[comps.Actor].energy >= 0 or q.is_dead(
+                self.player
+            )
+
+            if should_break:
                 break
 
         pos = player.components[comps.Location]
@@ -125,6 +128,11 @@ class MainScreen(Screen):
                 else:
                     e.components[comps.Location] = dest
                     e.components[comps.Actor].energy -= 100
+                    arm = q.get_armor(e)
+                    if arm:
+                        e.components[comps.Actor].energy -= arm.components[
+                            comps.Equipment
+                        ].encumbrance
                     write_log(self.world, "action", f"{q.name(e)} moved")
 
                     if e.components.get(comps.InventoryMax) is not None:
@@ -177,6 +185,9 @@ class MainScreen(Screen):
                 def_redu = q.get_stat(defender, "reduction")
                 final_dmg = max(0, raw_dmg - def_redu)
                 defender.components[comps.Combatant].damage(final_dmg)
+                arm = q.get_armor(defender)
+                if arm:
+                    arm.components[comps.Equipment].durability -= 1
                 u.add_msg_about(
                     attacker,
                     f"<entity> hits {def_name} for {final_dmg} damage!",
@@ -186,7 +197,11 @@ class MainScreen(Screen):
                     "combat",
                     f"{atk_name} bumps {def_name} for {raw_dmg} raw, {final_dmg} after armor reduction",  # noqa: E501
                 )
-                attacker.components[comps.CheckOnHits] = defender
+                wpn = q.get_weapon(attacker)
+                if wpn:
+                    wpn.components[comps.CheckOnHits] = defender
+                else:
+                    attacker.components[comps.CheckOnHits] = defender
             else:
                 u.add_msg_about(attacker, f"<entity> misses {def_name}!")
 

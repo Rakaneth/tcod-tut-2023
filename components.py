@@ -134,7 +134,6 @@ class Equipment:
     encumbrance: int = 0
     durability: int = 0
     reduction: int = 0
-    on_hit: OnHit | None = None
 
 
 # Named components - global Entity

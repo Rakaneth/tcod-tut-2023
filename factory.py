@@ -26,6 +26,24 @@ MAPDATA = GameData(f"{DATAFOLDER}/mapdata.yml")
 ITEMDATA = GameData(f"{DATAFOLDER}/itemdata.yml")
 EQUIPDATA = GameData(f"{DATAFOLDER}/equipdata.yml")
 
+EFFS = {
+    "bleed": effects.BleedEffect,
+    "burning": effects.BurningEffect,
+    "stunned": effects.StunnedEffect,
+}
+
+
+def _check_on_hits(tbl: dict, eff_id: str, eff_type):
+    _data = tbl.get(eff_id)
+    if _data:
+        duration = _data["duration"]
+        potency = _data["potency"]
+        chance = _data["chance"]
+        eff = eff_type(duration, potency)
+        return {comps.OnHit: comps.OnHit(eff, chance)}
+
+    return None
+
 
 def make_char(
     world: World, id: str, *, name: str = None, player: bool = False
@@ -54,7 +72,7 @@ def make_char(
         comps.Name: nm,
         comps.Renderable: comps.Renderable(glyph, color, z),
         comps.Location: Point(0, 0),
-        comps.Actor: comps.Actor(0, speed),
+        comps.Actor: comps.Actor(-100, speed),
         comps.EffectsList: list(),
     }
 
@@ -64,14 +82,10 @@ def make_char(
         c |= {comps.Combatant: cbt}
 
     if on_hit:
-        bleed_data = on_hit.get("bleed", None)
-        if bleed_data:
-            duration = bleed_data["duration"]
-            potency = bleed_data["potency"]
-            chance = bleed_data["chance"]
-            c |= {
-                comps.OnHit: comps.OnHit(effects.BleedEffect(duration, potency), chance)
-            }
+        for eff_type in on_hit.keys():
+            oh = _check_on_hits(on_hit, eff_type, EFFS[eff_type])
+            if c:
+                c |= oh
 
     if full_name:
         c |= {comps.FullName: full_name}
@@ -154,9 +168,15 @@ def make_equipment(w: World, build_id: str) -> Entity:
         comps.Renderable: comps.Renderable(glyph, color, 2),
         comps.Description: desc,
         comps.Equipment: comps.Equipment(
-            atp, dfp, dmg, encumbrance, durability, reduction, on_hit
+            atp, dfp, dmg, encumbrance, durability, reduction
         ),
     }
+
+    if on_hit:
+        for eff_id in on_hit.keys():
+            oh = _check_on_hits(on_hit, eff_id, EFFS[eff_id])
+            if oh:
+                c |= oh
 
     e = w.new_entity(components=c)
 
@@ -184,6 +204,8 @@ def place_entity(w: World, e: Entity, map_id: str, pt: Point = None):
 
     while blockers_here or items_here:
         pt = m.get_random_floor()
+        blockers_here = bool(len(list(blockers_at(w, pt))))
+        items_here = bool(len(list(items_at(w, pt))))
 
     e.components[comps.Location] = pt
 

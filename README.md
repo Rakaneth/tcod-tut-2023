@@ -17,7 +17,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 * [x] Part 10 - Saving and loading
 * [ ] Part 11 - Delving into the Dungeon
 * [ ] Part 12 - Increasing Difficulty
-* [-] Part 13 - Gearing up
+* [x] Part 13 - Gearing up
 
 # Libraries used
 
@@ -48,10 +48,11 @@ Equipment - and *most* of the necessary combat adjustments - are in. The player 
 
 ### TODO
 
-* [ ] Investigate lockup occuring sometimes during world generation
-* [ ] Implement encumbrance
-* [ ] Implement durability
-* [ ] Implement weapon on-hit effects
+* [x] Investigate lockup occuring sometimes during world generation
+* [x] Implement encumbrance
+* [x] Implement durability
+* [x] Implement weapon on-hit effects
+* [ ] Link dungeons
 
 ### Stretch
 
