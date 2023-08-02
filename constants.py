@@ -1,3 +1,3 @@
 SAVING = True
-VERSION = "0.6.01"
+VERSION = "0.7.01"
 DEBUG = True
