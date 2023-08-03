@@ -30,18 +30,18 @@ cavern:
   tier: 2
   dark: true
   monsters:
-    number: [15, 30]
+    number: [5, 10]
     tiers: [1, 2]
     types:
       - humanoid
       - cave
   items:
-    number: [5, 15]
+    number: [5, 10]
     tiers: [1, 2]
     types:
       - item
   equips:
-    number: [0, 10]
+    number: [3, 7]
     types:
       - equip
 
@@ -52,6 +52,15 @@ town:
   height: [20, 20]
   tier: 1
   dark: false
+  items:
+    number: [1, 1]
+    types:
+      - healing
+  equips:
+    number: [3, 3]
+    types:
+      - armor
+      - weapon
   downto: cave
 
 

@@ -38,6 +38,13 @@ class MainScreen(Screen):
         self.mode = GameStates.MAIN
         self.save_menu = ui.YesNoMenu(self.engine.root, "Save Game?")
         self.item_menu: ui.MenuWithValues = None
+        self.item_help = ui.TextBox(
+            self.engine.root,
+            30,
+            5,
+            "[ENTER] to use/equip, [SPACE] to drop, [ESC] to cancel",
+            title="Item Help",
+        )
 
     @property
     def cur_map(self) -> GameMap:
@@ -72,6 +79,7 @@ class MainScreen(Screen):
             self.save_menu.draw()
         if self.mode == GameStates.ITEM:
             self.item_menu.draw()
+            self.item_help.draw()
 
     def on_update(self):
         player = self.player
@@ -266,6 +274,7 @@ class MainScreen(Screen):
                             )
                     u.apply_item(item, target, duration=dur, potency=pot)
             item.clear()
+            e.components[comps.Actor].energy -= 100
             write_log(
                 self.world, "item", f"{user_name} uses {item_name} on {target_name}"
             )
@@ -324,10 +333,20 @@ class MainScreen(Screen):
             self.engine.should_update = True
 
     def on_wait(self):
-        if self.mode == GameStates.MAIN:
-            pos = self.player.components[comps.Location]
-            self.player.components[comps.TryMove] = pos
-            self.engine.should_update = True
+        match self.mode:
+            case GameStates.MAIN:
+                pos = self.player.components[comps.Location]
+                self.player.components[comps.TryMove] = pos
+                self.engine.should_update = True
+            case GameStates.ITEM:
+                item_to_drop: Entity = self.item_menu.selected_val
+                u.drop_item(item_to_drop, self.player)
+                u.add_msg_about(self.player, f"<entity> drops {q.name(item_to_drop)}")
+                inv = q.inventory(self.player)
+                if inv:
+                    self._setup_item_menu()
+                else:
+                    self.mode = GameStates.MAIN
 
     def on_cancel(self):
         match self.mode:
@@ -375,7 +394,6 @@ class MainScreen(Screen):
                         target, item_to_use
                     )
 
-                self.player.components[comps.Actor].energy -= 100
                 self.mode = GameStates.MAIN
                 self.engine.should_update = True
             case GameStates.MAIN:
@@ -396,16 +414,21 @@ class MainScreen(Screen):
                     self.player.components[comps.Actor].energy -= 100
                     self.engine.should_update = True
 
+    def _setup_item_menu(self):
+        inv = q.inventory(self.player)
+        opts_dict = {
+            f"{i+1} - {q.name(e)}{' (e)' if e in list(q.get_equipped(self.player)) else ''}": e  # noqa: E501
+            for i, e in enumerate(inv)
+        }
+        self.item_menu = ui.MenuWithValues(
+            self.engine.root, opts_dict, title="Inventory"
+        )
+        self.item_help.y = self.item_menu.y - 5
+
     def on_inventory(self):
         inv = q.inventory(self.player)
         if inv:
-            opts_dict = {
-                f"{i+1} - {q.name(e)}{' (e)' if e in list(q.get_equipped(self.player)) else ''}": e  # noqa: E501
-                for i, e in enumerate(inv)
-            }
-            self.item_menu = ui.MenuWithValues(
-                self.engine.root, opts_dict, title="Inventory"
-            )
+            self._setup_item_menu()
             self.mode = GameStates.ITEM
         else:
             u.add_msg(self.world, "(Nothing in the pack.)", TARGET)

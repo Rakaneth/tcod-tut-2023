@@ -104,6 +104,8 @@ def drop_item(item: Entity, holder: Entity):
     pos = holder.components[comps.Location]
     item.relation_tag.pop(comps.HeldBy)
     item.components[comps.Location] = pos
+    if item in q.get_equipped(holder):
+        unequip_item(item, holder)
     write_log(item.world, "inventory", f"{q.name(holder)} drops {q.name(item)}")
 
 

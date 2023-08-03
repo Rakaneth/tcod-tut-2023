@@ -25,6 +25,17 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # DevLog
 
+## 2023-8-2
+
+### Dungeon Improvements
+
+* Some weapons, armor, and one potion are guaranteed to spawn on the first level of the dungeon.
+
+### UI Improvements
+
+* The player can now drop items from the inventory screen (which now shows instructions on how to do so!)
+
+
 ## 2023-8-1
 
 ### Screenshots

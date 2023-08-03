@@ -84,6 +84,7 @@ base_human: &human
     - enemy 
     - humanoid
     - human
+    - blocker
 
 bandit:
   <<: *human
@@ -112,6 +113,7 @@ base_orc: &orc
     - enemy
     - humanoid
     - orc
+    - blocker
 
 korashi:
   <<: *orc
@@ -157,6 +159,7 @@ bat:
   tags:
     - enemy
     - cave
+    - blocker
   freq: 8
 
 
@@ -177,6 +180,7 @@ bear:
     - enemy
     - cave
     - ursine
+    - blocker
   freq: 3
 
 blindclaw:
@@ -196,4 +200,5 @@ blindclaw:
     - enemy
     - cave
     - humanoid
+    - blocker
   freq: 7
