@@ -202,3 +202,64 @@ blindclaw:
     - humanoid
     - blocker
   freq: 7
+
+wight:
+  name: Wight
+  glyph: 'w'
+  color: [192, 0, 192]
+  speed: 10
+  hp: 50
+  atp: 50
+  dfp: 5
+  st: 15
+  ag: 5
+  wl: 0
+  dmg: [2, 8]
+  tier: 3
+  tags:
+    - undead
+    - corporeal
+    - enemy
+    - blocker
+  freq: 3
+
+zombie:
+  name: Zombie
+  glyph: 'z'
+  color: [192, 0, 192]
+  speed: 10
+  hp: 40
+  atp: 20
+  dfp: 0
+  st: 13
+  ag: 2
+  wl: 2
+  dmg: [1, 6]
+  tier: 2
+  tags:
+    - undead
+    - corporeal
+    - enemy
+    - blocker
+  freq: 5
+
+ogre:
+  name: ogre
+  glyph: 'O'
+  color: [168, 168, 0]
+  speed: 15
+  hp: 75
+  atp: 50
+  dfp: 10
+  st: 20
+  ag: 5
+  wl: 5
+  dmg: [3, 12]
+  tier: 3
+  tags:
+    - humanoid
+    - giant
+    - ogre
+    - blocker
+    - enemy
+  freq: 5

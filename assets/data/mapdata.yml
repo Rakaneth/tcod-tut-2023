@@ -45,6 +45,28 @@ cavern:
     types:
       - equip
 
+crypt:
+  gen: drunkard
+  name: Crypt
+  width: [21, 31]
+  height: [30, 50]
+  tier: 3
+  dark: true
+  monsters:
+    number: [7, 13]
+    tiers: [2, 3]
+    types:
+      - humanoid
+      - undead
+  equips:
+    number: [4, 8]
+    tiers: [2, 3]
+    types: 
+      - equip
+
+
+
+
 town:
   gen: arena
   name: Town

@@ -40,8 +40,8 @@ sword_flame:
   color: [0xFF, 0x4D, 0x03] 
   atp: 10
   dfp: 10
-  dmg: [2, 8]
-  tier: 2
+  dmg: [1, 8]
+  tier: 3
   on_hit:
     burning:
       duration: 3
@@ -55,6 +55,24 @@ sword_flame:
     - sword
     - fire
 
+claymore:
+  <<: *sword
+  name: Claymore
+  desc: A mighty two-handed blade.
+  color: [128, 128, 128]
+  atp: 5
+  dfp: 10
+  dmg: [1, 10]
+  tier: 2
+  freq: 4
+  tags:
+    - weapon
+    - item
+    - equip
+    - sword
+    - heavy
+
+
 # Maces
 
 base_mace: &mace
@@ -67,6 +85,21 @@ base_mace: &mace
     - equip
     - mace
 
+club:
+  <<: *mace
+  name: Wooden Club
+  desc: A crudely-shaped mass of wood.
+  color: [192, 101, 98]
+  atp: 0
+  dfp: 0
+  dmg: [1, 6]
+  tier: 1
+  freq: 7
+  on_hit:
+    stunned:
+      duration: 1
+      chance: 10
+
 mace_iron:
   <<: *mace
   name: Iron Mace
@@ -75,7 +108,7 @@ mace_iron:
   atp: 0
   dfp: 0
   dmg: [1, 8]
-  tier: 1
+  tier: 2
   freq: 5
   on_hit:
     stunned:
@@ -90,7 +123,7 @@ vajra:
   atp: -5
   dfp: 0
   dmg: [2, 12]
-  tier: 2
+  tier: 3
   freq: 1
   on_hit:
     stunned:
@@ -212,6 +245,24 @@ scale:
   tier: 1
   freq: 2
 
+mithril_chain:
+  <<: *armor_med
+  name: Mithril Chain
+  desc: Fine chainmail, made from mithril, forged in Mithril Gate.
+  color: [224, 224, 224]
+  durability: 100
+  reduction: 5
+  encumbrance: 2
+  tier: 3
+  freq: 1
+  tags:
+    - equip
+    - item
+    - armor
+    - medium
+    - mithril
+    - magic
+
 # Heavy Armors
 
 base_armor_heavy: &armor_heavy
@@ -233,6 +284,24 @@ plate:
   color: [32, 32, 192]
   tier: 2
   freq: 2
+
+adamantine:
+  <<: *armor_heavy
+  name: Adamantine Armor
+  desc: A full suit of heavy adamantine armor.
+  reduction: 10
+  encumbrance: 20
+  durability: 150
+  color: [16, 16, 96]
+  tier: 3
+  freq: 1
+  tags:
+    - armor
+    - item
+    - equip
+    - heavy
+    - adamantine
+    - magic
 
 # Trinkets
 
