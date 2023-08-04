@@ -15,7 +15,8 @@ cave:
   items:
     number: [1, 5]
     types:
-      - item
+      - potion
+      - scroll
   equips:
     number: [0, 5]
     types:
@@ -37,13 +38,14 @@ cavern:
       - cave
   items:
     number: [5, 10]
-    tiers: [1, 2]
     types:
-      - item
+      - potion
+      - scroll
   equips:
     number: [3, 7]
     types:
       - equip
+  downto: crypt
 
 crypt:
   gen: drunkard
