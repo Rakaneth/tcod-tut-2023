@@ -25,6 +25,17 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # DevLog
 
+## 2023-8-6
+
+### Dungeon Improvements
+
+* Added a new level, the Crypt, as well as a few monsters.
+
+### Combat Improvements
+
+* Adjusted enemy movement to avoid conga lines.
+* The Stunned effect now functions, preventing the creature suffering it from gaining energy.
+
 ## 2023-8-2
 
 ### Dungeon Improvements
