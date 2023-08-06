@@ -171,7 +171,12 @@ class MainScreen(Screen):
     def update_energy(self):
         for e in q.current_actors(self.world):
             act_comp = e.components[comps.Actor]
-            act_comp.energy += act_comp.speed
+            stun_eff = q.find_effect(e, "Stunned")
+            if not stun_eff:
+                act_comp.energy += act_comp.speed
+            else:
+                write_log(self.world, "energy", f"{q.name(e)} is stunned; no energy")
+
             write_log(
                 self.world,
                 "energy",
