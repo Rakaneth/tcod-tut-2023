@@ -1,5 +1,5 @@
 from geom import Point, Rect
-from typing import Tuple
+from typing import Iterable, Tuple
 from random import choice
 from tcod.path import maxarray, dijkstra2d
 from tcod.map import compute_fov
@@ -99,10 +99,14 @@ class GameMap:
     def tiles(self) -> np.ndarray:
         return self.__tiles
 
-    def update_cost(self):
+    def update_cost(self, pts: Iterable[Point] = None):
         self.cost = np.select(
             condlist=[self.tiles["walkable"]], choicelist=[1], default=0
         )
+
+        if pts:
+            for pt in pts:
+                self.cost[pt.x, pt.y] = 10
 
     def update_dmap(self, *goals: Point):
         self.dist = maxarray((self.width, self.height), order="F")

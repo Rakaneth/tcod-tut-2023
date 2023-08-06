@@ -163,6 +163,9 @@ class MainScreen(Screen):
 
     def update_dmap(self):
         pos = self.player.components[comps.Location]
+        enemies = filter(lambda e: q.is_enemy(e), q.turn_actors(self.world))
+        enemy_locs = map(lambda e: e.components[comps.Location], enemies)
+        self.cur_map.update_cost(enemy_locs)
         self.cur_map.update_dmap(pos)
 
     def update_energy(self):
