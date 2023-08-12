@@ -180,16 +180,37 @@ def change_map(e: Entity, map_id: str, pt: Point):
 
 def gain_xp(e: Entity, victim: Entity):
     stats = victim.components.get(comps.Combatant)
+    lvl = e.components.get(comps.Level)
     xp = 0
+
+    if not lvl:
+        return
 
     if stats:
         xp = (stats.atp + stats.dfp) // 2 + (stats.st + stats.ag + stats.wl) // 3
 
-    e.components[comps.Level].xp += xp
+    lvl.xp += xp
     maybe_lvl = q.check_gain_levels(e)
+    write_log(e.world, "xp", f"{q.name(e)} gains {xp} xp from {q.name(victim)}")
     if maybe_lvl > 0:
         gain_levels(e, maybe_lvl)
 
 
 def gain_levels(e: Entity, lvls: int):
-    pass
+    maybe_fight = e.components.get(comps.Combatant)
+    maybe_lvl = e.components.get(comps.Level)
+
+    if not (maybe_fight and maybe_lvl):
+        return
+
+    for _ in range(lvls):
+        maybe_fight.base_max_hp += 5
+        maybe_fight.st += 1
+        maybe_fight.ag += 1
+        maybe_fight.wl += 1
+        maybe_fight.at += 5
+        maybe_fight.df += 5
+
+    maybe_lvl.level += lvls
+    add_msg_about(e, f"<entity> gains {lvls} level{('s' if lvls > 1 else '')}!")
+    write_log(e.world, "xp", f"{q.name(e)} gains {lvls} levels")

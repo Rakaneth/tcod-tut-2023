@@ -273,3 +273,7 @@ def check_gain_levels(e: Entity) -> int:
     eff_lvl = xp_level(level.xp)
     cur_lvl = level.level
     return eff_lvl - cur_lvl
+
+
+def xp_list(dead_entity: Entity):
+    return dead_entity.world.Q.all_of(relations=[(dead_entity, comps.DamagedBy, None)])

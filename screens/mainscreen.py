@@ -218,6 +218,9 @@ class MainScreen(Screen):
                     wpn.components[comps.CheckOnHits] = defender
                 else:
                     attacker.components[comps.CheckOnHits] = defender
+
+                defender.relation_tags_many[comps.DamagedBy].add(attacker)
+
             else:
                 u.add_msg_about(attacker, f"<entity> misses {def_name}!")
 
@@ -229,7 +232,10 @@ class MainScreen(Screen):
         for e, stats in query[Entity, comps.Combatant]:
             if stats.dead:
                 u.add_msg_about(e, "<entity> has fallen!")
+                for killer in q.xp_list(e):
+                    u.gain_xp(killer, e)
                 u.kill(e)
+                e.relation_tags_many[comps.DamagedBy].clear()
 
     def check_on_hits(self):
         for attacker, defender, on_hit in q.on_hits(self.world):
@@ -265,6 +271,7 @@ class MainScreen(Screen):
                             e, f"<entity> throws {item_name} at {target_name}!"
                         )
                     u.apply_item(item, target)
+                    target.relation_tags_many[comps.DamagedBy].add(e)
                 case "drink":
                     if q.is_visible(e):
                         u.add_msg_about(e, f"<entity> drinks {item_name}.")
@@ -280,6 +287,7 @@ class MainScreen(Screen):
                                 e,
                                 f"<entity> reads {item_name}, pointing at {target_name}!",  # noqa: E501
                             )
+                            target.relation_tags_many[comps.DamagedBy].add(e)
                     u.apply_item(item, target, duration=dur, potency=pot)
             item.clear()
             e.components[comps.Actor].energy -= 100
@@ -473,18 +481,22 @@ class MainScreen(Screen):
         dfp = q.get_stat(self.player, "dfp")
         redu = q.get_stat(self.player, "reduction")
         dmg_l, dmg_h = q.dmg(self.player)
+        lvl = self.player.components[comps.Level]
+        cur_xp = lvl.xp
+        next_xp = q.required_xp(lvl.level + 1)
 
-        con.print(ui.MAP_W, 0, f"{name}")
+        con.print(ui.MAP_W, 0, f"{name} - level {lvl.level}")
         con.print(ui.MAP_W, 1, f"{map_name} - {loc}")
-        con.print(ui.MAP_W, 2, hp_txt)
-        self.draw_hp_bar(ui.MAP_W + len(hp_txt), 2, 8, self.player, con)
-        con.print(ui.MAP_W, 3, f"ST: {stats.st} AG: {stats.ag} WL: {stats.wl}")
-        con.print(ui.MAP_W, 4, f"ATP: {atp} DFP: {dfp}")
-        con.print(ui.MAP_W, 5, f"DMG: {dmg_l}-{dmg_h} RED: {redu}")
-        con.print(ui.MAP_W, 6, f"Weapon: {wpn_txt}")
-        con.print(ui.MAP_W, 7, f"Armor: {arm_text}")
-        con.print(ui.MAP_W, 8, f"Trinket:  {trink_text}")
-        con.print(ui.MAP_W, 9, f"Target: {target_name}")
+        con.print(ui.MAP_W, 2, f"XP: {cur_xp}/{next_xp}")
+        con.print(ui.MAP_W, 3, hp_txt)
+        self.draw_hp_bar(ui.MAP_W + len(hp_txt), 3, 8, self.player, con)
+        con.print(ui.MAP_W, 4, f"ST: {stats.st} AG: {stats.ag} WL: {stats.wl}")
+        con.print(ui.MAP_W, 5, f"ATP: {atp} DFP: {dfp}")
+        con.print(ui.MAP_W, 6, f"DMG: {dmg_l}-{dmg_h} RED: {redu}")
+        con.print(ui.MAP_W, 7, f"Weapon: {wpn_txt}")
+        con.print(ui.MAP_W, 8, f"Armor: {arm_text}")
+        con.print(ui.MAP_W, 9, f"Trinket:  {trink_text}")
+        con.print(ui.MAP_W, 10, f"Target: {target_name}")
 
     def draw_fx(self, con: Console):
         effects = list(
@@ -512,13 +524,13 @@ class MainScreen(Screen):
 
             es = list(q.entities_at(self.world, lt))
             if es and self.cur_map.visible[lt.x, lt.y]:
-                con.print(ui.MAP_W, 10, "Things here:")
+                con.print(ui.MAP_W, 11, "Things here:")
                 for i, e in enumerate(es):
                     name = e.components[comps.Name]
                     dead = q.is_dead(e)
                     if dead:
                         name = f"{name} (dead)"
-                    y = 11 + i
+                    y = 12 + i
                     con.print(
                         ui.MAP_W,
                         y,

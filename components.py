@@ -176,6 +176,7 @@ EquippedArmor = "armor"
 EquippedWeapon = "weapon"
 EquippedTrinket = "trinket"
 Equipped = "equipped"
+DamagedBy = "damaged_by"
 
 
 # Relation components
