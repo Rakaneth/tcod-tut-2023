@@ -118,6 +118,7 @@ def make_char(
     if player:
         e.tags.add("player")
         e.relation_tags_many[comps.HostileTo].add("enemy")
+        e.components[comps.Level] = comps.Level()
 
     gl.write_log(world, "factory", f"Creating character {nm}")
 

@@ -136,6 +136,15 @@ class Equipment:
     reduction: int = 0
 
 
+class Level:
+    """Describes a creature that can level."""
+
+    def __init__(self, start_lvl: int = 1, start_xp: int = 0):
+        assert start_lvl >= 1
+        self.level = start_lvl
+        self.xp = start_xp
+
+
 # Named components - global Entity
 Messages = ("messages", list[GameMessage])
 GameVersion = ("game_version", str)

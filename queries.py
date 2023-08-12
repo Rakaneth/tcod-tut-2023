@@ -6,6 +6,8 @@ from tcod.ecs.query import WorldQuery
 from typing import TYPE_CHECKING, Literal, Tuple
 from gamemap import GameMap
 from geom import Point
+from constants import FIBO
+
 import components as comps
 
 if TYPE_CHECKING:
@@ -254,3 +256,20 @@ def dmg(e: Entity) -> Tuple[int, int]:
         return (eq_low + st, eq_high + st)
     else:
         return dmg
+
+
+def required_xp(lvl: int) -> int:
+    return FIBO[lvl - 1] * 100 if lvl < 11 else 13900 + (lvl - 11) * 5000
+
+
+def xp_level(xp: int) -> int:
+    for i, p in enumerate(FIBO):
+        if xp < p * 100:
+            return i
+
+
+def check_gain_levels(e: Entity) -> int:
+    level = e.components[comps.Level]
+    eff_lvl = xp_level(level.xp)
+    cur_lvl = level.level
+    return eff_lvl - cur_lvl

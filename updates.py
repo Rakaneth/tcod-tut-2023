@@ -6,6 +6,7 @@ from swatch import WHITE
 from gamelog import write_log
 from typing import Any
 
+
 import components as comps
 import queries as q
 import effects as eff
@@ -175,3 +176,20 @@ def equip_item(item: Entity, wielder: Entity):
 def change_map(e: Entity, map_id: str, pt: Point):
     e.relation_tag[comps.MapId] = e.world[map_id]
     e.components[comps.Location] = pt
+
+
+def gain_xp(e: Entity, victim: Entity):
+    stats = victim.components.get(comps.Combatant)
+    xp = 0
+
+    if stats:
+        xp = (stats.atp + stats.dfp) // 2 + (stats.st + stats.ag + stats.wl) // 3
+
+    e.components[comps.Level].xp += xp
+    maybe_lvl = q.check_gain_levels(e)
+    if maybe_lvl > 0:
+        gain_levels(e, maybe_lvl)
+
+
+def gain_levels(e: Entity, lvls: int):
+    pass
