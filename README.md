@@ -25,6 +25,12 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # DevLog
 
+## 2023-8-12
+
+### Combat Improvements
+
+* The player can now gain levels. This could be extended to other creatures as well, but is limited to the player for the moment.
+
 ## 2023-8-6
 
 ### Dungeon Improvements
