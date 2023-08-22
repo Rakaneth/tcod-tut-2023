@@ -305,6 +305,20 @@ adamantine:
 
 # Trinkets
 
+dragon_scale:
+  name: Dragon Scale
+  desc: A hard, ruddy scale of a dragon.
+  glyph: '"'
+  color: [255, 0, 0]
+  dfp: 10
+  reduction: 1
+  tier: 2
+  freq: 2
+  tags:
+    - trinket
+    - item
+    - equip
+
 brave_necklace:
   name: Proof of Bravery
   desc: A silver necklace with a golden cross. Said to be a sign of bravery.
@@ -313,7 +327,7 @@ brave_necklace:
   atp: 5
   dfp: 5
   reduction: 1
-  tier: 3
+  tier: 4
   freq: 1
   tags:
     - trinket

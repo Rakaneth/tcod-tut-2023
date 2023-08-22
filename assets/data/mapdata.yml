@@ -65,6 +65,18 @@ crypt:
     tiers: [2, 3]
     types: 
       - equip
+  downto: end
+
+end:
+  gen: arena
+  name: The End
+  width: [20, 20]
+  height: [20, 20]
+  tier: 4
+  equips:
+    number: [1, 1]
+    types:
+      - trinket
 
 
 

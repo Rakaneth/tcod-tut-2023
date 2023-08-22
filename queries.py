@@ -277,3 +277,6 @@ def check_gain_levels(e: Entity) -> int:
 
 def xp_list(dead_entity: Entity):
     return dead_entity.world.Q.all_of(relations=[(dead_entity, comps.DamagedBy, None)])
+
+def is_winner(w: World) -> bool:
+    return "winner" in w[None].tags

@@ -37,6 +37,7 @@ class ScreenNames:
     TITLE = "title"
     TEST_UI = "test_ui"
     GAME_OVER = "game_over"
+    WIN = "win"
 
 
 class Screen(tcod.event.EventDispatch):

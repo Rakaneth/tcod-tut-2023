@@ -425,6 +425,9 @@ class MainScreen(Screen):
                     new_m, new_loc = map_conns["up"]
                     u.change_map(self.player, new_m, new_loc)
                     went_stairs = True
+                    maybe_trink = q.get_trinket(self.player)
+                    if new_m == "town" and maybe_trink is not None and q.name(maybe_trink) == "Proof of Bravery":
+                        self.engine.switch_screen(ScreenNames.WIN)
 
                 if went_stairs:
                     self.player.components[comps.Actor].energy -= 100
