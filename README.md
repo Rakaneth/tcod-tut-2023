@@ -14,7 +14,7 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 ## Linux
 
 1. `git clone https://github.com/Rakaneth/tcod-tut-2023`
-2. `./bootstrap.sh` \
+2. `./bootstrap.sh`
 3. `./.venv/bin/activate`
 4. `python main.py`
 
