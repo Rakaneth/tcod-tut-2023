@@ -9,7 +9,7 @@ from gamelog import dump_log
 from queries import map_connections
 from screens.gameoverscreen import GameOverScreen
 from screen import Screen, ScreenNames
-from screens import MainScreen, TitleScreen, TestUIScreen
+from screens import MainScreen, TitleScreen, TestUIScreen, WinScreen
 from ui import SCR_W, SCR_H
 from constants import SAVING, VERSION
 from datetime import datetime
@@ -56,7 +56,7 @@ class Engine:
         if not os.path.exists("logs/"):
             os.mkdir("logs")
 
-        for sc in [MainScreen, TitleScreen, TestUIScreen, GameOverScreen]:
+        for sc in [MainScreen, TitleScreen, TestUIScreen, GameOverScreen, WinScreen]:
             self._register_sc(sc(self))
 
         self.switch_screen(ScreenNames.TITLE)

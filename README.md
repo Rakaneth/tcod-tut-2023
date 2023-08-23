@@ -25,6 +25,16 @@ This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annua
 
 # DevLog
 
+## 2023 8-22 FINAL
+
+### Combat Improvements
+
+* One last balance pass to lessen the tedium of bumping (and to give Farin and Falwyn a chance)
+
+### Dungeon Improvements
+
+* There is now a final room called *The End*, in which the *Proof of Bravery* can be found. Wear it, and return to town to secure victory!
+
 ## 2023-8-12
 
 ### Combat Improvements

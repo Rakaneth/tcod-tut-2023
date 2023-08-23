@@ -3,5 +3,6 @@
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "bookmarks.saveBookmarksInProject": true,
-    "editor.fontSize": 18
+    "editor.fontSize": 18,
+    "editor.formatOnSave": true
 }

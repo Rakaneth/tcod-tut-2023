@@ -7,8 +7,8 @@ base_hero: &hero
   color: [255, 255, 255]
   speed: 20
   hp: 20
-  atp: 20
-  dfp: 20
+  atp: 40
+  dfp: 40
   st: 10
   ag: 10
   wl: 10
@@ -24,7 +24,6 @@ falwyn:
   full_name: Falwyn Matrison
   desc: A humble druid of the reclusive Brotherhood of the Fang.
   color: [16, 192, 16]
-  atp: 10
   wl: 15
   ag: 8
   
@@ -34,7 +33,7 @@ farin:
   full_name: Lord Farin Oglebane
   desc: A mysterious necromancer from Grakis, seeking knowledge.
   color: [255, 0, 255]
-  atp: 5
+  atp: 35
   st: 5
   wl: 20
   dmg: [1, 1]
@@ -45,7 +44,8 @@ thrakir:
   full_name: Thrakir af Vitkulle
   desc: A mighty warrior from the wintry land of Falakia.
   color: [192, 16, 16]
-  dfp: 10
+  atp: 50
+  dfp: 35
   st: 20
   wl: 5
   dmg: [1, 4]
@@ -58,8 +58,8 @@ rikkas:
   color: [192, 101, 64]
   speed: 15
   hp: 25
-  atp: 15
-  dfp: 30
+  atp: 45
+  dfp: 50
   st: 15
   ag: 5
   dmg: [1, 3]
@@ -93,6 +93,8 @@ bandit:
   hp: 15
   speed: 20
   freq: 10
+  atp: 30
+  dfp: 40
 
 # Orc templates
 
@@ -102,8 +104,8 @@ base_orc: &orc
   color: [16, 128, 16]
   speed: 20
   hp: 25
-  atp: 20
-  dfp: 10
+  atp: 40
+  dfp: 40
   st: 15
   ag: 10
   wl: 15
@@ -123,6 +125,8 @@ korashi:
   hp: 30
   st: 20
   ag: 8
+  atp: 55
+  dfp: 35
   dmg: [1, 4]
   tier: 2
   freq: 2
@@ -132,6 +136,7 @@ chidani:
   name: Chidani Orc
   color: [0x9D, 0, 0]
   speed: 25
+  dfp: 55
   ag: 15
   tier: 2
   freq: 2
@@ -144,8 +149,8 @@ bat:
   color: [192, 32, 32]
   speed: 20
   hp: 10
-  atp: 10
-  dfp: 30
+  atp: 30
+  dfp: 50
   st: 5
   ag: 15
   wl: 3
@@ -169,7 +174,7 @@ bear:
   color: [108, 96, 64]
   speed: 10
   hp: 50
-  atp: 30
+  atp: 50
   dfp: -5
   dmg: [1, 6]
   st: 25
@@ -189,8 +194,8 @@ blindclaw:
   color: [32, 32, 108]
   speed: 30
   hp: 30
-  atp: 30
-  dfp: 15
+  atp: 50
+  dfp: 55
   st: 10
   ag: 15
   wl: 5
@@ -209,7 +214,7 @@ wight:
   color: [192, 0, 192]
   speed: 10
   hp: 50
-  atp: 50
+  atp: 65
   dfp: 5
   st: 15
   ag: 5
@@ -229,7 +234,7 @@ zombie:
   color: [192, 0, 192]
   speed: 10
   hp: 40
-  atp: 20
+  atp: 40
   dfp: 0
   st: 13
   ag: 2
@@ -244,13 +249,13 @@ zombie:
   freq: 5
 
 ogre:
-  name: ogre
+  name: Ogre
   glyph: 'O'
   color: [168, 168, 0]
   speed: 15
   hp: 75
-  atp: 50
-  dfp: 10
+  atp: 75
+  dfp: 25
   st: 20
   ag: 5
   wl: 5

@@ -52,6 +52,7 @@ class TitleScreen(Screen):
             if (
                 w[None].components[GameVersion] == VERSION
                 and "dead" not in w["player"].tags
+                and not "winner" in w[None].tags
             ):
                 if fn == last_name:
                     counter += 1
