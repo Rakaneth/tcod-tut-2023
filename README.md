@@ -2,6 +2,42 @@
 
 This is my entry for [r/roguelikedev's](https://reddit.com/r/roguelikedev) annual tutorial event. It is a ~~overdone~~ classic medieval fantasy roguelike set in a world of my own design.
 
+# How to Install
+
+## Windows
+
+1. `git clone https://github.com/Rakaneth/tcod-tut-2023`
+2. `.\bootstrap.bat`
+3. `.\.venv\Scripts\activate`
+4. `python main.py`
+
+## Linux
+
+1. `git clone https://github.com/Rakaneth/tcod-tut-2023`
+2. `./bootstrap.sh` \
+3. `./.venv/bin/activate`
+4. `python main.py`
+
+# How to Play
+
+Your mission is to retrieve the *Proof of Bravery* from the depths of the caves and return to town. 
+
+## Controls
+
+* `W` - move up
+* `A` - move left
+* `S` - move down
+* `D` - move right
+* `i` - show inventory
+    * `W` - move up
+    * `S` - move down
+    * `Enter` - use, equip, or unequip item
+    * `ESC` - exit inventory
+    * `space` - drop item
+* `space` - wait one turn
+* `ESC` - save menu
+* `Left Click` - select monster as target
+
 # Progress
 
 * [x] Part 0 - Setting Up
